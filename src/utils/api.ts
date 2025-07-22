@@ -21,7 +21,7 @@ const parseJwt = (token: string): any => {
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:4000/", // Fixed typo: baseUrl -> baseURL
+  baseURL: "https://qespl-backend.onrender.com/", // Fixed typo: baseUrl -> baseURL
   headers: {
     "Content-Type": "application/json",
   },
