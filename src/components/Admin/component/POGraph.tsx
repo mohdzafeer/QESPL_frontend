@@ -180,7 +180,7 @@ export const POChart: React.FC<POChartProps> = ({
 
   return (
     <div className={className}>
-      <h3 className="text-start font-semibold">POs Status Over Time</h3>
+      {/* <h3 className="text-start font-semibold">POs Status Over Time</h3> */}
       {type === 'line' ? (
         <Line data={chartData} options={options} />
       ) : (

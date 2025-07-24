@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Import useEffect
 import { MdDeleteOutline } from "react-icons/md";
 import { createOrder } from "../../../../utils/api";
 import { useSelector } from "react-redux";
@@ -14,27 +14,22 @@ type Product = {
   quantity: number;
   price: number;
   remark: string;
-  // dispatchDate: string;
 };
 
+type orderThrough = {
+  username: string;
+  employeeId: string;
+};
 
-type orderThrough={
-  username:string,
-  employeeId:string
-}
-
-type generatedBy={
-  username:string,
-  employeeId:string
-}
+type generatedBy = {
+  username: string;
+  employeeId: string;
+};
 
 type OrderFormData = {
   orderNumber: string;
   orderDate: string;
-  // dispatchDate: string;
   invoiceNumber: string;
-  // employeeName: string;
-  // employeeId: string;
   clientName: string;
   companyName: string;
   gstNumber: string;
@@ -42,21 +37,27 @@ type OrderFormData = {
   zipCode: string;
   contactNumber: string;
   products: Product[];
-  estimatedDispatchDate:string;
-  orderThrough:orderThrough,
-  generatedBy:generatedBy
+  estimatedDispatchDate: string;
+  orderThrough: orderThrough;
+  generatedBy: generatedBy;
 };
 
 const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
- const { user } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  // Helper function to get today's date in YYYY-MM-DD format for input[type="date"]
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   const [formData, setFormData] = useState<OrderFormData>({
     orderNumber: "",
-    orderDate: "",
-    // dispatchDate: "",
+    orderDate: getTodayDate(), // Set default to today's date
     invoiceNumber: "",
-    // employeeName: "",
-    // employeeId: "",
     clientName: "",
     companyName: "",
     gstNumber: "",
@@ -64,61 +65,63 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     zipCode: "",
     contactNumber: "",
     products: [{ id: 1, name: "", quantity: 0, price: 0, remark: "" }],
-    estimatedDispatchDate:"",
-    orderThrough:{username:"",employeeId:""},
-    generatedBy:{
-      username:user.username,
-      employeeId:"default"
-    }
+    estimatedDispatchDate: "",
+    orderThrough: { username: "", employeeId: "" },
+    generatedBy: {
+      username: user.username,
+      employeeId: "default",
+    },
   });
 
-  // Handles input changes for top-level form fields
-  const handleInputChange = (
-  e: React.ChangeEvent<
-    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  >
-) => {
-  const { name, value } = e.target;
+  const [loading, setLoading] = useState(false);
 
-  // Handle nested keys like "orderThrough.username"
-  if (name.includes(".")) {
-    const [parentKey, childKey] = name.split(".");
-
+  // You can use useEffect to set the employeeId for `generatedBy` if it needs to be dynamic
+  // For now, it's set in initial state, so this might not be strictly necessary unless 'user.employeeId' changes.
+  useEffect(() => {
     setFormData((prev) => ({
       ...prev,
-      [parentKey]: {
-        ...(prev as any)[parentKey], // <- Type assertion to bypass TS error
-        [childKey]: value,
+      generatedBy: {
+        ...prev.generatedBy,
+        username: user.username, // Ensure this is always up-to-date
+        employeeId: user.employeeId || "default", // Assuming user object might have an employeeId
       },
     }));
-  } else {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-};
+  }, [user]); // Depend on user to update if user data changes
 
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
 
+    if (name.includes(".")) {
+      const [parentKey, childKey] = name.split(".");
+      setFormData((prev) => ({
+        ...prev,
+        [parentKey]: {
+          ...(prev as any)[parentKey],
+          [childKey]: value,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
 
-  // Handles input changes specifically for product fields
   const handleProductChange = (
     id: number,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    // Changed event type to HTMLInputElement
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       products: prev.products.map((product) => {
         if (product.id === id) {
-          // Explicitly convert 'quantity' and 'price' to numbers for storage in state
-          // Number("") returns 0, Number("non-numeric") returns NaN.
-          // Backend validation will catch NaN for quantity < 0, but good practice to handle.
           if (name === "quantity" || name === "price") {
             return { ...product, [name]: Number(value) };
           }
-          // For other fields (like 'name', 'remark', 'dispatchDate'), keep as string
           return { ...product, [name]: value };
         }
         return product;
@@ -126,25 +129,22 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }));
   };
 
-  // Adds a new product row to the form
   const addProduct = () => {
     setFormData((prev) => ({
       ...prev,
       products: [
         ...prev.products,
         {
-          id: prev.products.length + 1,
+          id: prev.products.length > 0 ? Math.max(...prev.products.map(p => p.id)) + 1 : 1, // Ensure unique IDs
           name: "",
           quantity: 0,
           price: 0,
           remark: "",
-          // dispatchDate: "",
         },
       ],
     }));
   };
 
-  // Removes a product row from the form
   const removeProduct = (id: number) => {
     setFormData((prev) => ({
       ...prev,
@@ -152,21 +152,13 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }));
   };
 
-  // Closes the form by updating the parent component's state
   const handleClose = () => {
     setShowForm(false);
   };
 
-  // Handles the form submission
-
-  const [loading, setLoading] = useState(false)
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Transform formData to match the API's orderData model
-    // Note: 'remark', 'employeeName', 'orderNumber', 'orderDate', 'invoiceNumber'
-    // are sent from the form. Ensure your backend model can accept these.
     const apiOrderData = {
       clientName: formData.clientName,
       companyName: formData.companyName,
@@ -180,17 +172,15 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
         price: product.price,
         remark: product.remark,
       })),
-      // Uses the dispatch date from the first product for estimatedDispatchDate
-      // estimatedDispatchDate: formData.products[0]?.dispatchDate || "",
       generatedBy: {
         username: user.username,
-        employeeId: formData.generatedBy.employeeId,
+        employeeId: formData.generatedBy.employeeId, // Use employeeId from form state
       },
-      orderThrough:{
-        username:formData.orderThrough.username,
-        employeeId:formData.orderThrough.employeeId
+      orderThrough: {
+        username: formData.orderThrough.username,
+        employeeId: formData.orderThrough.employeeId,
       },
-      orderThrougth: "Online",
+      orderThrougth: "Online", // Typo: Should probably be 'orderThrough' if it maps to your backend
       department: "sales",
       orderNumber: formData.orderNumber,
       orderDate: formData.orderDate,
@@ -199,28 +189,18 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     };
 
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await createOrder(apiOrderData);
       console.log("Order created successfully:", response);
-      alert("Order created successfully!"); // Using alert for user feedback
-      setShowForm(false); // Close the form on success
-      setLoading(false)
-      // window.location.reload()
+      alert("Order created successfully!");
+      setShowForm(false);
     } catch (error) {
-      console.log(apiOrderData)
       console.error("Error creating order:", error);
-      alert("Failed to create order. Please check the console for details."); // Using alert for user feedback
-      setLoading(false)
+      alert("Failed to create order. Please check the console for details.");
+    } finally {
+      setLoading(false);
     }
   };
-
-  const getTodayDate = () => {
-  const today = new Date();
-  const day = String(today.getDate()).padStart(2, '0');
-  const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-  const year = today.getFullYear();
-  return `${day}-${month}-${year}`;
-};
 
   return (
     <div className="w-screen h-screen flex justify-center items-center pt-20">
@@ -272,9 +252,8 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder="Order Date"
                   required
-                  value={formData.orderDate}
+                  value={formData.orderDate} // Bound to state
                   onChange={handleInputChange}
-                  defaultValue={getTodayDate().toString()}
                 />
                 <label
                   htmlFor="order_date"
@@ -530,7 +509,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                       className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                       placeholder=" "
                       required
-                      value={product.quantity.toString()} // Convert number to string for input value
+                      value={product.quantity.toString()}
                       onChange={(e) => handleProductChange(product.id, e)}
                     />
                     <label
@@ -549,7 +528,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                       className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                       placeholder=" "
                       required
-                      value={product.price.toString()} // Convert number to string for input value
+                      value={product.price.toString()}
                       onChange={(e) => handleProductChange(product.id, e)}
                     />
                     <label
@@ -581,25 +560,6 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   </label>
                 </div>
 
-                {/* Dispatch Date Input */}
-                {/* <div className="relative z-0 w-full mb-5 group">
-                  <input
-                    type="date"
-                    name="dispatchDate" 
-                    id={`Dispatch_Date_${index}`}
-                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
-                    required
-                    value={product.dispatchDate}
-                    onChange={(e) => handleProductChange(product.id, e)}
-                  />
-                  <label
-                    htmlFor={`Dispatch_Date_${index}`}
-                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
-                  >
-                    Dispatch Date
-                  </label>
-                </div> */}
-
                 {/* Delete Button */}
                 {formData.products.length > 1 && (
                   <button
@@ -613,23 +573,23 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
               </div>
             ))}
             <div className="relative z-0 w-full mb-5 group">
-            <input
-              type="date"
-              name="estimatedDispatchDate"
-              id="dispatch_date"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
-              placeholder="Order Date"
-              required
-              value={formData.estimatedDispatchDate}
-              onChange={handleInputChange}
-            />
-            <label
-              htmlFor="dispatch_date"
-              className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
-            >
-              Estimated Dispatch Date
-            </label>
-          </div>
+              <input
+                type="date"
+                name="estimatedDispatchDate"
+                id="dispatch_date"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                placeholder="Order Date"
+                required
+                value={formData.estimatedDispatchDate}
+                onChange={handleInputChange}
+              />
+              <label
+                htmlFor="dispatch_date"
+                className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+              >
+                Estimated Dispatch Date
+              </label>
+            </div>
 
             {/* Add Product Button */}
             <div className="flex justify-between">
@@ -642,14 +602,16 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
               </button>
               <button
                 type="submit"
-                className={`text-end max-w-fit bg-[#0A2975] text-white px-2 py-1 font-semibold text-xl rounded-md ${!loading && 'hover:bg-[#092060]'} transition duration-300 ${!loading && 'cursor-pointer'} ${loading && 'bg-gray-400 cursor-not-allowed hover:bg-gray-600'} `}
+                className={`text-end max-w-fit bg-[#0A2975] text-white px-2 py-1 font-semibold text-xl rounded-md ${
+                  !loading && "hover:bg-[#092060]"
+                } transition duration-300 ${
+                  !loading && "cursor-pointer"
+                } ${loading && "bg-gray-400 cursor-not-allowed hover:bg-gray-600"} `}
               >
                 {loading ? "Submitting..." : " Submit"}
               </button>
             </div>
           </section>
-
-          
         </form>
       </div>
     </div>

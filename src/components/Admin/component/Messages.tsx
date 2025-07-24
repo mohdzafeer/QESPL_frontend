@@ -194,7 +194,10 @@ const Messages = () => {
                       );
                     })}
                   </div>
-                  <button className="text-start bg-blue-500 max-w-fit text-white font-semibold px-2 py-1 rounded-sm cursor-pointer hover:bg-blue-400 duration-300 active:bg-blue-500">Update Permissions</button>
+                  <div className="flex items-center gap-4">
+                    <button className="text-start bg-blue-500 max-w-fit text-white font-semibold px-2 py-1 rounded-sm cursor-pointer hover:bg-blue-400 duration-300 active:bg-blue-500">Update Permissions</button>
+                    <button className="text-start bg-red-500 max-w-fit text-white font-semibold px-2 py-1 rounded-sm cursor-pointer hover:bg-red-400 duration-300 active:bg-red-500">Reject Permissions</button>
+                  </div>
                 </div>
               </div>
             )}

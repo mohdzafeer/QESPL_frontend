@@ -19,10 +19,10 @@ interface GeneratedBy {
   name?: string; // Some orders have 'name' directly under generatedBy
 }
 
-interface CreatedBy {
-  userId: string;
-  username: string;
-}
+// interface CreatedBy {
+//   userId: string;
+//   username: string;
+// }
 
 interface OrderThrough{
   username:string,
@@ -42,16 +42,16 @@ interface Order {
   products: Product[];
   estimatedDispatchDate?: string; // Optional
   generatedBy: GeneratedBy;
-  orderThrougth?: string; // Optional
-  department?: string; // Optional
+  // orderThrougth?: string; // Optional
+  // department?: string; // Optional
   status: string;
   isdeleted: boolean;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
   __v: number;
-  createdBy?: CreatedBy; // Optional
+  // createdBy?: CreatedBy; // Optional
   deletedAt?: string; // Optional
-  formGeneratedBy?: string; // Some orders have this field
+  // formGeneratedBy?: string; // Some orders have this field
   orderThrough:OrderThrough
 }
 // --- END INTERFACES ---
