@@ -22,12 +22,13 @@ const AdminLayout = () => {
     }
   }, [theme]);
 
+  
 
   return (
     <div className="flex flex-col h-screen bg-gray-100 dark:bg-zinc-700">
       <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar isOpen={isSidebarOpen} />
+        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen}/>
         <div className="flex-1 overflow-auto p-4">
           <Outlet />
         </div>
