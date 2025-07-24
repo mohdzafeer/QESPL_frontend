@@ -21,17 +21,22 @@ interface Product {
 }
 
 interface GeneratedBy {
-  user?: {
-    username: string;
-  };
+  username: string;
   employeeId: string;
   name?: string; // Some orders have 'name' directly under generatedBy
 }
 
-interface CreatedBy {
-  userId: string;
-  username: string;
+// interface CreatedBy {
+//   userId: string;
+//   username: string;
+// }
+
+interface orderThrough{
+  username:string,
+  employeeId:string
+
 }
+
 
 interface Order {
   _id: string;
@@ -45,16 +50,17 @@ interface Order {
   products: Product[];
   estimatedDispatchDate?: string; // Optional
   generatedBy: GeneratedBy;
-  orderThrougth?: string; // Optional
+  // orderThrougth?: string; // Optional
   department?: string; // Optional
   status: string;
   isdeleted: boolean;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
   __v: number;
-  createdBy?: CreatedBy; // Optional
+  // createdBy?: CreatedBy; // Optional
   deletedAt?: string; // Optional
   formGeneratedBy?: string; // Some orders have this field
+  orderThrough?:orderThrough
 }
 
 interface Pagination {
@@ -123,7 +129,7 @@ const DashboardPOs = () => {
                           order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
                           order.clientName.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
                           order.companyName.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.generatedBy.user?.username?.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
+                          order.generatedBy.username?.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
                           order.generatedBy.name?.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
                           order.generatedBy.employeeId.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
                           order.products.some(p => p.name.toLowerCase().includes(searchQuery.toLowerCase().trim()));
@@ -340,8 +346,8 @@ const DashboardPOs = () => {
                       </td>
                       <td className="p-2 flex items-center gap-3">
                         <div className="flex flex-col">
-                          <span>{data.generatedBy.user?.username || data.generatedBy.name || 'N/A'}</span>
-                          <span>{data.generatedBy.employeeId}</span>
+                          <span>{data.generatedBy?.username || data.generatedBy?.name || 'N/A'}</span>
+                          <span>{data.generatedBy?.employeeId || 'N/A'}</span>
                         </div>
                       </td>
                       <td className="lg:p-2 p-1">{data.companyName}</td>
@@ -406,7 +412,7 @@ const DashboardPOs = () => {
                     </span>
                     <div className="w-2/3 flex gap-2 items-center text-left">
                       <div className="text-left">
-                        <p>{data.generatedBy.user?.username || data.generatedBy.name || 'N/A'}</p>
+                        <p>{data.generatedBy?.username || data.generatedBy.name || 'N/A'}</p>
                         <p className="text-gray-500">{data.generatedBy.employeeId}</p>
                       </div>
                     </div>
@@ -459,7 +465,7 @@ const DashboardPOs = () => {
                       onClick={() => handleViewPODetails(data)} 
                       className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                     />
-                    <BsDownload className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer" />
+                    <BsDownload  className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer" />
                     <RiDeleteBinLine className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer" />
                   </div>
                 </div>

@@ -32,6 +32,11 @@ export const registerSchema = yup.object().shape({
       /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
       "Password must contain at least one letter and one number"
     ),
+    employeeId: yup
+    .string()
+    .required("Employee Id is required")
+    .min(3, "Employee Id must be at least 3 characters")
+    .max(30, "Employee Id must not exceed 30 characters"),
 });
 
 

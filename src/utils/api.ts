@@ -20,12 +20,26 @@ const parseJwt = (token: string): any => {
 
 import axios from "axios";
 
+// const api = axios.create({
+//   baseURL: "https://qespl-backend.onrender.com/", 
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+// });
+
+const isLocalhost = window.location.hostname === "localhost";
+
 const api = axios.create({
-  baseURL: "https://qespl-backend.onrender.com/", // Fixed typo: baseUrl -> baseURL
+  baseURL: isLocalhost
+    ? "http://localhost:8080" // your local backend
+    : "https://qespl-backend.onrender.com/", // production backend
   headers: {
     "Content-Type": "application/json",
   },
+  
 });
+
+
 
 
 api.interceptors.request.use(

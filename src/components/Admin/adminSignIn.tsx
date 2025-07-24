@@ -16,6 +16,7 @@ interface LoginFormData {
 }
 
 const LoginForm = () => {
+  const [loading, setLoading] = useState(false)
   const {
     register,
     handleSubmit,
@@ -68,6 +69,7 @@ const LoginForm = () => {
   };
 
   const [showPassword, setShowPassword] = useState(false);
+  
 
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row items-center justify-center lg:py-10 lg:px-56 px-10 pt-16">
@@ -97,18 +99,9 @@ const LoginForm = () => {
               className="w-24 h-auto mb-2 md:w-30"
             />
           </h1>
-          <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-black mb-5 text-left w-full ml-5 md:text-left">
+          <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-black mb-5 text-center w-full ml-5 ">
             Sign in
           </h2>
-          {/* <span className="text-sm  mb-5 ml-5 text-left w-full">
-            Don't have an account?{" "}
-            <span
-              onClick={() => navigate("/register")}
-              className="text-[#0A2975] hover:underline cursor-pointer font-bold"
-            >
-              Sign Up
-            </span>
-          </span> */}
           <form
             onSubmit={handleSubmit(
               onSubmit as unknown as Parameters<typeof handleSubmit>[0]
@@ -156,41 +149,15 @@ const LoginForm = () => {
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
             <button
               type="submit"
-              className="min-w-full p-3 bg-[#0A2975]  text-white  text-base font-medium hover:bg-blue-800 transition-colors cursor-pointer"
-              disabled={status === "loading" || !isValid}
+              className={`min-w-full p-3 bg-[#0A2975]  text-white  text-base font-medium ${status!=='loading' && "hover:bg-blue-800 cursor-pointer"} transition-colors  ${
+                status == "loading" &&
+                " cursor-not-allowed bg-gray-400"
+              }`}
+              // disabled={status === "loading" || !isValid}
             >
               {status === "loading" ? "Signing in..." : "Sign In"}
             </button>
           </form>
-          {/* <div className="flex flex-col items-center justify-center gap-2 w-full max-w-sm  mt-4">
-            <div className="flex w-full items-center gap-2 py-6 text-sm text-slate-600">
-              <div className="h-px w-full bg-slate-200"></div>
-              OR
-              <div className="h-px w-full bg-slate-200"></div>
-            </div>
-            <button
-              className="inline-flex h-10 min-w-full items-center justify-center gap-2  border border-slate-300 bg-white  text-sm font-medium text-black outline-none focus:ring-2 focus:ring-[#333] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60 px-2 hover:bg-gray-200 duration-300 cursor-pointer"
-              disabled={status === "loading"}
-            >
-              <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="Google"
-                className="h-[18px] w-[18px]"
-              />
-              Continue with Google
-            </button>
-            <button
-              className="inline-flex h-10 min-w-full items-center justify-center gap-2 rounded border border-slate-300 bg-white text-sm font-medium text-black outline-none focus:ring-2 focus:ring-[#333] focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60 px-2 hover:bg-gray-200 duration-300 cursor-pointer"
-              disabled={status === "loading"}
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg"
-                alt="Facebook"
-                className="h-[18px] w-[18px]"
-              />
-              Continue with Facebook
-            </button>
-          </div> */}
         </div>
         <p className="text-sm text-gray-600 absolute bottom-5 right-5">
           © 2025 Powered By QESPL

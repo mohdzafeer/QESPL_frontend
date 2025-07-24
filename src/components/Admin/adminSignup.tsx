@@ -14,6 +14,7 @@ interface RegisterFormData {
   email: string;
   password: string;
   userType: string;
+  employeeId:string;
 }
 
 const RegisterForm = () => {
@@ -26,7 +27,7 @@ const RegisterForm = () => {
     resolver: yupResolver(registerSchema) as any,
     // resolver: yupResolver(registerSche
     mode: "onChange", // Validate on every change
-    defaultValues: { userType: "admin" }, // Set default userType
+    defaultValues: { userType: "user" }, // Set default userType
   });
 
   const dispatch = useDispatch<AppDispatch>();
@@ -126,6 +127,19 @@ const RegisterForm = () => {
               )}
             </div>
             <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Enter your Employee Id"
+                className="w-full p-3 border rounded-xl  text-base "
+                {...register("employeeId")}
+              />
+              {errors.employeeId && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.employeeId?.message}
+                </p>
+              )}
+            </div>
+            <div className="mb-4">
               <div className="flex items-center border rounded-xl">
                 <input
                   type={showPassword ? 'text':'password'}
@@ -151,7 +165,7 @@ const RegisterForm = () => {
             <button
               type="submit"
               className="min-w-full p-3 mt-5 bg-[#0A2975] text-white rounded text-base font-medium hover:bg-blue-800 transition-colors cursor-pointer "
-              disabled={status === "loading" || !isValid}
+              // disabled={status === "loading" || !isValid}
             >
               {status === "loading" ? "Signing Up..." : "Sign-Up"}
             </button>

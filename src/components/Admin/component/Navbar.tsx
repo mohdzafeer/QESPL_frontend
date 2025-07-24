@@ -123,7 +123,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
             </MenuButton>
             <MenuItems
               transition
-              className="absolute right-0 z-10 mt-2 w-44 sm:w-48 origin-top-right rounded-md dark:bg-zinc-900 dark:text-zinc-300 py-1 shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-black ring-1 ring-gray-200 dark:ring-zinc-700 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+              className="absolute right-0 z-10 mt-2 w-44 sm:w-48 origin-top-right rounded-md bg-white dark:bg-zinc-900 dark:text-zinc-300 py-1 shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-black ring-1 ring-gray-200 dark:ring-zinc-700 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
             >
               <MenuItem>
                 {({ active }) => (
@@ -133,7 +133,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
                     onClick={() => setShowProfile(true)}
                     className={classNames(
                       active ? "bg-gray-100 dark:bg-zinc-600 dark:text-zinc-300" : "",
-                      "block w-full px-4 py-2 text-sm text-gray-700 dark:text-zinc-300"
+                      "block  w-full px-4 py-2 text-sm text-gray-700 dark:text-zinc-300"
                     )}
                   >
                     View Profile
@@ -148,7 +148,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
                     onClick={handleLogout}
                     className={classNames(
                       active ? "bg-gray-100" : "",
-                      "block px-4 py-2 text-sm text-gray- hover:bg-red-600 hover:text-white"
+                      "block px-4 py-2 text-sm text-gray- hover:bg-red-600 hover:text-white "
                     )}
                   >
                     Sign out

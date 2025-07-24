@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { CgSandClock } from "react-icons/cg";
 import { IoMdTime } from "react-icons/io";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -18,6 +18,26 @@ const DashboardCards = () => {
 //   >("all");
 
 const dispatch=useDispatch()
+const { orders } = useSelector((state: RootState) => state.orders);
+const counts = useMemo(
+    () => ({
+      total: orders.length,
+      pending: orders.filter(
+        (order) => order.status === "pending" && !order.isdeleted
+      ).length,
+      completed: orders.filter(
+        (order) => order.status === "completed" && !order.isdeleted
+      ).length,
+      delayed: orders.filter(
+        (order) => order.status === "delayed" && !order.isdeleted
+      ).length,
+      rejected: orders.filter(
+        (order) => order.status === "rejected" && !order.isdeleted
+      ).length,
+      deleted: orders.filter((order) => order.isdeleted).length,
+    }),
+    [orders]
+  );
 
 
 const statusFilter = useSelector(
@@ -62,7 +82,9 @@ const statusFilter = useSelector(
                 statusFilter == "all" ? "text-white" : "text-[#0A2975]"
               } text-3xl font-bold`}
             >
-              20
+              {/* {counts.total} */}
+              N/A
+              
             </p>
             {/* <p
                       className={`${
@@ -102,7 +124,9 @@ const statusFilter = useSelector(
                 statusFilter == "completed" ? "" : "text-[#0A2975]"
               } text-3xl font-bold`}
             >
-              20
+              {/* {counts.completed} */}
+              N/A
+              
             </p>
             {/* <p className="text-green-500 text-sm">
                       <span className="font-bold  ">+3%</span> from last month
@@ -140,7 +164,9 @@ const statusFilter = useSelector(
                 statusFilter == "pending" ? "" : "text-[#0A2975]"
               } text-3xl font-bold`}
             >
-              20
+              {/* {counts.pending} */}
+              N/A
+              
             </p>
             {/* <p className="text-yellow-400 text-sm">
                       <span className="font-bold  ">+2%</span> from last month
@@ -176,7 +202,9 @@ const statusFilter = useSelector(
                 statusFilter == "delayed" ? "" : "text-[#0A2975]"
               } text-3xl font-bold`}
             >
-              20
+              {/* {counts.delayed} */}
+              N/A
+              
             </p>
             {/* <p className="font-bold text-2xl">20</p> */}
             {/* <p className="text-orange-400 text-sm">
@@ -213,7 +241,9 @@ const statusFilter = useSelector(
                 statusFilter == "rejected" ? "" : "text-[#0A2975]"
               } text-3xl font-bold`}
             >
-              20
+              {/* {counts.rejected} */}
+              N/A
+              
             </p>
             {/* <p className="font-bold text-2xl">20</p> */}
             {/* <p className="text-red-600 text-sm">

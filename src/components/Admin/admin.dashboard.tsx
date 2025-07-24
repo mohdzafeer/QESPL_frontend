@@ -697,7 +697,7 @@ const DashBoard = () => {
                               <img
                                 src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
                                 alt={
-                                  data.generatedBy?.name ||
+                                  data.generatedBy?.username ||
                                   data.formGeneratedBy ||
                                   "Unknown"
                                 }
@@ -705,7 +705,7 @@ const DashBoard = () => {
                               />
                               <div className="flex flex-col">
                                 <span>
-                                  {data.generatedBy?.name ||
+                                  {data.generatedBy?.username ||
                                     data.formGeneratedBy ||
                                     data.generatedBy?.user?.username ||
                                     "Unknown"}
