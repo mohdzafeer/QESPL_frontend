@@ -9,7 +9,7 @@ export const schema = yup.object().shape({
   password: yup
     .string()
     .required("Password is required")
-    .min(8, "Password must be at least 8 characters"),
+    // .min(8, "Password must be at least 8 characters"),
 });
 
 //// registration form validations funcations  using yup
@@ -26,17 +26,17 @@ export const registerSchema = yup.object().shape({
     .email("Invalid email format"),
   password: yup
     .string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters")
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
-      "Password must contain at least one letter and one number"
-    ),
+    .required("Password is required"),
+    // .min(8, "Password must be at least 8 characters")
+    // .matches(
+    //   /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+    //   "Password must contain at least one letter and one number"
+    // ),
     employeeId: yup
     .string()
     .required("Employee Id is required")
-    .min(3, "Employee Id must be at least 3 characters")
-    .max(30, "Employee Id must not exceed 30 characters"),
+    // .min(3, "Employee Id must be at least 3 characters")
+    // .max(30, "Employee Id must not exceed 30 characters"),
 });
 
 
@@ -47,13 +47,13 @@ export const useValidationForm = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup
     .string()
-    .required("Password is required")
-    .min(8, "Minimum 8 characters")
-    .matches(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
+    .required("Password is required"),
+    // .min(8, "Minimum 8 characters")
+    // .matches(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
   employeeId: yup.string().optional(),
   userType: yup
     .string()
-    .oneOf(["user", "subadmin"], "Invalid user type")
+    .oneOf(["user", "subadmin","admin"], "Invalid user type")
     .required("User type is required"),
   designation: yup.string().when("userType", {
     is: "user", // Simplified condition (no function needed for simple equality)

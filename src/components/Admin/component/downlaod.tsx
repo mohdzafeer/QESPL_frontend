@@ -11,7 +11,11 @@ export const handleDownload = (order: any) => {
   // --- Page Dimensions ---
   const pageWidth = doc.internal.pageSize.getWidth(); // A4 width: 210 mm
   const pageHeight = doc.internal.pageSize.getHeight(); // A4 height: 297 mm
-  const margin = 10; // 10mm margin on all sides
+
+  // --- Adjustable Margins ---
+  const topMargin = 20; // Increased top margin to 20mm
+  const bottomMargin = 20; // Increased bottom margin to 20mm
+  const sideMargin = 10; // Left and right margin
 
   // --- Colors ---
   const primaryColor = [10, 41, 117]; // #0A2975 in RGB
@@ -23,10 +27,10 @@ export const handleDownload = (order: any) => {
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0); // Black text by default
 
-  let currentY = margin; // Starting Y position for the left column (Company Address)
+  let currentY = topMargin; // Starting Y position for the left column (Company Address)
 
   // --- Top Left: Company Address (from QESPL_PO_35_QESPL_JUL_25.pdf) ---
-  const companyAddressStartX = margin;
+  const companyAddressStartX = sideMargin;
   let companyAddressCurrentY = currentY;
 
   doc.setFontSize(14);
@@ -46,14 +50,14 @@ export const handleDownload = (order: any) => {
 
   // --- Top Right: Purchase Order Title & PO Number ---
   const poTitleStartX = pageWidth / 2; // Start roughly in the middle for right alignment
-  let poTitleCurrentY = margin;
+  let poTitleCurrentY = topMargin;
 
   doc.setFontSize(24); // Larger font size for "Purchase Order"
   doc.setFont("helvetica", "bold");
   doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]); // Set color to primaryColor
   const purchaseOrderText = "Purchase Order";
   const purchaseOrderTextWidth = doc.getTextWidth(purchaseOrderText);
-  doc.text(purchaseOrderText, pageWidth - margin - purchaseOrderTextWidth, poTitleCurrentY); // Right aligned
+  doc.text(purchaseOrderText, pageWidth - sideMargin - purchaseOrderTextWidth, poTitleCurrentY); // Right aligned
 
   poTitleCurrentY += 8; // Space between title and PO number
   doc.setFontSize(18);
@@ -61,15 +65,15 @@ export const handleDownload = (order: any) => {
   doc.setTextColor(0, 0, 0); // Reset to black for PO number
   const poNumberText = `#${order.orderNumber || order.orderId || "no PO Number Available"}`;
   const poNumberTextWidth = doc.getTextWidth(poNumberText);
-  doc.text(poNumberText, pageWidth - margin - poNumberTextWidth, poTitleCurrentY); // Right aligned
+  doc.text(poNumberText, pageWidth - sideMargin - poNumberTextWidth, poTitleCurrentY); // Right aligned
   const poBlockBottomY = poTitleCurrentY; // Bottom edge of PO block
 
   // Set currentY for the next section (Client/Company details) to be below the lowest of the top two blocks
   currentY = Math.max(companyAddressBottomY, poBlockBottomY) + 15; // Added extra space
 
   // --- Client & Company Details Section ---
-  const sectionMargin = margin; // Use main margin for this section
-  const sectionWidth = pageWidth - (2 * margin);
+  const sectionMargin = sideMargin; // Use main sideMargin for this section
+  const sectionWidth = pageWidth - (2 * sideMargin);
   const halfSectionWidth = sectionWidth / 2;
   const clientLineSpacing = 5; // Reduced vertical spacing for address/contact details
 
@@ -95,7 +99,7 @@ export const handleDownload = (order: any) => {
   doc.setFontSize(10); // Decreased font size for address
   const addressText = String(order.address || "___");
   // Calculate address width to ensure it doesn't overlap PO heading area
-  const maxAddressWidth = (pageWidth / 2) - margin - 5; // Half page width minus margin and some padding
+  const maxAddressWidth = (pageWidth / 2) - sideMargin - 5; // Half page width minus sideMargin and some padding
   const addressLines = doc.splitTextToSize(addressText, maxAddressWidth);
   doc.text("Address:", leftColumnX, leftColumnY);
   doc.text(addressLines, leftColumnX + doc.getTextWidth("Address: "), leftColumnY);
@@ -117,20 +121,19 @@ export const handleDownload = (order: any) => {
   currentY = Math.max(leftColumnY, rightColumnY) + 5; // Reduced space before table
 
   // --- Products Table ---
-  // Removed currentY += 10; here to reduce space
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.text("Products", margin, currentY);
+  doc.text("Products", sideMargin, currentY);
   currentY += 4;
 
   // Table headers and column widths (S.No., Product, Quantity, Remark)
-  const tableWidth = pageWidth - (2 * margin); // Usable width for the table
-  // Re-distribute widths to sum up to tableWidth (e.g., 190mm if margin is 10mm)
+  const tableWidth = pageWidth - (2 * sideMargin); // Usable width for the table
+  // Re-distribute widths to sum up to tableWidth (e.g., 190mm if sideMargin is 10mm)
   // S.No. (15), Product (65), Quantity (25), Remark (85) => Total 190mm
   const columnWidths = [15, 65, 25, 85];
   const tableHeaders = ["S.No.", "Product", "Quantity", "Remark"]; // Explicitly defined array
 
-  const tableX = margin;
+  const tableX = sideMargin;
   const tableHeaderY = currentY;
   const rowHeight = 10; // Minimum height for each row in the table
   const headerPaddingX = 2; // Small padding for header text
@@ -182,6 +185,28 @@ export const handleDownload = (order: any) => {
       rowHeight - (2 * verticalTextPadding) // Ensure minimum height for single line content
     ) + (2 * verticalTextPadding);
 
+    // Check if adding this row would exceed the page height minus the bottom margin
+    if (currentY + requiredRowHeight > pageHeight - bottomMargin) {
+      doc.addPage();
+      currentY = topMargin; // Reset Y to topMargin for new page
+
+      // Re-draw table header on new page
+      doc.setFillColor(headerBgColor[0], headerBgColor[1], headerBgColor[2]);
+      doc.rect(tableX, currentY, tableWidth, rowHeight, 'F');
+      doc.setTextColor(255, 255, 255);
+      let newPageHeaderDrawX = tableX;
+      tableHeaders.forEach((header, idx) => {
+        let textX = newPageHeaderDrawX + headerPaddingX;
+        if (header === "Product") {
+          textX += productTextLeftPadding;
+        }
+        doc.text(header, textX, currentY + rowHeight / 2, { baseline: "middle" });
+        newPageHeaderDrawX += columnWidths[idx];
+      });
+      doc.setTextColor(0, 0, 0);
+      currentY += rowHeight;
+    }
+
     // Draw row background (alternate light gray and white)
     if (index % 2 === 0) {
       doc.setFillColor(255, 255, 255); // White for even rows
@@ -209,42 +234,50 @@ export const handleDownload = (order: any) => {
   currentY += 10; // Space after table
 
   // --- Footer Details (from QESPL_PO_35_QESPL_JUL_25.pdf) ---
+  // Ensure footer elements don't go below the bottom margin
+  const footerStartMinY = pageHeight - bottomMargin - (5 * 7) - 10; // Approximate height for footer lines + notes + generated on
+
+  if (currentY < footerStartMinY) {
+    currentY = footerStartMinY;
+  }
+
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
 
   // "Generated by" remains as previous (12pt, bold)
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.text(`Generated by: ${order.generatedBy?.username || "Rehan"}`, margin, currentY);
+  doc.text(`Generated by: ${order.generatedBy?.username || "Rehan"}`, sideMargin, currentY);
   currentY += 7;
 
   doc.setFont("helvetica", "bold"); // Bold for "Order through"
-  doc.text(`Order through: ${order.orderThrough?.username || "Mr. Akif"}`, margin, currentY);
+  doc.text(`Order through: ${order.orderThrough?.username || "Mr. Akif"}`, sideMargin, currentY);
   currentY += 7;
   doc.setFont("helvetica", "bold"); // Bold for "Estimated Date/Time of Dispatch"
-  doc.text(`Estimated Date/Time of Dispatch: ${order.estimatedDispatchDate.split('T')[0] || "2025-07-29"}`, margin, currentY);
-  currentY += 15; // Increased space before Department Approvals
+  doc.text(`Estimated Date/Time of Dispatch: ${order.estimatedDispatchDate?.split('T')[0] || "2025-07-29"}`, sideMargin, currentY);
+  currentY += 10; // Increased space before Note
 
+  doc.setFontSize(12)
   doc.setFont("helvetica", "bold");
-  doc.text("Note :", margin, currentY);
+  doc.text("Note :", sideMargin, currentY);
+  doc.setFontSize(8)
   doc.setFont("helvetica", "normal");
   currentY += 7;
-  doc.text("Note 1", margin, currentY);
+  doc.text("1. If you want to update this Purchase Order, You must ask permission from admin/sub-admin", sideMargin, currentY);
   currentY += 5;
-  doc.text("Note 2", margin, currentY);
+  doc.text("1. If you want to update this Purchase Order, You must ask permission from admin/sub-admin", sideMargin, currentY);
   currentY += 5;
-  doc.text("Note 3", margin, currentY);
-  currentY += 10;
+  doc.text("1. If you want to update this Purchase Order, You must ask permission from admin/sub-admin", sideMargin, currentY);
 
   const now = new Date();
   // Format date and time as "DD/MM/YYYY HH:MM am/pm IST"
   const generatedOnDateTime = `${now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true })} IST`;
 
-  // "Generated on" at bottom left with reduced text and bold
+  // "Generated on" at bottom left with reduced text and bold, aligned to bottomMargin
   const smallFontSize = 8;
   doc.setFontSize(smallFontSize); // More reduced text size
   doc.setFont("helvetica", "bold"); // Bold
-  doc.text(`Generated on: ${generatedOnDateTime}`, margin, pageHeight - margin - 5); // Fixed position from bottom
+  doc.text(`Generated on: ${generatedOnDateTime}`, sideMargin, pageHeight - bottomMargin + 5); // Adjusted position
 
   // Save the PDF
   doc.save(`PO_${String(order.orderNumber || "new_PO")}.pdf`);

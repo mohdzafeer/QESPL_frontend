@@ -16,7 +16,7 @@ interface LoginFormData {
 }
 
 const LoginForm = () => {
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
   const {
     register,
     handleSubmit,
@@ -140,11 +140,11 @@ const LoginForm = () => {
                   {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
               </div>
-              {errors.password && (
+              {/* {errors.password && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.password.message}
                 </p>
-              )}
+              )} */}
             </div>
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
             <button

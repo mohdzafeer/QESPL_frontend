@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // Import useEffect
+import React, { useState, useEffect } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { createOrder } from "../../../../utils/api";
 import { useSelector } from "react-redux";
@@ -27,7 +27,7 @@ type generatedBy = {
 };
 
 type OrderFormData = {
-  orderNumber: string;
+  orderNumber: string; // This will store only the numeric part
   orderDate: string;
   invoiceNumber: string;
   clientName: string;
@@ -54,8 +54,9 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     return `${year}-${month}-${day}`;
   };
 
+  // State for form data
   const [formData, setFormData] = useState<OrderFormData>({
-    orderNumber: "",
+    orderNumber: "", // Stores only the number entered by the user
     orderDate: getTodayDate(), // Set default to today's date
     invoiceNumber: "",
     clientName: "",
@@ -69,29 +70,52 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     orderThrough: { username: "", employeeId: "" },
     generatedBy: {
       username: user.username,
-      employeeId: "default",
+      employeeId: user.employeeId || "default", // Use actual employeeId from user if available
     },
   });
 
+  // State for loading indicator
   const [loading, setLoading] = useState(false);
 
-  // You can use useEffect to set the employeeId for `generatedBy` if it needs to be dynamic
-  // For now, it's set in initial state, so this might not be strictly necessary unless 'user.employeeId' changes.
+  // State to hold the dynamic PO suffix (e.g., /QESPL/JUL/25)
+  const [poSuffix, setPoSuffix] = useState('');
+
+  // Calculate the dynamic suffix once on component mount
+  useEffect(() => {
+    const now = new Date();
+    const currentYearShort = now.getFullYear().toString().slice(-2);
+    // Use 'en-IN' locale to ensure correct month abbreviation for India, although 'en-US' is generally fine for 'short' month.
+    const currentMonthAbbr = now.toLocaleString('en-IN', { month: 'short' }).toUpperCase();
+    setPoSuffix(`/QESPL/${currentMonthAbbr}/${currentYearShort}`);
+  }, []);
+
+  // Update generatedBy user details if the `user` object changes (e.g., after initial load)
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
       generatedBy: {
         ...prev.generatedBy,
-        username: user.username, // Ensure this is always up-to-date
-        employeeId: user.employeeId || "default", // Assuming user object might have an employeeId
+        username: user.username,
+        employeeId: user.employeeId || "default",
       },
     }));
-  }, [user]); // Depend on user to update if user data changes
+  }, [user]);
 
+  // Handle input changes for general form fields
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    // Special handling for orderNumber to allow only numeric input
+    if (name === "orderNumber") {
+      const numericValue = value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+      setFormData((prev) => ({
+        ...prev,
+        [name]: numericValue,
+      }));
+      return; // Exit early as orderNumber is handled
+    }
 
     if (name.includes(".")) {
       const [parentKey, childKey] = name.split(".");
@@ -110,6 +134,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }
   };
 
+  // Handle changes for product fields
   const handleProductChange = (
     id: number,
     e: React.ChangeEvent<HTMLInputElement>
@@ -120,6 +145,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       products: prev.products.map((product) => {
         if (product.id === id) {
           if (name === "quantity" || name === "price") {
+            // Convert to number for quantity and price
             return { ...product, [name]: Number(value) };
           }
           return { ...product, [name]: value };
@@ -129,6 +155,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }));
   };
 
+  // Add a new product row
   const addProduct = () => {
     setFormData((prev) => ({
       ...prev,
@@ -145,6 +172,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }));
   };
 
+  // Remove a product row
   const removeProduct = (id: number) => {
     setFormData((prev) => ({
       ...prev,
@@ -152,41 +180,48 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }));
   };
 
+  // Close the form
   const handleClose = () => {
     setShowForm(false);
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Construct the full order number for API submission
+    const fullOrderNumber = formData.orderNumber + poSuffix;
+
     const apiOrderData = {
+      orderNumber: fullOrderNumber, // Send the full formatted PO number to the API
+      orderDate: formData.orderDate,
+      invoiceNumber: formData.invoiceNumber,
       clientName: formData.clientName,
       companyName: formData.companyName,
       gstNumber: formData.gstNumber,
-      contact: formData.contactNumber,
       address: formData.address,
       zipCode: formData.zipCode,
+      contact: formData.contactNumber, // Check if this should be `contactNumber` or `contact` on backend
       products: formData.products.map((product) => ({
         name: product.name,
         quantity: product.quantity,
         price: product.price,
         remark: product.remark,
       })),
-      generatedBy: {
-        username: user.username,
-        employeeId: formData.generatedBy.employeeId, // Use employeeId from form state
-      },
+      estimatedDispatchDate: formData.estimatedDispatchDate,
       orderThrough: {
         username: formData.orderThrough.username,
         employeeId: formData.orderThrough.employeeId,
       },
-      orderThrougth: "Online", // Typo: Should probably be 'orderThrough' if it maps to your backend
+      generatedBy: {
+        username: user.username,
+        employeeId: user.employeeId || "default", // Ensure employeeId is captured
+      },
+      orderThrougth: "Online", // Typo in original code: 'orderThrougth' -> confirm with backend if this should be 'orderThrough'
       department: "sales",
-      orderNumber: formData.orderNumber,
-      orderDate: formData.orderDate,
-      invoiceNumber: formData.invoiceNumber,
-      estimatedDispatchDate: formData.estimatedDispatchDate,
     };
+
+    console.log("Submitting Order Data:", apiOrderData);
 
     try {
       setLoading(true);
@@ -217,7 +252,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
           </button>
         </div>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          {/* Section 1 : PO Details*/}
+          {/* Section 1 : PO Details */}
           <section className="flex flex-col gap-2 text-sm">
             <h1 className="text-start font-semibold text-sm mb-4 uppercase">
               PO DETAILS
@@ -230,18 +265,38 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   name="orderNumber"
                   id="order_number"
                   className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
-                  placeholder=" "
+                  placeholder=" " // Keep placeholder empty for floating label effect
                   required
-                  value={formData.orderNumber}
+                  value={formData.orderNumber} // Input value remains just the number
                   onChange={handleInputChange}
+                  autoComplete="off" // Prevent browser auto-fill
                 />
-                <label
-                  htmlFor="order_number"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                {/* Faded suffix display */}
+                <span
+                  className={`absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform top-0 left-0 origin-[0] pointer-events-none
+                    ${formData.orderNumber ? 'peer-focus:-translate-y-4 peer-focus:scale-75' : 'peer-placeholder-shown:translate-y-2.5 peer-placeholder-shown:scale-100'}
+                    peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]
+                    ${formData.orderNumber ? 'block' : ''}
+                    `}
+                  style={{
+                    // Position the suffix right after the typed number
+                    // Adjust '7' based on average character width for 'text-sm'
+                    left: `${formData.orderNumber.length * 7}px`,
+                    opacity: formData.orderNumber ? 0.6 : 0.8, // Fade slightly more when user types
+                    transition: 'opacity 0.2s ease-in-out',
+                  }}
                 >
-                  Order Number
-                </label>
+                  Order Number{formData.orderNumber ? '' : poSuffix}
+                </span>
+
               </div>
+
+              {/* Display full PO number for confirmation */}
+              {formData.orderNumber && (
+                <p className="text-xs text-gray-600 dark:text-gray-400 -mt-3 mb-5 text-start">
+                  Full PO will be: <strong>{formData.orderNumber}{poSuffix}</strong>
+                </p>
+              )}
 
               {/* Order Date Input */}
               <div className="relative z-0 w-full mb-5 group">
