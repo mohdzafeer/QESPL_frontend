@@ -164,7 +164,7 @@ const RegisterForm = () => {
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
             <button
               type="submit"
-              className="min-w-full p-3 mt-5 bg-[#0A2975] text-white rounded text-base font-medium hover:bg-blue-800 transition-colors cursor-pointer "
+              className="min-w-full p-3 mt-5 bg-[var(--theme-color)] text-white rounded text-base font-medium hover:bg-blue-800 transition-colors cursor-pointer "
               // disabled={status === "loading" || !isValid}
             >
               {status === "loading" ? "Signing Up..." : "Sign-Up"}

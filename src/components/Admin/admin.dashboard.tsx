@@ -311,7 +311,7 @@ const DashBoard = () => {
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
                   className={`${
                     statusFilter === "all"
-                      ? "bg-[#0A2975] text-white"
+                      ? "bg-[var(--theme-color)] text-white"
                       : "bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
                   } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold w-full`}
                   onClick={() => setStatusFilter("all")}
@@ -329,7 +329,7 @@ const DashBoard = () => {
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
                   className={`${
                     statusFilter === "completed"
-                      ? "bg-[#0A2975] text-white"
+                      ? "bg-[var(--theme-color)] text-white"
                       : "bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
                   } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("completed")}
@@ -355,7 +355,7 @@ const DashBoard = () => {
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
                   className={`${
                     statusFilter === "pending"
-                      ? "bg-[#0A2975] text-white"
+                      ? "bg-[var(--theme-color)] text-white"
                       : "bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
                   } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("pending")}
@@ -381,7 +381,7 @@ const DashBoard = () => {
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
                   className={`${
                     statusFilter === "delayed"
-                      ? "bg-[#0A2975] text-white"
+                      ? "bg-[var(--theme-color)] text-white"
                       : "bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
                   } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("delayed")}
@@ -407,7 +407,7 @@ const DashBoard = () => {
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
                   className={`${
                     statusFilter === "rejected"
-                      ? "bg-[#0A2975] text-white"
+                      ? "bg-[var(--theme-color)] text-white"
                       : "bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
                   } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("rejected")}
@@ -455,8 +455,8 @@ const DashBoard = () => {
                             <button
                               className={`py-2 px-3 rounded-lg text-sm font-semibold ${
                                 timeFilter === "weekly"
-                                  ? "bg-[#0A2975] text-white"
-                                  : "bg-gray-200 text-[#0A2975] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
+                                  ? "bg-[var(--theme-color)] text-white"
+                                  : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
                               }`}
                               onClick={() => setTimeFilter("weekly")}
                             >
@@ -465,8 +465,8 @@ const DashBoard = () => {
                             <button
                               className={`py-2 px-3 rounded-lg text-sm font-semibold ${
                                 timeFilter === "monthly"
-                                  ? "bg-[#0A2975] text-white"
-                                  : "bg-gray-200 text-[#0A2975] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
+                                  ? "bg-[var(--theme-color)] text-white"
+                                  : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
                               }`}
                               onClick={() => setTimeFilter("monthly")}
                             >
@@ -475,8 +475,8 @@ const DashBoard = () => {
                             <button
                               className={`py-2 px-3 rounded-lg text-sm font-semibold ${
                                 timeFilter === "yearly"
-                                  ? "bg-[#0A2975] text-white"
-                                  : "bg-gray-200 text-[#0A2975] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
+                                  ? "bg-[var(--theme-color)] text-white"
+                                  : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
                               }`}
                               onClick={() => setTimeFilter("yearly")}
                             >
@@ -642,7 +642,7 @@ const DashBoard = () => {
                       <select
                         value={statusFilter}
                         onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded-md text-gray-700 bg-white dark:bg-zinc-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
+                        className="w-full p-2 border border-gray-300 rounded-md text-gray-700 bg-white dark:bg-zinc-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-[var(--theme-color)]"
                       >
                         <option value="all">All Status</option>
                         <option value="completed">Completed</option>
@@ -889,7 +889,7 @@ const DashBoard = () => {
                           onClick={() => changePage(i + 1)}
                           className={`px-3 py-1 rounded-full text-sm ${
                             currentPage === i + 1
-                              ? "bg-blue-600 text-white font-semibold"
+                              ? "bg-[var(--theme-color)] text-white font-semibold"
                               : "bg-gray-100 dark:bg-zinc-500 text-black dark:text-white hover:bg-blue-100 dark:hover:bg-zinc-400"
                           }`}
                         >

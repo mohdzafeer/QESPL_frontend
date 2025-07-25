@@ -239,13 +239,13 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
 
   return (
     <div className="w-screen h-screen flex justify-center items-center pt-20">
-      <div className="bg-white w-11/12 max-h-10/12 rounded-lg p-5 my-10 no-scrollbar overflow-y-scroll">
+      <div className="bg-white dark:bg-zinc-900 w-11/12 max-h-10/12 rounded-lg p-5 my-10 no-scrollbar overflow-y-scroll">
         <div className="flex justify-between items-center w-full ">
-          <h1 className="text-[#0A2975] font-bold text-lg mb-5 uppercase">
+          <h1 className="text-[#0A2975] dark:text-white font-bold text-lg mb-5 uppercase">
             Create PO
           </h1>
           <button
-            className="text-gray-700 text-2xl px-3 py-2 rounded-lg cursor-pointer"
+            className="text-gray-700 dark:text-white text-2xl px-3 py-2 rounded-lg cursor-pointer"
             onClick={handleClose}
           >
             &times;
@@ -264,7 +264,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="text"
                   name="orderNumber"
                   id="order_number"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder=" " // Keep placeholder empty for floating label effect
                   required
                   value={formData.orderNumber} // Input value remains just the number
@@ -275,7 +275,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 <span
                   className={`absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform top-0 left-0 origin-[0] pointer-events-none
                     ${formData.orderNumber ? 'peer-focus:-translate-y-4 peer-focus:scale-75' : 'peer-placeholder-shown:translate-y-2.5 peer-placeholder-shown:scale-100'}
-                    peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]
+                    peer-focus:text-[#0A2975] peer-focus:dark:text-white
                     ${formData.orderNumber ? 'block' : ''}
                     `}
                   style={{
@@ -286,7 +286,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                     transition: 'opacity 0.2s ease-in-out',
                   }}
                 >
-                  Order Number{formData.orderNumber ? '' : poSuffix}
+                  Order Number{formData.orderNumber ? '' : poSuffix}  
                 </span>
 
               </div>
@@ -304,7 +304,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="date"
                   name="orderDate"
                   id="order_date"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder="Order Date"
                   required
                   value={formData.orderDate} // Bound to state
@@ -312,7 +312,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 />
                 <label
                   htmlFor="order_date"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   Order Date
                 </label>
@@ -324,7 +324,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="text"
                   name="invoiceNumber"
                   id="invoice_number"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder=" "
                   required
                   value={formData.invoiceNumber}
@@ -332,7 +332,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 />
                 <label
                   htmlFor="invoice_number"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   Invoice Number
                 </label>
@@ -352,7 +352,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="text"
                   name="orderThrough.username"
                   id="Employee_Name"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder=" "
                   required
                   value={formData.orderThrough.username}
@@ -360,7 +360,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 />
                 <label
                   htmlFor="Employee_Name"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   Employee Name
                 </label>
@@ -372,7 +372,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="text"
                   name="orderThrough.employeeId"
                   id="Employee_ID"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder=" "
                   required
                   value={formData.orderThrough.employeeId}
@@ -380,7 +380,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 />
                 <label
                   htmlFor="Employee_ID"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   Employee ID
                 </label>
@@ -400,7 +400,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="text"
                   name="clientName"
                   id="Client_Name"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder=" "
                   required
                   value={formData.clientName}
@@ -408,7 +408,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 />
                 <label
                   htmlFor="Client_Name"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   Client Name
                 </label>
@@ -420,7 +420,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="text"
                   name="companyName"
                   id="Company_Name"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder=" "
                   required
                   value={formData.companyName}
@@ -428,7 +428,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 />
                 <label
                   htmlFor="Company_Name"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   Company Name
                 </label>
@@ -439,7 +439,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="text"
                   name="gstNumber"
                   id="GST_Number"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder=" "
                   required
                   value={formData.gstNumber}
@@ -447,7 +447,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 />
                 <label
                   htmlFor="GST_Number"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   GST Number
                 </label>
@@ -458,7 +458,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="text"
                   name="address"
                   id="Address"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder=" "
                   required
                   value={formData.address}
@@ -466,7 +466,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 />
                 <label
                   htmlFor="Address"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   Address
                 </label>
@@ -477,7 +477,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="text"
                   name="zipCode"
                   id="ZIP_Code"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder=" "
                   required
                   value={formData.zipCode}
@@ -485,7 +485,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 />
                 <label
                   htmlFor="ZIP_Code"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   ZIP Code
                 </label>
@@ -496,7 +496,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   type="text"
                   name="contactNumber"
                   id="Contact_Number"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                   placeholder=" "
                   required
                   value={formData.contactNumber}
@@ -504,7 +504,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 />
                 <label
                   htmlFor="Contact_Number"
-                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   Contact Number
                 </label>
@@ -526,7 +526,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                     list={`product-options-${index}`}
                     name="name"
                     id={`Product_Name_${index}`}
-                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                     placeholder=" "
                     required
                     value={product.name}
@@ -534,7 +534,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   />
                   <label
                     htmlFor={`Product_Name_${index}`}
-                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                   >
                     Product Name
                   </label>
@@ -561,7 +561,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                       type="number"
                       name="quantity"
                       id={`Product_Quantity_${index}`}
-                      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                       placeholder=" "
                       required
                       value={product.quantity.toString()}
@@ -569,7 +569,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                     />
                     <label
                       htmlFor={`Product_Quantity_${index}`}
-                      className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                      className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                     >
                       Qty
                     </label>
@@ -580,7 +580,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                       type="number"
                       name="price"
                       id={`Product_Price_${index}`}
-                      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                      className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                       placeholder=" "
                       required
                       value={product.price.toString()}
@@ -588,7 +588,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                     />
                     <label
                       htmlFor={`Product_Price_${index}`}
-                      className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                      className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                     >
                       Price
                     </label>
@@ -601,7 +601,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                     type="text"
                     name="remark"
                     id={`Remark_${index}`}
-                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                     placeholder=" "
                     required
                     value={product.remark}
@@ -609,7 +609,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   />
                   <label
                     htmlFor={`Remark_${index}`}
-                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                   >
                     Remark
                   </label>
@@ -632,7 +632,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 type="date"
                 name="estimatedDispatchDate"
                 id="dispatch_date"
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
                 placeholder="Order Date"
                 required
                 value={formData.estimatedDispatchDate}
@@ -640,7 +640,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
               />
               <label
                 htmlFor="dispatch_date"
-                className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
               >
                 Estimated Dispatch Date
               </label>
@@ -657,8 +657,8 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
               </button>
               <button
                 type="submit"
-                className={`text-end max-w-fit bg-[#0A2975] text-white px-2 py-1 font-semibold text-xl rounded-md ${
-                  !loading && "hover:bg-[#092060]"
+                className={`text-end max-w-fit bg-[#0A2975] dark:bg-blue-500 text-white px-2 py-1 font-semibold text-xl rounded-md ${
+                  !loading && "hover:bg-[#092060] dark:hover:bg-blue-600"
                 } transition duration-300 ${
                   !loading && "cursor-pointer"
                 } ${loading && "bg-gray-400 cursor-not-allowed hover:bg-gray-600"} `}

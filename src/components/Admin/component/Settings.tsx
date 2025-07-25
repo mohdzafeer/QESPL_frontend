@@ -71,9 +71,9 @@ const Settings = () => {
           </select>
         </div>
       </div>
-      {/* <div className="flex justify-start w-full mt-10 px-3">
+      <div className="flex justify-start w-full mt-10 px-3">
         <button className="text-start bg-blue-500 text-white px-2 py-1 rounded-sm font-semibold hover:bg-blue-400 duration-300 active:bg-blue-500 cursor-pointer">Save Changes</button>
-      </div> */}
+      </div>
     </div>
   );
 };

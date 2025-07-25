@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import {
@@ -41,6 +40,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
   endDate,
   query,
 }) => {
+  
   const chartData = useMemo(() => {
     const statusTypes = ['completed', 'pending', 'delayed', 'rejected', 'deleted'];
     const filteredOrders = orders.filter((order) => {
@@ -68,10 +68,10 @@ export const DonutChart: React.FC<DonutChartProps> = ({
         data: counts,
         backgroundColor: [
           'hsl(142 76% 36%)', // Completed
-          'hsl(43 96% 56%)',  // Pending
+          'hsl(43 96% 56%)',  // Pending
           'hsl(33 100% 50%)', // Delayed
-          'hsl(0 84% 60%)',   // Rejected
-          'hsl(0 0% 50%)',    // Deleted
+          'hsl(0 84% 60%)',   // Rejected
+          'hsl(0 0% 50%)',    // Deleted
         ],
         hoverBackgroundColor: [
           'hsl(142 76% 46%)',
@@ -85,6 +85,10 @@ export const DonutChart: React.FC<DonutChartProps> = ({
     } as ChartData<'doughnut', number[], string>;
   }, [orders, statusFilter, startDate, endDate, query]);
 
+  // Determine text color based on dark mode class on the document body
+  const isDarkMode = document.documentElement.classList.contains('dark');
+  const textColor = isDarkMode ? 'white' : '#333'; // Using '#333' for a soft black in light mode
+
   const options: ChartOptions<'doughnut'> = {
     responsive: false,
     maintainAspectRatio: false,
@@ -93,17 +97,18 @@ export const DonutChart: React.FC<DonutChartProps> = ({
         display: true,
         position: 'bottom',
         labels: {
-          color: 'hsl(var(--muted-foreground))',
+          color: textColor, // Use the dynamic color here
           font: { size: 14 },
           padding: 15,
           usePointStyle: true,
         },
       },
       tooltip: {
-        backgroundColor: 'hsl(var(--popover))',
-        titleColor: 'hsl(var(--popover-foreground))',
-        bodyColor: 'hsl(var(--popover-foreground))',
-        borderColor: 'hsl(var(--border))',
+        // You can also use the dynamic color for the tooltip text
+        titleColor: textColor,
+        bodyColor: textColor,
+        backgroundColor: isDarkMode ? 'rgba(51, 51, 51, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+        borderColor: isDarkMode ? '#444' : '#ccc',
         borderWidth: 1,
         callbacks: {
           label: function (context) {
@@ -121,7 +126,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
   };
 
   if (chartData.datasets[0].data.every((count) => count === 0)) {
-    return <div className="text-center p-4 text-gray-500">No data available</div>;
+    return <div className="text-center p-4 text-gray-500 dark:text-white">No data available</div>;
   }
 
   return (
@@ -133,4 +138,3 @@ export const DonutChart: React.FC<DonutChartProps> = ({
 };
 
 export default React.memo(DonutChart);
-

@@ -1,428 +1,346 @@
-import { debounce } from "lodash";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-// import { getUserWithWithOp } from "../../../utils/api";
-import {
-  getUserWithWithOp,
-  // searchAdminUser,
-} from "../../../store/Slice/adminSlice";
-import type { AppDispatch, RootState } from "../../../store/store";
-import { deleteUser, searchAdminUser } from "../../../store/Slice/adminSlice";
-import { useSelector } from "react-redux";
-import Navbar from "./Navbar";
-import Sidebar from "./sidebar";
-import AddUserForm from "./AddUserForm";
-import UserReport from "./UserReport";
 
-export const UserList = () => {
-  const { users } = useSelector((state: RootState) => state.adminUser);
-  console.log("Users in UserList:", users);
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { useValidationForm } from "../../validationComponent/validationSchema";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../store/store";
+import { createSubAdminUser, createNormalUser, resetUserState } from "../../../store/Slice/subadminSlice";
+
+interface FormData {
+  username: string;
+  email: string;
+  password: string;
+  employeeId?: string;
+  designation?: string;
+}
+
+const UserDetailsForm: React.FC = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [userType, setUserType] = useState<"user" | "subadmin">("subadmin");
+  const [imagePreview, setImagePreview] = useState<string>(
+    "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
+  );
+  const [resource, setResource] = useState<"none" | "orders" | "repairs">("none");
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+  const [permissions, setPermissions] = useState({
+    readOnly: true,
+    create: false,
+    update: false,
+    delete: false,
+  });
+  const [profileFile, setProfileFile] = useState<File | undefined>(undefined);
+
   const dispatch = useDispatch<AppDispatch>();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const USERS_PER_PAGE = 5; // Set how many users per page
-
-  const handleSearchChange = useCallback(
-    debounce((query: string) => {
-      setCurrentPage(1); // Reset to first page on search
-      if (query.trim() === "") {
-        dispatch<any>(getUserWithWithOp({ page: 1, limit: USERS_PER_PAGE }));
-      } else {
-        dispatch(searchAdminUser({ query }));
-      }
-    }, 500), // 500ms debounce delay
-    [dispatch]
-  );
-
-  const FRONTEND_BASE_URL =
-    import.meta.env.VITE_FRONTEND_BASE_URL ||
-    "http://localhost:5173/images/profile.png";
-
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [showAlert, setShowAlert] = useState(false);
-  const [showReport, setShowReport] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<string | null>(null);
-
-  const handleViewReport = (user: any) => {
-    setSelectedUser(user);
-    setShowReport(true);
-  };
-
-  const handleDeleteUser = (userId: string) => {
-    setUserToDelete(userId);
-    setShowAlert(true);
-  };
-
-  const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
-
-  const demoUserData = [
-    {
-      profilePicture: "",
-      username: "John Doe",
-      employeeId: 12345,
-      email: "email@email.com",
-      designation: "designation",
-      department: "department",
-      orderCount: 10,
-    },
-    {
-      profilePicture: "",
-      username: "John Doe",
-      employeeId: 12346,
-      email: "email@email.com",
-      designation: "designation",
-      department: "department",
-      orderCount: 10,
-    },
-    {
-      profilePicture: "",
-      username: "John Doe",
-      employeeId: 12347,
-      email: "email@email.com",
-      designation: "designation",
-      department: "department",
-      orderCount: 10,
-    },
-    {
-      profilePicture: "",
-      username: "John Doe",
-      employeeId: 12348,
-      email: "email@email.com",
-      designation: "designation",
-      department: "department",
-      orderCount: 10,
-    },
-    {
-      profilePicture: "",
-      username: "John Doe",
-      employeeId: 12349,
-      email: "email@email.com",
-      designation: "designation",
-      department: "department",
-      orderCount: 10,
-    },
-    {
-      profilePicture: "",
-      username: "John Doe",
-      employeeId: 12350,
-      email: "email@email.com",
-      designation: "designation",
-      department: "department",
-      orderCount: 10,
-    },
-    {
-      profilePicture: "",
-      username: "John Doe",
-      employeeId: 12351,
-      email: "email@email.com",
-      designation: "designation",
-      department: "department",
-      orderCount: 10,
-    },
-    {
-      profilePicture: "",
-      username: "John Doe",
-      employeeId: 12352,
-      email: "email@email.com",
-      designation: "designation",
-      department: "department",
-      orderCount: 10,
-    },
-    {
-      profilePicture: "",
-      username: "John Doe",
-      employeeId: 12353,
-      email: "email@email.com",
-      designation: "designation",
-      department: "department",
-      orderCount: 10,
-    },
-    {
-      profilePicture: "",
-      username: "John Doe",
-      employeeId: 12354,
-      email: "email@email.com",
-      designation: "designation",
-      department: "department",
-      orderCount: 10,
-    },
-  ];
-
-  // const paginatedUsers = users.slice(
-  //   (currentPage - 1) * USERS_PER_PAGE,
-  //   currentPage * USERS_PER_PAGE
-  // );
-  const paginatedUsers = demoUserData.slice(
-    (currentPage - 1) * USERS_PER_PAGE,
-    currentPage * USERS_PER_PAGE
-  );
-
-  // ------------------------------------------------------------
-
-  // const [showAlert, setShowAlert] = useState(false);
-  // const [showReport, setShowReport] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const [selectedUser, setSelectedUser] = useState<any>(null);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [userToDelete, setUserToDelete] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const [searchQuery, setSearchQuery] = useState<string>("");
-
-  // const dispatch = useDispatch<AppDispatch>();
-  // const { users } = useSelector((state: RootState) => state.adminUser);
+  const { loading, error, success } = useSelector((state: RootState) => state.user);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: yupResolver(useValidationForm),
+    context: { userType }, // Pass userType to schema context
+    defaultValues: { userType: "subadmin" }, // Set default userType
+  });
 
   useEffect(() => {
-    dispatch(getUserWithWithOp({ page: currentPage, limit: USERS_PER_PAGE }));
-  }, [dispatch, currentPage]);
+    if (success) {
+      reset();
+      setUserType("subadmin");
+      setSelectedDepartments([]);
+      setResource("none");
+      setPermissions({ readOnly: true, create: false, update: false, delete: false });
+      setProfileFile(undefined);
+      setImagePreview("https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png");
+      setTimeout(() => dispatch(resetUserState()), 3000);
+    }
+  }, [success, dispatch, reset]);
 
-  const confirmDelete = () => {
-    if (userToDelete) {
-      dispatch(deleteUser(userToDelete));
-      setShowAlert(false);
-      setUserToDelete(null);
+  const onSubmit = async (data: FormData) => {
+    try {
+      const formData = {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        userType,
+        profilePicture: profileFile,
+        employeeId:data.employeeId,
+        designation:data.designation,
+        ...(userType === "subadmin"
+          ? { department: selectedDepartments.join(",") }
+          : { employeeId: data.employeeId, designation: data.designation }),
+        ...(resource !== "none" && {
+          permissions: {
+            resource,
+            actions: Object.entries(permissions)
+              .filter(([_, value]) => value)
+              .map(([key]) => key),
+          },
+        }),
+      };
+      if (userType === "subadmin") {
+        await dispatch(createSubAdminUser(formData)).unwrap();
+      } else {
+        await dispatch(createNormalUser(formData)).unwrap();
+      }
+    } catch (err: any) {
+      console.error("Form submission error:", err.message);
+      // Optionally update Redux state with error message
     }
   };
 
-  // const handleSearchChange = useCallback(
-  //   debounce((query: string) => {
-  //     setCurrentPage(1); // Reset to first page on search
-  //     if (query.trim() === "") {
-  //       dispatch(getUserWithWithOp({ page: 1, limit: USERS_PER_PAGE }));
-  //     } else {
-  //       dispatch(searchAdminUser({ query }));
-  //     }
-  //   }, 500), // 500ms debounce delay
-  //   [dispatch]
-  // );
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfileFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
 
-  // --------------------------------------------------------------------
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value as "none" | "orders" | "repairs";
+    setResource(selected);
+    if (selected === "none") {
+      setPermissions({ readOnly: true, create: false, update: false, delete: false });
+    }
+  };
+
+  const handleChangeUserType = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value as "user" | "subadmin";
+    console.log(selected,"jch")
+    setUserType(selected);
+    setSelectedDepartments([]);
+  };
+
+  const handleDepartmentChange = (department: string) => {
+    setSelectedDepartments((prev) =>
+      prev.includes(department) ? prev.filter((d) => d !== department) : [...prev, department]
+    );
+  };
+
+  const handlePermissionChange = (permission: keyof typeof permissions) => {
+    setPermissions((prev) => ({ ...prev, [permission]: !prev[permission] }));
+  };
+
+  const departments = [
+    { id: "sales", label: "Sales" },
+    { id: "production", label: "Production" },
+    { id: "Accounts", label: "Accounts" },
+    { id: "R&D", label: "Research and Development (R&D)" },
+  ];
 
   return (
-    <>
-      <div className="bg-gray-100 rounded-lg overflow-x-auto lg:p-5 p-1">
-        <AddUserForm />
-        {/* <p>User List</p> */}
-        <div className="header bg-gray-100 p-1 text-xl font-bold text-gray-800 w-full flex flex-col sm:flex-row justify-between items-center gap-2">
-          <span className="bg-gray-100 p-1 text-xl font-bold text-gray-800 w-full sm:w-auto text-x3 text-left">
-            User List
-          </span>
-
-          <div className="filter flex flex-col sm:flex-row items-center w-full sm:w-auto gap-2">
-            <span className="search bg-white w-full sm:w-80 flex items-center justify-center rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="p-2 size-10"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
-                  clipRule="evenodd"
+    <form
+      className="max-w-screen px-1 py-4 bg-gray-100 rounded-lg space-y-4 lg:mb-10 mb-1"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <div className="w-full">
+        <div className="grid lg:grid-cols-2 grid-cols-1 max-w-screen gap-8">
+          <div className="lg:text-xl text-sm flex flex-col gap-6 justify-start shadow-lg bg-white lg:px-20 px-2 lg:py-10 py-2 rounded-xl">
+            <h2 className="text-2xl font-semibold text-start">User Details</h2>
+            <div className="flex justify-start">
+              <div className="relative w-24 h-24 border-2 border-gray-400 rounded-full">
+                <img
+                  src={imagePreview}
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover border"
                 />
-              </svg>
+                <label
+                  htmlFor="profileImage"
+                  className="absolute bottom-0 left-0 bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center cursor-pointer text-sm font-bold"
+                >
+                  +
+                </label>
+                <input
+                  id="profileImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+            <div>
               <input
-                id="search"
-                name="search"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  handleSearchChange(e.target.value);
-                }}
-                type="search"
-                placeholder="Search Users..."
-                className="w-full p-2 font-semibold text-sm"
+                type="text"
+                placeholder="Username"
+                {...register("username")}
+                className="w-full border rounded px-4 py-2 border-gray-400"
               />
-            </span>
-
-            <button className="bg-white text-gray-800 p-2 w-10 h-10 hover:bg-[#0A2975] hover:text-white focus:outline-none duration-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
+              <p className="text-red-500 text-sm">{errors.username?.message}</p>
+            </div>
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
+                {...register("email")}
+                className="w-full border rounded px-4 py-2 border-gray-400"
+              />
+              <p className="text-red-500 text-sm">{errors.email?.message}</p>
+            </div>
+            <div>
+              <div className="flex items-center space-x-2 border rounded border-gray-400">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  {...register("password")}
+                  className="w-full outline-none rounded px-4 py-2"
                 />
-              </svg>
-            </button>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="text-gray-700 text-lg duration-200 p-2 border-none"
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
+              <p className="text-red-500 text-sm">{errors.password?.message}</p>
+            </div>
+            {userType === "user" || userType==="subadmin" ? (
+              <>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Employee ID"
+                    {...register("employeeId")}
+                    className="w-full border rounded px-4 py-2 border-gray-400"
+                  />
+                  <p className="text-red-500 text-sm">{errors.employeeId?.message}</p>
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Designation"
+                    {...register("designation")}
+                    className="w-full border rounded px-4 py-2 border-gray-400"
+                  />
+                  <p className="text-red-500 text-sm">{errors.designation?.message}</p>
+                </div>
+              </>
+            ):''}
+            <div className="w-full font-semibold text-gray-600">
+              <div className="flex justify-start items-center gap-4 text-sm">
+                <p className="w-fit font-semibold lg:text-lg text-sm">User Type:</p>
+                <select
+                  value={userType}
+                  onChange={handleChangeUserType}
+                  className="w-fit px-5 py-2 border border-gray-300 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
+                >
+                  <option value="user">User</option>
+                  <option value="subadmin">Sub Admin</option>
+                </select>
+              </div>
+              {userType === "subadmin" && (
+                <div className="mt-5">
+                  {departments.map((department) => (
+                    <div className="flex gap-2 items-center" key={department.id}>
+                      <input
+                        id={department.id}
+                        type="checkbox"
+                        checked={selectedDepartments.includes(department.id)}
+                        onChange={() => handleDepartmentChange(department.id)}
+                      />
+                      <label
+                        htmlFor={department.id}
+                        className="text-lg font-semibold text-gray-500"
+                      >
+                        {department.label}
+                      </label>
+                    </div>
+                  ))}
+                  {selectedDepartments.length === 0 && (
+                    <p className="text-red-500 text-sm">At least one department is required</p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[600px] shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff]">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-center p-2 text-gray-600">Img</th>
-                <th className="text-center p-2 text-gray-600">Name</th>
-                <th className="text-center p-2 text-gray-600">Employee Id</th>
-                <th className="text-center p-2 text-gray-600">Department</th>
-                <th className="text-center p-2 text-gray-600">Designation</th>
-                <th className="text-center p-2 text-gray-600">Email Address</th>
-                <th className="text-center p-2 text-gray-600">PO Count</th>
-                <th className="text-center p-2 text-gray-600">Remove User</th>
-                <th className="text-center p-2 text-gray-600">View User</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedUsers.map((user) => (
-                <tr className="border-b border-gray-200" key={user.employeeId}>
-                  <td className="p-2 text-center rounded-full w-10 h-10 text-gray-800">
-                    <img
-                      src={
-                        user.profilePicture
-                          ? user.profilePicture
-                          : FRONTEND_BASE_URL
-                      }
-                      alt={`${user.username}'s profile`}
-                      className="w-8 h-8 mx-auto rounded-full object-cover"
+          <div className="flex flex-col h-full gap-6 justify-start items-start">
+            <div className="flex flex-col gap-2 items-start bg-white lg:px-20 px-2 lg:py-10 py-4 rounded-xl shadow-xl min-w-full max-h-fit">
+              <h2 className="text-2xl font-semibold text-start mb-5">Permissions of Actions</h2>
+              <select
+                value={resource}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
+              >
+                <option value="none">None</option>
+                <option value="orders">Orders</option>
+                <option value="repairs">Repairs</option>
+              </select>
+              {resource !== "none" && (
+                <div className="flex flex-col gap-4 text-gray-500">
+                  <div className="flex gap-2 items-center w-[250px]">
+                    <input
+                      type="checkbox"
+                      id="readOnly"
+                      checked={permissions.readOnly}
+                      onChange={() => handlePermissionChange("readOnly")}
                     />
-                  </td>
-                  <td className="p-2 text-center text-gray-800">
-                    {user.username}
-                  </td>
-                  <td className="p-2 text-center text-gray-800">
-                    {user.employeeId}
-                  </td>
-                  <td className="p-2 text-center text-gray-800">
-                    {user.department}
-                  </td>
-                  <td className="p-2 text-center text-gray-800">
-                    {user.designation}
-                  </td>
-                  <td className="p-2 text-center text-gray-800">
-                    {user.email}
-                  </td>
-                  <td className="p-2 text-center text-gray-800">
-                    {user.orderCount}
-                  </td>
-                  <td className="p-2 text-center text-white">
-                    <button
-                      className="bg-red-500 p-2 hover:bg-red-200 hover:text-red-800 duration-300 focus:outline-none w-1"
-                      // onClick={() => handleDeleteUser(user._id)}
-                      onClick={() => {
-                        setShowAlert(true);
-                        setUserToDelete(null);
-                      }}
-                    >
-                      Remove
-                    </button>
-                  </td>
-                  <td className="p-2 text-center text-gray-800">
-                    <button
-                      className="bg-blue-500 w-10 h-10 p-2 hover:bg-blue-700 text-white focus:outline-none "
-                      onClick={() => handleViewReport(user)}
-                    >
-                      View Report
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {/* Pagination Controls */}
-        <div className="flex justify-center items-center gap-2 py-4">
-          <button
-            className="px-3 py-1 rounded bg-[#0A2975] text-white hover:bg-[gray-800] disabled:opacity-50 transition"
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            aria-label="Previous Page"
-          >
-            &lt;
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              className={`px-3 py-1 rounded border transition ${
-                currentPage === i + 1
-                  ? "bg-[#0A2975] text-white border-black"
-                  : "bg-white text-black border-gray-300 hover:bg-[#0A2975] hover:text-white"
-              }`}
-              onClick={() => setCurrentPage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            className="px-3 py-1 rounded bg-[#0A2975] text-white hover:bg-[#0A2975] disabled:opacity-50 transition"
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            aria-label="Next Page"
-          >
-            &gt;
-          </button>
-        </div>
-      </div>
-      {showReport && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl font-bold z-10"
-              onClick={() => setShowReport(false)}
-              aria-label="Close"
-            >
-              &times;
-            </button>
-            <UserReport {...selectedUser} />
+                    <label className="text-lg font-semibold text-gray-500" htmlFor="readOnly">
+                      Read Only
+                    </label>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="checkbox"
+                      id="create"
+                      checked={permissions.create}
+                      onChange={() => handlePermissionChange("create")}
+                    />
+                    <label htmlFor="create" className="text-lg font-semibold">
+                      Create
+                    </label>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="checkbox"
+                      id="update"
+                      checked={permissions.update}
+                      onChange={() => handlePermissionChange("update")}
+                    />
+                    <label htmlFor="edit" className="text-lg font-semibold">
+                      Edit
+                    </label>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="checkbox"
+                      id="delete"
+                      checked={permissions.delete}
+                      onChange={() => handlePermissionChange("delete")}
+                    />
+                    <label htmlFor="delete" className="text-lg font-semibold">
+                      Delete
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      )}
-
-      <div
-        id="alert-additional-content-2"
-        className={`fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-black dark:text-red-400 dark:border-red-800 transition-all duration-300 ease-in-out w-[90vw] max-w-sm sm:max-w-md md:max-w-lg
-              ${
-                showAlert
-                  ? "opacity-100 scale-100 pointer-events-auto"
-                  : "opacity-0 scale-95 pointer-events-none"
-              }`}
-        role="alert"
-      >
-        <div className="flex items-center">
-          <svg
-            className="shrink-0 w-4 h-4 me-2"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-          </svg>
-          <span className="sr-only">Info</span>
-          <h3 className="text-lg font-medium">
-            Are you sure you want to remove this user?
-          </h3>
-        </div>
-        <div className="mt-2 mb-4 text-sm">
-          Click on "Delete" to remove the user or "Dismiss" to close this alert.
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <button
-            type="button"
-            className="text-white bg-red-800 hover:bg-red-900 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-            onClick={confirmDelete}
-          >
-            Delete
-          </button>
-          <button
-            type="button"
-            className="text-red-800 bg-transparent border border-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-red-600 dark:border-red-600 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800"
-            onClick={() => {
-              setShowAlert(false);
-              setUserToDelete(null);
-            }}
-          >
-            Dismiss
-          </button>
-        </div>
       </div>
-    </>
+      <button
+        type="submit"
+        disabled={loading || (userType === "subadmin" && selectedDepartments.length === 0)}
+        className="w-fit lg:px-16 px-6 bg-[#0A2975] text-white py-2 rounded hover:bg-blue-900 active:bg-blue-950 duration-200 cursor-pointer font-bold mt-10 disabled:opacity-50"
+      >
+        {loading ? "Creating..." : "Create User"}
+      </button>
+      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+      {success && <p className="text-green-500 text-sm mt-2">User created successfully!</p>}
+    </form>
   );
 };
 
-export default UserList;
+export default UserDetailsForm;
+
+
+
+
+
+

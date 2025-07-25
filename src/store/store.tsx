@@ -1,3 +1,4 @@
+
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./Slice/authSlice";
 import storage from "redux-persist/lib/storage";
@@ -9,12 +10,13 @@ import orderSearchReducer from './Slice/orderSearchSlice';
 import userReducer from "../store/Slice/subadminSlice";
 import filterReducer from "./Slice/filterSlice"
 import themeReducer  from "./Slice/themeSlice"
+// import recycleBinReducer from './Slice/recycleBinSlice';
 
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth","filter","theme"],
+  whitelist: ["auth"],
 };
 
 const rootReducer = combineReducers({
@@ -24,8 +26,8 @@ const rootReducer = combineReducers({
   orderSearch: orderSearchReducer,
   user: userReducer,
   filter:filterReducer,
-  theme:themeReducer
-
+  theme:themeReducer,
+  // recycleBin: recycleBinReducer, // Add recycleBin reducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

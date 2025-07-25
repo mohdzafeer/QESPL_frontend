@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   BarElement,
@@ -48,9 +48,12 @@ export const POChart: React.FC<POChartProps> = ({
   endDate,
   query,
 }) => {
+  const isDark = document.documentElement.classList.contains('dark');
+
   const chartData = useMemo(() => {
     const statusTypes = ['completed', 'pending', 'delayed', 'rejected', 'deleted'];
     const labels: string[] = [];
+
     const datasets = statusTypes.map((status) => ({
       label: status === 'deleted' ? 'Deleted POs' : `${status.charAt(0).toUpperCase() + status.slice(1)} POs`,
       data: [] as number[],
@@ -69,7 +72,6 @@ export const POChart: React.FC<POChartProps> = ({
       fill: type === 'line',
     }));
 
-    // Generate labels based on time filter
     const now = new Date();
     if (timeFilter === 'weekly') {
       for (let i = 6; i >= 0; i--) {
@@ -89,7 +91,6 @@ export const POChart: React.FC<POChartProps> = ({
       }
     }
 
-    // Filter orders based on props
     const filteredOrders = orders.filter((order) => {
       const matchesStatus = statusFilter === 'all' ||
         (statusFilter === 'deleted' ? order.isdeleted : order.status === statusFilter && !order.isdeleted);
@@ -102,7 +103,6 @@ export const POChart: React.FC<POChartProps> = ({
       return matchesStatus && matchesDate && matchesQuery;
     });
 
-    // Count orders for each label and status
     const counts = labels.map(() => statusTypes.map(() => 0));
     filteredOrders.forEach((order) => {
       const createdAt = new Date(order.createdAt || order.date || now);
@@ -141,14 +141,14 @@ export const POChart: React.FC<POChartProps> = ({
           font: { size: 12 },
           padding: 15,
           usePointStyle: true,
-          color: 'hsl(var(--muted-foreground))',
+          color: isDark ? '#ffffffcc' : '#444',
         },
       },
       tooltip: {
-        backgroundColor: 'hsl(var(--popover))',
-        titleColor: 'hsl(var(--popover-foreground))',
-        bodyColor: 'hsl(var(--popover-foreground))',
-        borderColor: 'hsl(var(--border))',
+        backgroundColor: isDark ? '#1f2937' : '#fff',
+        titleColor: isDark ? '#fff' : '#111',
+        bodyColor: isDark ? '#d1d5db' : '#333',
+        borderColor: isDark ? '#374151' : '#ddd',
         borderWidth: 1,
       },
     },
@@ -157,10 +157,10 @@ export const POChart: React.FC<POChartProps> = ({
         beginAtZero: true,
         grid: {
           drawBorder: false,
-          color: 'hsl(var(--border))',
+          color: isDark ? '#2e2e2e' : '#e5e7eb',
         },
         ticks: {
-          color: 'hsl(var(--muted-foreground))',
+          color: isDark ? '#d1d5db' : '#4b5563',
         },
       },
       x: {
@@ -168,19 +168,18 @@ export const POChart: React.FC<POChartProps> = ({
           display: false,
         },
         ticks: {
-          color: 'hsl(var(--muted-foreground))',
+          color: isDark ? '#d1d5db' : '#4b5563',
         },
       },
     },
   };
 
   if (chartData.labels.length === 0) {
-    return <div className="text-center p-4 text-gray-500">No data available</div>;
+    return <div className="text-center p-4 text-gray-500 dark:text-gray-300">No data available</div>;
   }
 
   return (
     <div className={className}>
-      {/* <h3 className="text-start font-semibold">POs Status Over Time</h3> */}
       {type === 'line' ? (
         <Line data={chartData} options={options} />
       ) : (
@@ -191,4 +190,3 @@ export const POChart: React.FC<POChartProps> = ({
 };
 
 export default React.memo(POChart);
-

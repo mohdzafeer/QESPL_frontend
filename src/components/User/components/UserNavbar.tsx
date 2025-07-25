@@ -42,7 +42,7 @@ const UserNavbar: React.FC<NavbarProps> = ({ isSidebarOpen }) => {
 
   return (
     <>
-      <nav className="bg-white px-2 sm:px-4 py-2 flex flex-wrap items-center shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] mb-4 z-[50]">
+      <nav className="bg-white dark:bg-zinc-900 dark:text-white px-2 sm:px-4 py-2 flex flex-wrap items-center shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] mb-4 z-[50] dark:shadow-black">
         {/* Sidebar toggle - always left on desktop, top on mobile */}
         {/* <div className="flex-shrink-0 flex items-center">
           <button
@@ -73,51 +73,26 @@ const UserNavbar: React.FC<NavbarProps> = ({ isSidebarOpen }) => {
           <img
             src="/images/logo.png"
             alt="Logo"
-            className="w-28 sm:w-40 h-auto"
+            className="w-28 sm:w-40 h-auto dark:invert ml-14"
           />
         </div>
         {/* Right section */}
         <div className="flex items-center gap-2 order-3 ml-auto relative">
           {/* Bell Icon with Notification Dropdown */}
-          <div className="relative">
-            <button
-              type="button"
-              className="relative rounded-full bg-white p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-light-wheat focus:outline-none mr-1 sm:mr-4"
-              onClick={() => setShowNotifications((prev) => !prev)}
-            >
-              {/* Accessibility */}
-              <span className="absolute -inset-1.5" />
-              <span className="sr-only">View notifications</span>
-
-              {/* Bell Icon */}
-              <BellIcon aria-hidden="true" className="h-7 w-7 sm:h-8 sm:w-8" />
-
-              {/* 🔴 Notification Counter */}
-              <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                3
-              </span>
-            </button>
-
-            {showNotifications && (
-              <Notification
-                notifications={notifications}
-                onClose={() => setShowNotifications(false)}
-              />
-            )}
-          </div>
+          
           {/* User Menu */}
           <Menu as="div" className="relative">
             <MenuButton className="flex items-center focus:outline-none">
               <img
                 alt=""
                 src="/images/user-pic.png"
-                className="h-10 w-10 sm:h-12 sm:w-13 rounded-full mr-2 object-cover"
+                className="h-10 w-10 sm:h-12 sm:w-13 rounded-full mr-2 object-cover dark:bg-white"
               />
               <div className="hidden sm:block text-left">
-                <div className="text-gray-800 text-base sm:text-lg font-semibold">
+                <div className="text-gray-800 dark:text-white text-base sm:text-lg font-semibold">
                   {user.username}
                 </div>
-                <div className="flex items-center text-gray-600 text-xs sm:text-sm">
+                <div className="flex items-center text-gray-600 dark:text-gray-200 text-xs sm:text-sm">
                   <UserIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />
                   {user.userType}
                 </div>
@@ -125,7 +100,7 @@ const UserNavbar: React.FC<NavbarProps> = ({ isSidebarOpen }) => {
             </MenuButton>
             <MenuItems
               transition
-              className="absolute right-0 z-10 mt-2 w-44 sm:w-48 origin-top-right rounded-md bg-white py-1 shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] ring-1 ring-gray-200 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+              className="absolute right-0 z-10 mt-2 w-44 sm:w-48 origin-top-right rounded-md bg-white dark:bg-zinc-950 py-1 shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-black ring-1 ring-gray-200 dark:ring-gray-600 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
             >
               <MenuItem>
                 {({ active }) => (
@@ -134,8 +109,8 @@ const UserNavbar: React.FC<NavbarProps> = ({ isSidebarOpen }) => {
                     href="#"
                     onClick={() => setShowProfile(true)}
                     className={classNames(
-                      active ? "bg-gray-100" : "",
-                      "block w-full px-4 py-2 text-sm text-gray-700"
+                      active ? "bg-gray-100 dark:bg-zinc-900" : "",
+                      "block w-full px-4 py-2 text-sm text-gray-700 dark:text-white"
                     )}
                   >
                     View Profile
@@ -166,7 +141,7 @@ const UserNavbar: React.FC<NavbarProps> = ({ isSidebarOpen }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="relative">
             <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl font-bold z-10"
+              className="absolute top-2 right-2 text-gray-500 dark:text-white hover:text-gray-800 text-2xl font-bold z-10"
               onClick={() => setShowProfile(false)}
               aria-label="Close"
             >

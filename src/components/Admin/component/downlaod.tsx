@@ -60,8 +60,8 @@ export const handleDownload = (order: any) => {
   doc.text(purchaseOrderText, pageWidth - sideMargin - purchaseOrderTextWidth, poTitleCurrentY); // Right aligned
 
   poTitleCurrentY += 8; // Space between title and PO number
-  doc.setFontSize(18);
-  doc.setFont("helvetica", "normal underline");
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
   doc.setTextColor(0, 0, 0); // Reset to black for PO number
   const poNumberText = `#${order.orderNumber || order.orderId || "no PO Number Available"}`;
   const poNumberTextWidth = doc.getTextWidth(poNumberText);
@@ -265,9 +265,9 @@ export const handleDownload = (order: any) => {
   currentY += 7;
   doc.text("1. If you want to update this Purchase Order, You must ask permission from admin/sub-admin", sideMargin, currentY);
   currentY += 5;
-  doc.text("1. If you want to update this Purchase Order, You must ask permission from admin/sub-admin", sideMargin, currentY);
-  currentY += 5;
-  doc.text("1. If you want to update this Purchase Order, You must ask permission from admin/sub-admin", sideMargin, currentY);
+  doc.text("1. If you want to delete this Purchase Order, You must ask permission from admin/sub-admin", sideMargin, currentY);
+  // currentY += 5;
+  // doc.text("1. If you want to update this Purchase Order, You must ask permission from admin/sub-admin", sideMargin, currentY);
 
   const now = new Date();
   // Format date and time as "DD/MM/YYYY HH:MM am/pm IST"

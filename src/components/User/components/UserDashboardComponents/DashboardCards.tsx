@@ -65,21 +65,21 @@ const statusFilter = useSelector(
             transition: { duration: 0.3 },
           }}
           className={`${
-            statusFilter == "all" ? "bg-[#0A2975]" : "bg-white"
-          } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] flex justify-between cursor-pointer font-semibold`}
+            statusFilter == "all" ? "bg-[var(--theme-color)]" : "bg-white dark:bg-zinc-950"
+          } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("all")}
         >
           <div className="flex flex-col text-white items-start gap-3">
             <p
               className={`${
-                statusFilter == "all" ? "text-white" : "text-[#0A2975]"
+                statusFilter == "all" ? "text-white dark:text-white" : "text-[var(--theme-color)] dark:text-white"
               }`}
             >
               Total POs
             </p>
             <p
               className={`${
-                statusFilter == "all" ? "text-white" : "text-[#0A2975]"
+                statusFilter == "all" ? "text-white dark:text-white" : "text-[var(--theme-color)] dark:text-white"
               } text-3xl font-bold`}
             >
               {/* {counts.total} */}
@@ -88,7 +88,7 @@ const statusFilter = useSelector(
             </p>
             {/* <p
                       className={`${
-                        statusFilter == "all" ? "text-white" : "text-[#0A2975]"
+                        statusFilter == "all" ? "text-white" : "text-[var(--theme-color)]"
                       } text-sm`}
                     >
                       <span className="font-bold ">+12.5%</span> from last month
@@ -107,21 +107,21 @@ const statusFilter = useSelector(
             transition: { duration: 0.3 },
           }}
           className={`${
-            statusFilter == "completed" ? "bg-[#0A2975]" : "bg-white"
-          } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] flex justify-between cursor-pointer font-semibold`}
+            statusFilter == "completed" ? "bg-[var(--theme-color)]" : "bg-white dark:bg-zinc-950"
+          } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("completed")}
         >
           <div className="flex flex-col text-black items-start gap-3">
             <p
               className={`${
-                statusFilter == "completed" ? "text-white" : "text-[#0A2975]"
+                statusFilter == "completed" ? "text-white " : "text-[var(--theme-color)] dark:text-white"
               }`}
             >
               Completed POs
             </p>
             <p
               className={`text-green-500 ${
-                statusFilter == "completed" ? "" : "text-[#0A2975]"
+                statusFilter == "completed" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
               {/* {counts.completed} */}
@@ -145,8 +145,8 @@ const statusFilter = useSelector(
             transition: { duration: 0.3 },
           }}
           className={`${
-            statusFilter == "pending" ? "bg-[#0A2975]" : "bg-white"
-          } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] flex justify-between cursor-pointer font-semibold`}
+            statusFilter == "pending" ? "bg-[var(--theme-color)]" : "bg-white dark:bg-zinc-950"
+          } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => {
             handleClick("pending");
           }}
@@ -154,14 +154,14 @@ const statusFilter = useSelector(
           <div className="flex flex-col text-black items-start gap-3">
             <p
               className={`${
-                statusFilter == "pending" ? "text-white" : "text-[#0A2975]"
+                statusFilter == "pending" ? "text-white" : "text-[var(--theme-color)] dark:text-white"
               }`}
             >
               Pending POs
             </p>
             <p
               className={`text-yellow-400 ${
-                statusFilter == "pending" ? "" : "text-[#0A2975]"
+                statusFilter == "pending" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
               {/* {counts.pending} */}
@@ -185,21 +185,21 @@ const statusFilter = useSelector(
             transition: { duration: 0.3 },
           }}
           className={`${
-            statusFilter == "delayed" ? "bg-[#0A2975] " : "bg-white"
-          } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] flex justify-between cursor-pointer font-semibold`}
+            statusFilter == "delayed" ? "bg-[var(--theme-color)] " : "bg-white dark:bg-zinc-950"
+          } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("delayed")}
         >
           <div className="flex flex-col text-black items-start gap-3">
             <p
               className={`${
-                statusFilter == "delayed" ? "text-white" : "text-[#0A2975]"
+                statusFilter == "delayed" ? "text-white" : "text-[var(--theme-color)] dark:text-white"
               }`}
             >
               Delayed POs
             </p>
             <p
               className={`text-orange-500 ${
-                statusFilter == "delayed" ? "" : "text-[#0A2975]"
+                statusFilter == "delayed" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
               {/* {counts.delayed} */}
@@ -224,21 +224,21 @@ const statusFilter = useSelector(
             transition: { duration: 0.3 },
           }}
           className={`${
-            statusFilter == "rejected" ? "bg-[#0A2975] " : "bg-white"
-          } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] flex justify-between cursor-pointer font-semibold`}
+            statusFilter == "rejected" ? "bg-[var(--theme-color)] " : "bg-white dark:bg-zinc-950"
+          } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("rejected")}
         >
           <div className="flex flex-col text-black items-start gap-3">
             <p
               className={` ${
-                statusFilter == "rejected" ? "text-white" : "text-[#0A2975]"
+                statusFilter == "rejected" ? "text-white" : "text-[var(--theme-color)] dark:text-white"
               }`}
             >
               Rejected POs
             </p>
             <p
               className={`text-red-500 ${
-                statusFilter == "rejected" ? "" : "text-[#0A2975]"
+                statusFilter == "rejected" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
               {/* {counts.rejected} */}

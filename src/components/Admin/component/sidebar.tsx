@@ -124,10 +124,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 <li
                   key={item.id}
                   onClick={() => handleMenuItemClick(item.redirectTo)} // Use the new handler
-                  className={`p-3 duration-200 cursor-pointer flex items-center dark:text-white ${
+                  className={`p-3 duration-200 cursor-pointer flex items-center dark:text-white font-semibold ${
                     isActive
-                      ? "bg-gray-100 dark:bg-zinc-700 dark:text-white text-blue-900 rounded-l-full font-semibold border-l-4 border-blue-900 dark:border-black pl-2"
-                      : "hover:bg-blue-950 dark:hover:bg-black hover:text-white text-black rounded-l-full"
+                      ? "bg-gray-100 dark:bg-zinc-700 dark:text-white text-[var(--theme-color)] rounded-l-full font-semibold border-l-4 border-[var(--theme-color)] dark:border-black pl-2"
+                      : "hover:bg-[var(--theme-color)] dark:hover:bg-black hover:text-gray-300 text-black rounded-l-full"
                   }`}
                 >
                   <span className="mr-2">{item.icon}</span>
@@ -149,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           </ul>
         )}
       </div>
-      <div className="w-11/12 shadow-lg rounded-xl  flex p-3 gap-2 cursor-pointer bg-amber-100 dark:bg-zinc-900 dark:text-zinc-300   text-black duration-300">
+      <div className="w-11/12 shadow-lg rounded-xl  flex p-3 gap-2 cursor-pointer bg-gray-200 dark:bg-zinc-900 dark:text-zinc-300   text-black duration-300">
         <img
           src="/images/user-pic.png"
           alt="user"

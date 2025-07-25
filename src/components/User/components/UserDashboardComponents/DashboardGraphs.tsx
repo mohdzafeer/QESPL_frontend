@@ -29,13 +29,13 @@ const DashboardGraphs = () => {
                   <span className="font-semibold">POs Status</span>
                 </div>
                 <div className="flex gap-2">
-                  <button className="bg-[#0A2975] py-2 px-3 rounded-lg hover:bg-gray-300 duration-300 text-white hover:text-[#0A2975] font-semibold text-sm  ">
+                  <button className="bg-[var(--theme-color)] py-2 px-3 rounded-lg hover:bg-gray-300 duration-300 text-white hover:text-[var(--theme-color)] font-semibold text-sm  ">
                     Weekly
                   </button>
-                  <button className="bg-[#0A2975] py-2 px-3 rounded-lg hover:bg-gray-300 duration-300 text-white hover:text-[#0A2975] font-semibold text-sm  ">
+                  <button className="bg-[var(--theme-color)] py-2 px-3 rounded-lg hover:bg-gray-300 duration-300 text-white hover:text-[var(--theme-color)] font-semibold text-sm  ">
                     Monthly
                   </button>
-                  <button className="bg-[#0A2975] py-2 px-3 rounded-lg hover:bg-gray-300 duration-300 text-white hover:text-[#0A2975] font-semibold text-sm  ">
+                  <button className="bg-[var(--theme-color)] py-2 px-3 rounded-lg hover:bg-gray-300 duration-300 text-white hover:text-[var(--theme-color)] font-semibold text-sm  ">
                     Yearly
                   </button>
                 </div>

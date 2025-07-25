@@ -79,10 +79,10 @@ export default function BottomNav() {
   const ActiveIcon = menuItems[activeIndex].filledIcon;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg h-20 flex justify-around items-end z-50 pb-2 text-white">
+    <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 shadow-lg h-20 flex justify-around items-end z-50 pb-2 text-white">
       {/* Floating circle with active icon */}
       <div
-        className="absolute bottom-[36px] w-16 h-16 bg-[#0A2975] rounded-full flex items-center justify-center transition-all duration-500 ease-in-out z-10"
+        className="absolute bottom-[36px] w-16 h-16  bg-[var(--theme-color)] rounded-full flex items-center justify-center transition-all duration-500 ease-in-out z-10"
         style={{ left: `${circlePos.left}px`, transform: 'translateX(-50%)' }}
       >
         <ActiveIcon className="text-white text-2xl" />
@@ -103,11 +103,11 @@ export default function BottomNav() {
               itemRefs.current[index] = el;
             }}
             className={`flex flex-col items-center justify-center relative transition-all duration-300 ${
-              isActive ? 'text-transparent z-0' : 'text-sm text-gray-600'
+              isActive ? 'text-transparent z-0' : 'text-sm text-gray-600 dark:text-white '
             }`}
             style={{ width: '20%' }}
           >
-            <Icon className={`${isActive ? 'invisible' : 'text-[#0A2975] text-lg'}`} />
+            <Icon className={`${isActive ? 'invisible' : 'text-[var(--theme-color)] dark:text-white text-lg'}`} />
             {!isActive && <span className="text-xs mt-1">{item.name}</span>}
           </button>
         );

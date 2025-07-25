@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../store/store";
-import { changePassword, resetPasswordChangeState } from "../../../store/Slice/adminSlice";
+import {
+  changePassword,
+  resetPasswordChangeState,
+} from "../../../store/Slice/adminSlice";
 import { toast } from "react-toastify";
 
 interface UserProfileProps {
@@ -58,17 +61,47 @@ const UserProfile: React.FC<UserProfileProps> = ({
   };
 
   return (
-    <div className="w-100 bg-white rounded-xl shadow-lg p-8 flex flex-col items-center space-y-5">
-      <img
-        src={imageUrl}
-        alt="Profile"
-        className="w-28 h-28 rounded-full border-4 border-blue-200 shadow-md object-cover"
-      />
+    <div className="w-100 bg-white dark:bg-zinc-900 rounded-xl shadow-lg p-8 flex flex-col items-center space-y-5">
+      <div className="relative w-fit">
+        <img
+          src={imageUrl}
+          alt="Profile"
+          className="w-28 h-28 rounded-full border-4 border-blue-200 shadow-md object-cover"
+        />
+        <label
+          htmlFor="profile-image-upload"
+          className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 bg-blue-500 text-white rounded-full p-2 cursor-pointer border-2 border-white shadow-lg"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
+        </label>
+        <input
+          id="profile-image-upload"
+          type="file"
+          className="hidden"
+          accept="image/*"
+        />
+      </div>
+
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-1">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">
           {user?.username || name || "User"}
         </h2>
-        <p className="text-gray-500 text-base">{user?.email || propEmail || "No email provided"}</p>
+        <p className="text-gray-500 dark:text-white text-base">
+          {user?.email || propEmail || "No email provided"}
+        </p>
       </div>
       {!showPasswordFields ? (
         <button

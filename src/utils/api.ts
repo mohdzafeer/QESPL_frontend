@@ -20,31 +20,17 @@ const parseJwt = (token: string): any => {
 
 import axios from "axios";
 
-// const api = axios.create({
-//   baseURL: "https://qespl-backend.onrender.com/", 
-//   headers: {
-//     "Content-Type": "application/json",
-//   },
-// });
-
-const isLocalhost = window.location.hostname === "localhost";
-
 const api = axios.create({
-  baseURL: isLocalhost
-    ? "http://localhost:8080" // your local backend
-    : "https://qespl-backend.onrender.com/", // production backend
+  // baseURL: "http://13.233.137.149:4000",
+  baseURL: "http://localhost:8080/",
   headers: {
     "Content-Type": "application/json",
   },
-  
 });
-
-
-
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('jwt'); 
+    const token = localStorage.getItem("jwt");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -55,16 +41,13 @@ api.interceptors.request.use(
 
 export default api;
 
-
-
-
 export const fetchAllOrders = async (page: number = 1, limit: number = 10) => {
   try {
-    const response = await api.get('/order/api/get-all-orders', {
+    const response = await api.get("/order/api/get-all-orders", {
       params: { page, limit },
       withCredentials: true,
     });
-    console.log(response, 'api call');
+    console.log(response, "api call");
     const orders = response?.data?.data?.orders || [];
     const pagination = response?.data?.data?.pagination || {
       currentPage: 1,
@@ -74,7 +57,7 @@ export const fetchAllOrders = async (page: number = 1, limit: number = 10) => {
     };
     return { orders, pagination };
   } catch (error) {
-    console.error('API error:', error);
+    console.error("API error:", error);
     throw error;
   }
 };
@@ -84,25 +67,29 @@ export const deleteOrders = async (orderId: string) => {
     const response = await api.delete(`/order/api/delete-order/${orderId}`, {
       withCredentials: true,
     });
-    console.log(response, 'api call');
+    console.log(response, "api call");
     return { orderId };
   } catch (error) {
-    console.error('Delete order error:', error);
+    console.error("Delete order error:", error);
     throw error;
   }
 };
 
 /// search orders by query parameter
-export const searchOrderApi = async (query: string, startDate?: string, endDate?: string, status?: string) => {
-  console.log(query ," check valus ..... on api values ....")
+export const searchOrderApi = async (
+  query: string,
+  startDate?: string,
+  endDate?: string,
+  status?: string
+) => {
   const response = await api.get(`/order/api/search-order`, {
     withCredentials: true,
     params: {
       query,
       startDate,
       endDate,
-      status
-    }
+      status,
+    },
   });
   return response.data;
 };
@@ -133,26 +120,28 @@ export const adminSigIn = async (UserData: {
   const response = await api.post("/user/api/admin-sigin", UserData, {
     withCredentials: true,
   });
-  const {token}=response.data
-  if(token){
+  const { token } = response.data;
+  if (token) {
     localStorage.setItem("jwt", token);
   }
   return response.data;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const getUserWithWithOp = async (p0: {
+export const getUserWithWithOp = async ({
+  page,
+  limit,
+}: {
   page: number;
   limit: number;
 }) => {
-  const response = await api.get(`/user/api/admin-get-all-user`, {
-    withCredentials: true,
-  }
-);
-  console.log(
-    "getUserWithWithOp response shariq khan fetch user details:",
-    response.data
+  const response = await api.get(
+    `/user/api/admin-get-all-user?page=${page}&limit=${limit}`,
+    {
+      withCredentials: true,
+    }
   );
+  console.log("getUserWithWithOp response:", response.data);
   return response.data;
 };
 
@@ -171,9 +160,7 @@ export const apiSearchUser = async (query: string) => {
   return response.data;
 };
 
-
-
-export const adminChangePassword = async (passwordChange:{
+export const adminChangePassword = async (passwordChange: {
   email: string;
   oldPassword: string;
   newPassword: string;
@@ -188,7 +175,6 @@ export const adminChangePassword = async (passwordChange:{
   return response.data;
 };
 
-
 //// craerte interface for the subAdmin Create normal users
 interface SubAdminFormData {
   username: string;
@@ -199,6 +185,8 @@ interface SubAdminFormData {
   profilePicture?: File;
   permissions?: { resource: "none" | "orders" | "repairs"; actions: string[] };
   allowedFields?: string[];
+  employeeId: string;
+  designation: string;
 }
 
 interface UserFormData {
@@ -228,43 +216,72 @@ interface DecodedToken {
 //// create subadmin funcation for the handles
 
 export const createSubAdmin = async (data: SubAdminFormData) => {
-  const token = localStorage.getItem("jwt");
-  console.log(token,"check token of admin")
-  if (!token) throw new Error("No authentication token found");
-  let decoded: DecodedToken;
+  console.log(data,"hblsjcbj")
   try {
-    decoded = parseJwt(token);
-    const allowedRoles = ["admin", "subadmin"];
-    if (!allowedRoles.includes(decoded.role)) {
-      throw new Error("Unauthorized: Only admin or subadmin can create users");
+    // Retrieve and validate JWT token
+    const token = localStorage.getItem("jwt");
+    if (!token) {
+      throw new Error("No authentication token found");
     }
-  } catch (error) {
-    console.error("Token validation error:", error);
-    throw new Error("Invalid token");
-  }
-  const formData = new FormData();
-  formData.append("username", data.username);
-  formData.append("email", data.email);
-  formData.append("password", data.password);
-  formData.append("department", data.department);
-  formData.append("userType", data.userType);
-  if (data.profilePicture) formData.append("profilePicture", data.profilePicture);
-  try {
-    const response = await api.post("/user/api/admin-create-subadmin", formData, {
-      withCredentials: true,
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    // Decode and validate token
+    let decoded: DecodedToken;
+    try {
+      decoded = parseJwt(token); // Assume parseJwt is defined elsewhere
+      const allowedRoles = ["admin"];
+      if (!allowedRoles.includes(decoded.userType)) {
+        throw new Error("Unauthorized: Only admin can create sub-admins");
+      }
+    } catch (error) {
+      console.error("Token validation error:", error);
+      throw new Error("Invalid token");
+    }
+    const formData = new FormData();
+    formData.append("username", data.username);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("department", data.department);
+    formData.append("userType", data.userType);
+    if (data.employeeId) formData.append("employeeId", data.employeeId);
+  if (data.designation) formData.append("desgination", data.designation);
+    if (data.profilePicture) {
+      formData.append("profilePicture", data.profilePicture);
+    }
+    // Create sub-admin
+    const response = await api.post(
+      "/user/api/admin-create-subadmin",
+      formData,
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    // Assign permissions if provided
+    if (data.permissions && data.permissions.resource !== "none") {
+      const permissionData = {
+        userId: response.data.user.id,
+        resource: data.permissions.resource,
+        actions: data.permissions.actions,
+      };
+      await api.post("/user/api/admin-assign-permission", permissionData, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Create subadmin error:", error);
-    throw error;
+    throw new Error(
+      error.response?.data?.message || "Failed to create sub-admin"
+    );
   }
 };
 
-
-
 ///// create user funcations for handles
-
 export const createUser = async (data: UserFormData) => {
   const token = localStorage.getItem("jwt");
   if (!token) throw new Error("No authentication token found");
@@ -273,14 +290,13 @@ export const createUser = async (data: UserFormData) => {
   try {
     decoded = parseJwt(token);
     const allowedRoles = ["admin", "subadmin"];
-    if (!allowedRoles.includes(decoded.role)) {
+    if (!allowedRoles.includes(decoded.userType)) {
       throw new Error("Unauthorized: Only admin or subadmin can create users");
     }
   } catch (error) {
     console.error("Token validation error:", error);
-    throw new Error("Invalid token");
+    throw new Error("Invalid token jgghsdsadusaud");
   }
-
   const formData = new FormData();
   formData.append("username", data.username);
   formData.append("email", data.email);
@@ -288,22 +304,40 @@ export const createUser = async (data: UserFormData) => {
   formData.append("userType", data.userType);
   if (data.employeeId) formData.append("employeeId", data.employeeId);
   if (data.designation) formData.append("desgination", data.designation); // Match backend typo
-  if (data.profilePicture) formData.append("profilePicture", data.profilePicture);
+  if (data.profilePicture)
+    formData.append("profilePicture", data.profilePicture);
 
   try {
     const response = await api.post("/user/api/admin-create-user", formData, {
       withCredentials: true,
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
     });
+    // Assign permissions if provided
+    if (data.permissions && data.permissions.resource !== "none") {
+      const permissionData = {
+        userId: response.data.user.id,
+        resource: data.permissions.resource,
+        actions: data.permissions.actions,
+      };
+      console.log(response.data);
+      await api.post("/user/api/admin-assign-permission", permissionData, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
     return response.data;
-  } catch (error) {
-    console.error("Create user error:", error);
-    throw error;
+  } catch (error: any) {
+    console.error("Create subadmin error:", error);
+    throw new Error(
+      error.response?.data?.message || "Failed to create sub-admin"
+    );
   }
 };
-
-
-
 
 ////// create permission handles funcations
 
@@ -315,7 +349,9 @@ export const createPermission = async (data: PermissionData) => {
     decoded = parseJwt(token);
     const allowedRoles = ["admin", "subadmin"];
     if (!allowedRoles.includes(decoded.role)) {
-      throw new Error("Unauthorized: Only admin or subadmin can create permissions");
+      throw new Error(
+        "Unauthorized: Only admin or subadmin can create permissions"
+      );
     }
   } catch (error) {
     console.error("Token validation error:", error);
@@ -332,8 +368,21 @@ export const createPermission = async (data: PermissionData) => {
   }
 };
 
+export const createOrder = async (orderData: any) => {
+  const response = await api.post("order/api/order-create-api", orderData);
+  return response.data;
+};
 
-export const createOrder = async (orderData:any) => {
-  const response = await api.post('order/api/order-create-api', orderData);
+export const fetchRecycleBinOrdersApi = async () => {
+  const response = await api.get("/order/api/user-recycle-bin-order/");
+  console.log(response, "api call calling");
+  return response;
+};
+
+////
+export const restoreOps = async (orderIds: string[]) => {
+  const response = await api.post("/order/api/restore-orders/", {
+    ids: orderIds,
+  });
   return response.data;
 };
