@@ -22,7 +22,7 @@ import axios from "axios";
 
 const api = axios.create({
   // baseURL: "http://13.233.137.149:4000",
-  baseURL: "http://localhost:8080/",
+  baseURL: "https://qespl-backend.onrender.com/",
   headers: {
     "Content-Type": "application/json",
   },
