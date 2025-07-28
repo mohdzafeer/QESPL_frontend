@@ -27,7 +27,7 @@ const RegisterForm = () => {
     resolver: yupResolver(registerSchema) as any,
     // resolver: yupResolver(registerSche
     mode: "onChange", // Validate on every change
-    defaultValues: { userType: "user" }, // Set default userType
+    defaultValues: { userType: "admin" }, // Set default userType
   });
 
   const dispatch = useDispatch<AppDispatch>();
