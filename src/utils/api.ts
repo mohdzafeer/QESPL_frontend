@@ -21,7 +21,7 @@ const parseJwt = (token: string): any => {
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.BACKEND_URL || "http://localhost:8080/",
+  baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:8080/",
   headers: {
     "Content-Type": "application/json",
   },
