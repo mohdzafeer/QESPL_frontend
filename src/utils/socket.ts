@@ -15,7 +15,7 @@ export const initSocket = (userId: string, token: string) => {
   }
 
 
-  socket = io("http://localhost:8080/", {
+  socket = io(import.meta.env.VITE_BACKEND_URL, {
     query: { token },
     transports: ["websocket"],
     reconnection: true, // Enable reconnection
