@@ -4,7 +4,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { type RootState, type AppDispatch } from '../../../store/store';
-import { removeNotification, toggleShowAll } from '../../../store/Slice/notificationSlice';
+import { removeNotification, toggleShowAll } from '../../../store/Slice/NotificationSlice';
 // import { removeNotification } from '../../../store/Slice/notificationSlice';
 
 
