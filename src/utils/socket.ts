@@ -1,6 +1,6 @@
 // frontend/src/utils/socket.ts
 import { io, Socket } from "socket.io-client";
-import { addNotification } from "../store/Slice/notificationSlice";
+import { addNotification } from "../store/Slice/NotificationSlice";
 import { store } from "../store/store";
 import { toast } from "react-toastify";
 
