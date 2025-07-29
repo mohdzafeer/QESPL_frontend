@@ -10,7 +10,8 @@ import userReducer from "../store/Slice/subadminSlice";
 import filterReducer from "./Slice/filterSlice"
 import themeReducer  from "./Slice/themeSlice"
 // import recycleBinReducer from './Slice/recycleBinSlice';
-import notificationReducer from '../store/Slice/notificationSlice';
+// import notificationReducer from '../store/Slice/notificationSlice';
+import notificationReducer from './Slice/NotificationSlice';
 
 
 
