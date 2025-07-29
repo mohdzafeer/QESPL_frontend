@@ -6,6 +6,7 @@ import type { RootState } from "../../../../store/store";
 import { createOrderAsync } from "../../../../store/Slice/orderSlice";
 
 import { toast } from "react-toastify";
+import { set } from "lodash";
 
 type UserCreatePOFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -48,6 +49,8 @@ type OrderFormData = {
 };
 
 const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
+  const [loading, setLoading] = useState(false)
+
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
   const { status, error } = useSelector((state: RootState) => state.orders);
@@ -174,8 +177,8 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
 
   useEffect(() => {
     if (status === "succeeded") {
-      setShowForm(false); // Close form on success
-      toast.success("Order created successfully!");
+      // setShowForm(false); // Close form on success
+      
 
       // After successful submission, increment the stored counter for the *next* order
       const today = new Date();
@@ -207,7 +210,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       console.log(error, "Error creating order:");
       toast.error(error);
     }
-  }, [status, error, setShowForm]);
+  }, [status, error]);
 
   // Handles input changes for top-level form fields
   const handleInputChange = (
@@ -293,6 +296,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
 
   // Handles the form submission
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
     e.preventDefault();
 
     // Ensure orderNumber is a valid number before submission
@@ -303,6 +307,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }
 
     const apiOrderData = {
+      
       clientName: formData.clientName,
       companyName: formData.companyName,
       gstNumber: formData.gstNumber,
@@ -334,7 +339,11 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     };
 
     try {
+      
       await dispatch(createOrderAsync(apiOrderData));
+      setShowForm(false)
+      toast.success("Order created successfully!");
+      setLoading(false);
       // The increment of localStorage is now handled in the success useEffect
     } catch (err) {
       toast.error("Failed to create order. Please try again.");
@@ -798,12 +807,21 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
               >
                 + Add Product
               </button>
-              <button
+              {loading===false ? (
+                <button
                 type="submit"
                 className="text-end max-w-fit bg-[#0A2975] text-white px-2 py-1 font-semibold text-xl rounded-md hover:bg-[#092060] transition duration-300 cursor-pointer"
               >
                 Submit
               </button>
+              ):(
+                <button
+                // type="submit"
+                className="text-end max-w-fit bg-gray-400 text-white px-2 py-1 font-semibold text-xl rounded-md cursor-not-allowed"
+              >
+                Submiting...
+              </button>
+              )}
             </div>
           </section>
         </form>
