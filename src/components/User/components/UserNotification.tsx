@@ -6,7 +6,7 @@ const UserNotification = () => {
       <h1 className="font-semibold lg:text-2xl xl:text-2xl text-lg mb-2">Notifications</h1>
       <div>
         <table className="w-full">
-          <thead className="bg-gray-500 text-white lg:text-xl xl:text-lg text-sm">
+          <thead className="bg-gray-500 dark:bg-zinc-950 text-white lg:text-xl xl:text-lg text-sm">
             <tr className="h-10">
               <td className="font-semibold text-start lg:pl-5 xl:pl-5 pl-1">User</td>
               <td className="font-semibold text-start lg:pl-5 xl:pl-5 pl-1">Activity</td>

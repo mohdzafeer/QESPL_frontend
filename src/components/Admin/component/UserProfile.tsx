@@ -10,22 +10,63 @@ import { toast } from "react-toastify";
 interface UserProfileProps {
   name?: string;
   email?: string;
-  imageUrl?: string;
+  // firstLetter prop is no longer needed as it's derived internally
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({
   name,
   email: propEmail,
-  imageUrl = "/images/user-pic.png",
+  // firstLetter is removed from destructuring here
 }) => {
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [profileBgColor, setProfileBgColor] = useState("bg-gray-500"); // Initialize with a default color
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth); // Access user directly from Redux
   const { passwordChangeStatus, passwordChangeMessage, error } = useSelector(
     (state: RootState) => state.adminUser
   );
+
+  // Function to get the first letter of the username, now defined within UserProfile
+  const getFirstLetter = (username: string | undefined) => {
+    if (username && username.trim().length > 0) {
+      return username.trim().charAt(0).toUpperCase();
+    }
+    return "U"; // Default to 'U' if username is empty, null, undefined, or just whitespace
+  };
+
+  const letter = getFirstLetter(user?.username); // Derive letter directly from the Redux user
+
+
+  // Effect to manage and persist the profile background color for UserProfile
+  useEffect(() => {
+    if (user?.id) { // Ensure user.id exists before trying to store/retrieve
+      const localStorageKey = `userProfileColor_ProfilePage_${user.id}`; // Use a different key to avoid conflict with Navbar
+      const storedColor = localStorage.getItem(localStorageKey);
+
+      if (storedColor) {
+        setProfileBgColor(storedColor);
+      } else {
+        const colors = [
+          "bg-red-500",
+          "bg-blue-500",
+          "bg-green-500",
+          "bg-yellow-500",
+          "bg-purple-500",
+          "bg-pink-500",
+          "bg-indigo-500",
+          "bg-teal-500",
+        ]; // Added more colors for variety
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        setProfileBgColor(randomColor);
+        localStorage.setItem(localStorageKey, randomColor);
+      }
+    } else {
+        // If user is not logged in or user.id is null, ensure a default color
+        setProfileBgColor("bg-gray-500"); // A default color if no user ID
+    }
+  }, [user?.id]); // Dependency on user.id to ensure color is set per user
 
   useEffect(() => {
     if (passwordChangeStatus === "succeeded") {
@@ -40,13 +81,20 @@ const UserProfile: React.FC<UserProfileProps> = ({
     }
   }, [passwordChangeStatus, passwordChangeMessage, error, dispatch]);
 
+  // Log for debugging
+  useEffect(() => {
+    console.log("UserProfile - derived letter:", letter);
+    console.log("UserProfile - persistent profileBgColor:", profileBgColor);
+  }, [letter, profileBgColor]);
+
+
   const handleUpdateClick = () => {
     setShowPasswordFields(true);
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const userEmail = user?.email || propEmail;
+    const userEmail = user?.email || propEmail; // Still use propEmail as a fallback for display
     if (!userEmail) {
       toast.error("User email not found. Please log in again.");
       return;
@@ -61,38 +109,14 @@ const UserProfile: React.FC<UserProfileProps> = ({
   };
 
   return (
-    <div className="w-100 bg-white dark:bg-zinc-900 rounded-xl shadow-lg p-8 flex flex-col items-center space-y-5">
+    <div className="w-xs lg:w-sm xl:w-sm bg-white dark:bg-zinc-900 rounded-xl shadow-lg p-8 flex flex-col items-center space-y-5">
+      {/* Profile Avatar using first letter and dynamic background color */}
       <div className="relative w-fit">
-        <img
-          src={imageUrl}
-          alt="Profile"
-          className="w-28 h-28 rounded-full border-4 border-blue-200 shadow-md object-cover"
-        />
-        <label
-          htmlFor="profile-image-upload"
-          className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 bg-blue-500 text-white rounded-full p-2 cursor-pointer border-2 border-white shadow-lg"
+        <div
+          className={`w-28 h-28 rounded-full border-4 border-blue-200 shadow-md flex items-center justify-center text-white text-5xl font-bold ${profileBgColor}`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
-        </label>
-        <input
-          id="profile-image-upload"
-          type="file"
-          className="hidden"
-          accept="image/*"
-        />
+          {letter} {/* Display the internally derived 'letter' */}
+        </div>
       </div>
 
       <div className="text-center">
@@ -118,7 +142,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
           <input
             type="password"
             placeholder="Enter old password"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-zinc-800 dark:text-white dark:border-zinc-700"
             value={oldPassword}
             onChange={(e) => setOldPassword(e.target.value)}
             required
@@ -126,7 +150,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
           <input
             type="password"
             placeholder="Enter new password"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-zinc-800 dark:text-white dark:border-zinc-700"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
@@ -134,7 +158,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
           <div className="flex w-full justify-between space-x-2">
             <button
               type="button"
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
               onClick={() => {
                 setShowPasswordFields(false);
                 setOldPassword("");

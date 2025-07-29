@@ -17,7 +17,7 @@ interface UserData {
   password: string;
   userType: string;
   profilePicture?: string;
-  employeeId:string;
+  employeeId?:string;
 }
 
 interface AuthState {

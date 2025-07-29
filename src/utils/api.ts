@@ -21,7 +21,7 @@ const parseJwt = (token: string): any => {
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://qespl-backend.onrender.com/",
+  baseURL: import.meta.env.BACKEND_URL || "http://localhost:8080/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -241,7 +241,7 @@ export const createSubAdmin = async (data: SubAdminFormData) => {
     formData.append("department", data.department);
     formData.append("userType", data.userType);
     if (data.employeeId) formData.append("employeeId", data.employeeId);
-  if (data.designation) formData.append("desgination", data.designation);
+  if (data.designation) formData.append("designation", data.designation);
     if (data.profilePicture) {
       formData.append("profilePicture", data.profilePicture);
     }
@@ -367,10 +367,17 @@ export const createPermission = async (data: PermissionData) => {
   }
 };
 
+// export const createOrder = async (orderData: any) => {
+//   const response = await api.post("order/api/order-create-api", orderData);
+//   return response.data;
+// };
+
 export const createOrder = async (orderData: any) => {
   const response = await api.post("order/api/order-create-api", orderData);
+  console.log(response, "api call");
   return response.data;
 };
+
 
 export const fetchRecycleBinOrdersApi = async () => {
   const response = await api.get("/order/api/user-recycle-bin-order/");

@@ -15,8 +15,9 @@ import UserLayout from "../components/User/UserLayout";
 import UserDashboard from "../components/User/components/UserDashboard";
 import UserTask from "../components/User/components/UserTask";
 import UserMessage from "../components/User/components/UserMessage";
-import UserSettings from "../components/User/components/UserSettings";
+// import UserSettings from "../components/User/components/UserSettings";
 import UserNotification from "../components/User/components/UserNotification";
+import UserMyPOs from "../components/User/components/UserMyPOs";
 
 export const AppRoutes: React.FC = () => {
 
@@ -47,7 +48,7 @@ export const AppRoutes: React.FC = () => {
               <Route path="tasks" element={<UserTask />} /> 
               <Route path="requests" element={<UserMessage />} />
               <Route path="notifications" element={<UserNotification />} />
-              <Route path="settings" element={<UserSettings />} />
+              <Route path="mypos" element={<UserMyPOs />} />
               {/* <Route path="users" element={<UserUsersList />} /> */}
             </Route>
           </Route>

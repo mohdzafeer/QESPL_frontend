@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+
+import { useState } from 'react'
 import DashboardCards from './UserDashboardComponents/DashboardCards'
 import DashboardGraphs from './UserDashboardComponents/DashboardGraphs'
 import DashboardPOs from './UserDashboardComponents/DashboardPOs'
 import UserCreatePOForm from './UserDashboardComponents/UserCreatePOForm'
+
 
 const UserDashboard = () => {
 
@@ -12,7 +14,7 @@ const UserDashboard = () => {
     <div>
         <div>
             <div className='flex justify-end w-full'>
-              <button className='text-white bg-blue-800 px-3 py-2 rounded-lg mb-10 font-semibold cursor-pointer' onClick={()=>setShowForm(true)}>Create PO</button>
+              <button className='text-white bg-[var(--theme-color)] px-3 py-2 rounded-lg mb-10 font-semibold cursor-pointer' onClick={()=>setShowForm(true)}>Create PO</button>
             </div>
             <DashboardCards/>
             <DashboardGraphs/>

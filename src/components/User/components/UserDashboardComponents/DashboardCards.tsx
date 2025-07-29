@@ -9,17 +9,16 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store"; // adjust the import path as needed
 import { setStatusFilter } from "../../../../store/Slice/filterSlice"; // adjust the import path as needed
- // adjust the import path as needed
+// adjust the import path as needed
 
 const DashboardCards = () => {
+  // const [statusFilter, setStatusFilter] = useState<
+  //     "all" | "pending" | "completed" | "delayed" | "rejected"
+  //   >("all");
 
-// const [statusFilter, setStatusFilter] = useState<
-//     "all" | "pending" | "completed" | "delayed" | "rejected"
-//   >("all");
-
-const dispatch=useDispatch()
-const { orders } = useSelector((state: RootState) => state.orders);
-const counts = useMemo(
+  const dispatch = useDispatch();
+  const { orders } = useSelector((state: RootState) => state.orders);
+  const counts = useMemo(
     () => ({
       total: orders.length,
       pending: orders.filter(
@@ -39,18 +38,17 @@ const counts = useMemo(
     [orders]
   );
 
-
-const statusFilter = useSelector(
+  const statusFilter = useSelector(
     (state: RootState) => state.filter.statusFilter
   );
 
-  const handleClick = (status:String) => {
+  const handleClick = (status: String) => {
     dispatch(setStatusFilter(status));
   };
 
-    useEffect(()=>{
-     console.log(statusFilter)   
-    },[statusFilter])
+  useEffect(() => {
+    console.log(statusFilter);
+  }, [statusFilter]);
 
   return (
     <div>
@@ -65,26 +63,31 @@ const statusFilter = useSelector(
             transition: { duration: 0.3 },
           }}
           className={`${
-            statusFilter == "all" ? "bg-[var(--theme-color)]" : "bg-white dark:bg-zinc-950"
+            statusFilter == "all"
+              ? "bg-[var(--theme-color)]"
+              : "bg-white dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("all")}
         >
           <div className="flex flex-col text-white items-start gap-3">
             <p
               className={`${
-                statusFilter == "all" ? "text-white dark:text-white" : "text-[var(--theme-color)] dark:text-white"
+                statusFilter == "all"
+                  ? "text-white dark:text-white"
+                  : "text-[var(--theme-color)] dark:text-white"
               }`}
             >
               Total POs
             </p>
             <p
               className={`${
-                statusFilter == "all" ? "text-white dark:text-white" : "text-[var(--theme-color)] dark:text-white"
+                statusFilter == "all"
+                  ? "text-white dark:text-white"
+                  : "text-[var(--theme-color)] dark:text-white"
               } text-3xl font-bold`}
             >
               {/* {counts.total} */}
               N/A
-              
             </p>
             {/* <p
                       className={`${
@@ -95,7 +98,7 @@ const statusFilter = useSelector(
                     </p> */}
           </div>
           <div className="w-16 flex justify-center ">
-            <IoDocumentTextOutline className="text-white text-5xl w-fit bg-blue-900 rounded-lg p-2" />
+            <IoDocumentTextOutline className="text-black text-5xl w-fit bg-gray-200 dark:bg-zinc-700 rounded-lg p-2" />
           </div>
         </motion.div>
         <motion.div
@@ -107,14 +110,18 @@ const statusFilter = useSelector(
             transition: { duration: 0.3 },
           }}
           className={`${
-            statusFilter == "completed" ? "bg-[var(--theme-color)]" : "bg-white dark:bg-zinc-950"
+            statusFilter == "completed"
+              ? "bg-[var(--theme-color)]"
+              : "bg-white dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("completed")}
         >
           <div className="flex flex-col text-black items-start gap-3">
             <p
               className={`${
-                statusFilter == "completed" ? "text-white " : "text-[var(--theme-color)] dark:text-white"
+                statusFilter == "completed"
+                  ? "text-white "
+                  : "text-[var(--theme-color)] dark:text-white"
               }`}
             >
               Completed POs
@@ -126,7 +133,6 @@ const statusFilter = useSelector(
             >
               {/* {counts.completed} */}
               N/A
-              
             </p>
             {/* <p className="text-green-500 text-sm">
                       <span className="font-bold  ">+3%</span> from last month
@@ -145,7 +151,9 @@ const statusFilter = useSelector(
             transition: { duration: 0.3 },
           }}
           className={`${
-            statusFilter == "pending" ? "bg-[var(--theme-color)]" : "bg-white dark:bg-zinc-950"
+            statusFilter == "pending"
+              ? "bg-[var(--theme-color)]"
+              : "bg-white dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => {
             handleClick("pending");
@@ -154,7 +162,9 @@ const statusFilter = useSelector(
           <div className="flex flex-col text-black items-start gap-3">
             <p
               className={`${
-                statusFilter == "pending" ? "text-white" : "text-[var(--theme-color)] dark:text-white"
+                statusFilter == "pending"
+                  ? "text-white"
+                  : "text-[var(--theme-color)] dark:text-white"
               }`}
             >
               Pending POs
@@ -166,7 +176,6 @@ const statusFilter = useSelector(
             >
               {/* {counts.pending} */}
               N/A
-              
             </p>
             {/* <p className="text-yellow-400 text-sm">
                       <span className="font-bold  ">+2%</span> from last month
@@ -185,14 +194,18 @@ const statusFilter = useSelector(
             transition: { duration: 0.3 },
           }}
           className={`${
-            statusFilter == "delayed" ? "bg-[var(--theme-color)] " : "bg-white dark:bg-zinc-950"
+            statusFilter == "delayed"
+              ? "bg-[var(--theme-color)] "
+              : "bg-white dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("delayed")}
         >
           <div className="flex flex-col text-black items-start gap-3">
             <p
               className={`${
-                statusFilter == "delayed" ? "text-white" : "text-[var(--theme-color)] dark:text-white"
+                statusFilter == "delayed"
+                  ? "text-white"
+                  : "text-[var(--theme-color)] dark:text-white"
               }`}
             >
               Delayed POs
@@ -204,7 +217,6 @@ const statusFilter = useSelector(
             >
               {/* {counts.delayed} */}
               N/A
-              
             </p>
             {/* <p className="font-bold text-2xl">20</p> */}
             {/* <p className="text-orange-400 text-sm">
@@ -224,14 +236,18 @@ const statusFilter = useSelector(
             transition: { duration: 0.3 },
           }}
           className={`${
-            statusFilter == "rejected" ? "bg-[var(--theme-color)] " : "bg-white dark:bg-zinc-950"
+            statusFilter == "rejected"
+              ? "bg-[var(--theme-color)] "
+              : "bg-white dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("rejected")}
         >
           <div className="flex flex-col text-black items-start gap-3">
             <p
               className={` ${
-                statusFilter == "rejected" ? "text-white" : "text-[var(--theme-color)] dark:text-white"
+                statusFilter == "rejected"
+                  ? "text-white"
+                  : "text-[var(--theme-color)] dark:text-white"
               }`}
             >
               Rejected POs
@@ -243,7 +259,6 @@ const statusFilter = useSelector(
             >
               {/* {counts.rejected} */}
               N/A
-              
             </p>
             {/* <p className="font-bold text-2xl">20</p> */}
             {/* <p className="text-red-600 text-sm">

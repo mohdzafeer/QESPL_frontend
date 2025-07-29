@@ -321,7 +321,7 @@ const DashBoard = () => {
                     <p className="text-3xl font-bold">{counts.total}</p>
                   </div>
                   <div className="w-16 flex justify-center">
-                    <IoDocumentTextOutline className="text-white text-5xl w-fit bg-blue-900 rounded-lg p-2" />
+                    <IoDocumentTextOutline className="text-black text-5xl w-fit bg-gray-200 dark:bg-zinc-700 rounded-lg p-2" />
                   </div>
                 </motion.div>
                 <motion.div

@@ -254,7 +254,7 @@ export const handleDownload = (order: any) => {
   doc.text(`Order through: ${order.orderThrough?.username || "Mr. Akif"}`, sideMargin, currentY);
   currentY += 7;
   doc.setFont("helvetica", "bold"); // Bold for "Estimated Date/Time of Dispatch"
-  doc.text(`Estimated Date/Time of Dispatch: ${order.estimatedDispatchDate?.split('T')[0] || "2025-07-29"}`, sideMargin, currentY);
+  doc.text(`Estimated Date of Dispatch: ${order.estimatedDispatchDate?.split('T')[0] || "2025-07-29"}`, sideMargin, currentY);
   currentY += 10; // Increased space before Note
 
   doc.setFontSize(12)

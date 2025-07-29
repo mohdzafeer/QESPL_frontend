@@ -8,7 +8,8 @@ import {
 } from 'react-icons/fa';
 import { IoGridOutline, IoGridSharp } from 'react-icons/io5';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+import { IoIosList } from "react-icons/io";
+import { IoIosListBox } from "react-icons/io";
 const menuItems = [
   {
     name: 'Tasks',
@@ -35,10 +36,10 @@ const menuItems = [
     redirectTo: '/user/dashboard/notifications',
   },
   {
-    name: 'Settings',
-    filledIcon: FaCog,
-    outlineIcon: FaCog,
-    redirectTo: '/user/dashboard/settings',
+    name: 'My POs',
+    filledIcon: IoIosListBox,
+    outlineIcon: IoIosList,
+    redirectTo: '/user/dashboard/mypos',
   },
 ];
 

@@ -1,8 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchAllOrders, deleteOrders } from '../../utils/api';
+import { fetchAllOrders, deleteOrders ,createOrder} from '../../utils/api';
 
-interface Order {
-  _id: string;
+
+
+
+export interface Order {
+  _id?: string; // Optional for creation, added by backend
   orderNumber: string;
   clientName: string;
   companyName: string;
@@ -15,28 +18,38 @@ interface Order {
     price: number;
     quantity: number;
     remark?: string;
-    _id: string;
+    _id?: string; // Optional for creation
     createdAt?: string;
     updatedAt?: string;
   }>;
   estimatedDispatchDate: string;
-  status: string;
-  orderThrougth: string;
-  department: string;
-  isdeleted: boolean;
-  deletedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  formGeneratedBy?: string;
+  status?: string; // Optional for creation, set by backend
+  orderThrough: {
+    username: string;
+    employeeId: string;
+  }; // Fixed typo and aligned with apiOrderData
+  // department?: string; // Optional for creation
+  isdeleted?: boolean; // Optional for creation
+  deletedAt?: string | null; // Optional for creation
+  createdAt?: string; // Optional for creation
+  updatedAt?: string; // Optional for creation
+  // formGeneratedBy?: string;
   generatedBy: {
-    name?: string;
+    username: string; // Changed from employeeName to match interface
     employeeId: string;
   };
-  createdBy?: {
-    userId?: string;
-    username?: string;
-  };
+  // createdBy?: {
+  //   userId?: string;
+  //   username?: string;
+  // };
 }
+
+
+
+
+
+
+
 
 interface Pagination {
   currentPage: number;
@@ -45,6 +58,7 @@ interface Pagination {
   limit: number;
 }
 
+
 interface OrderState {
   orders: Order[];
   pagination: Pagination;
@@ -52,9 +66,12 @@ interface OrderState {
   error: string | null;
 }
 
+
 interface DeleteOrderResponse {
   orderId: string;
 }
+
+
 
 
 export const fetchOrdersAsync = createAsyncThunk(
@@ -69,13 +86,14 @@ export const fetchOrdersAsync = createAsyncThunk(
   }
 );
 
+
 export const deleteOrder = createAsyncThunk<
   DeleteOrderResponse,
   string,
   { rejectValue: string }
 >('orders/deleteOrder', async (orderId, { rejectWithValue }) => {
   try {
-    
+   
     const response = await deleteOrders(orderId);
     return response;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,6 +103,30 @@ export const deleteOrder = createAsyncThunk<
     );
   }
 });
+
+
+
+
+//// create redux thunk for the orders create
+export const createOrderAsync = createAsyncThunk<
+  Order, // Return type
+  Order, // Argument type
+  { rejectValue: string }
+>(
+  'orders/createOrder',
+  async (orderData: Order, { rejectWithValue }) => {
+    try {
+      const response = await createOrder(orderData);
+      return response as Order;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return rejectWithValue(error.response.data.message || 'Failed to create order');
+    }
+  }
+);
+
+
+
 
 const initialState: OrderState = {
   orders: [],
@@ -97,6 +139,7 @@ const initialState: OrderState = {
   status: 'idle',
   error: null,
 };
+
 
 const orderSlice = createSlice({
   name: 'orders',
@@ -138,9 +181,25 @@ const orderSlice = createSlice({
       .addCase(deleteOrder.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
+      })
+      ///// order create Extra reducers
+      .addCase(createOrderAsync.pending, (state) => {
+        state.status="loading";
+        state.error=null
+      })
+      .addCase(createOrderAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.orders.push(action.payload);
+      })
+      .addCase(createOrderAsync.rejected, (state, action) => {
+        console.log(action.payload,"slices error")
+        state.status = 'failed';
+        state.error = action.payload as string;
       });
   },
 });
 
+
 export const { resetOrders } = orderSlice.actions;
 export default orderSlice.reducer;
+

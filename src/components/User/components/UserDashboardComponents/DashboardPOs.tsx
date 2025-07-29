@@ -412,8 +412,8 @@ const DashboardPOs = () => {
                     </span>
                     <div className="w-2/3 flex gap-2 items-center text-left">
                       <div className="text-left">
-                        <p>{data.generatedBy?.username || data.generatedBy.name || 'N/A'}</p>
-                        <p className="text-gray-500 dark:text-gray-300">{data.generatedBy.employeeId}</p>
+                        <p>{data.generatedBy?.username  || 'N/A'}</p>
+                        <p className="text-gray-500 dark:text-gray-300">{data.generatedBy?.employeeId}</p>
                       </div>
                     </div>
                   </div>
@@ -465,7 +465,7 @@ const DashboardPOs = () => {
                       onClick={() => handleViewPODetails(data)} 
                       className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                     />
-                    <BsDownload  className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer" />
+                    <BsDownload onClick={()=>handleDownload(data)}  className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer" />
                     <RiDeleteBinLine className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer" />
                   </div>
                 </div>

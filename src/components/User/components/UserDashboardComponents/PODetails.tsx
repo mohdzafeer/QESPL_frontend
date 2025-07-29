@@ -158,7 +158,7 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
           <span>
             Employee Id :{" "}
             <span className="font-semibold text-blue-500 underline">
-              {orderData.generatedBy.employeeId} {/* Dynamic Employee ID */}
+              {orderData.generatedBy.employeeId ? orderData.generatedBy.employeeId : '_'} {/* Dynamic Employee ID */}
             </span>
           </span>
           {/* Assuming 'Designation' is not directly in your Order model for generatedBy */}
@@ -186,7 +186,7 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
               <span>
                 Employee Id :{" "}
                 <span className="font-semibold text-blue-500 underline">
-                  {orderData.orderThrough.employeeId}
+                  {orderData.orderThrough.employeeId ? orderData.orderThrough.employeeId : '_'} {/* Dynamic Employee ID */}
                 </span>
               </span>
               {/* Assuming 'Designation' is not directly in your Order model for createdBy */}
@@ -213,26 +213,26 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
             <span>
               Company Name :{" "}
               <span className="font-semibold ">
-                {orderData.companyName} {/* Dynamic Company Name */}
+                {orderData.companyName ? orderData.companyName : '_'} {/* Dynamic Company Name */}
               </span>
             </span>
             <span className="max-w-sm flex gap-2">
               <div className="min-w-fit">Address : </div>
-              <span className="font-semibold break-words">{orderData.address}</span> {/* Dynamic Address */}
+              <span className="font-semibold break-words">{orderData.address ? orderData.address : '_'}</span> {/* Dynamic Address */}
             </span>
           </div>
 
           <div className="flex flex-col text-start min-w-sm ">
             <span>
-              Zipcode : <span className="font-semibold">{orderData.zipCode}</span> {/* Dynamic Zipcode */}
+              Zipcode : <span className="font-semibold">{orderData.zipCode ? orderData.zipCode : '_'}</span> {/* Dynamic Zipcode */}
             </span>
             <span>
-              Contact No. : <span className="font-semibold">{orderData.contact}</span> {/* Dynamic Contact No. */}
+              Contact No. : <span className="font-semibold">{orderData.contact ? orderData.contact : '_'}</span> {/* Dynamic Contact No. */}
             </span>
             <span>
               GST No. :{" "}
               <span className="font-semibold text-blue-500 underline">
-                {orderData.gstNumber || 'N/A'} {/* Dynamic GST No. */}
+                {orderData.gstNumber || '_'} {/* Dynamic GST No. */}
               </span>
             </span>
           </div>
