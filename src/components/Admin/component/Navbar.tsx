@@ -126,7 +126,8 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
           <img
             src="/images/logo.png"
             alt="Logo"
-            className="w-28 sm:w-40 h-auto dark:invert"
+            className="w-28 sm:w-40 h-auto dark:invert cursor-pointer"
+            onClick={() => navigate("/admin/dashboard")}
           />
         </div>
         {/* Right section */}

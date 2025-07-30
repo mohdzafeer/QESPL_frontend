@@ -97,7 +97,8 @@ const UserNavbar: React.FC<NavbarProps> = () => {
           <img
             src="/images/logo.png"
             alt="Logo"
-            className="w-28 sm:w-40 h-auto dark:invert"
+            className="w-28 sm:w-40 h-auto dark:invert cursor-pointer"
+            onClick={() => navigate("/user/dashboard")}
           />
         </div>
 

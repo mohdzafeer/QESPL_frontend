@@ -14,7 +14,7 @@ const UserNotification = () => {
             </tr>
           </thead>
           <tbody className="w-full">
-            <tr className=" w-full border-b">
+            <tr className=" w-full border-b bg-white dark:bg-zinc-800">
               <td className="flex lg:pl-5 xl:pl-5 pl-1 gap-2 my-2">
                   <img src="/images/user-pic.png" className="lg:w-14 lg:h-14 xl:w-14 xl:h-14 h-8 w-8 lg:inline-block xl:inline-block hidden"/>
                   <div className="flex flex-col">
@@ -29,7 +29,7 @@ const UserNotification = () => {
                 9:00 AM
               </td>
             </tr>
-            <tr className=" w-full border-b">
+            <tr className=" w-full border-b bg-white dark:bg-zinc-800">
               <td className="flex lg:pl-5 xl:pl-5 pl-1 gap-2 my-2">
                   <img src="/images/user-pic.png" className="lg:w-14 lg:h-14 xl:w-14 xl:h-14 h-8 w-8 lg:inline-block xl:inline-block hidden"/>
                   <div className="flex flex-col">
@@ -44,7 +44,7 @@ const UserNotification = () => {
                 9:00 AM
               </td>
             </tr>
-            <tr className=" w-full border-b">
+            <tr className=" w-full border-b bg-white dark:bg-zinc-800">
               <td className="flex lg:pl-5 xl:pl-5 pl-1 gap-2 my-2">
                   <img src="/images/user-pic.png" className="lg:w-14 lg:h-14 xl:w-14 xl:h-14 h-8 w-8 lg:inline-block xl:inline-block hidden"/>
                   <div className="flex flex-col">

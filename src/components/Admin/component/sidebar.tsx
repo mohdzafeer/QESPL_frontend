@@ -8,15 +8,12 @@ import { FaRegUser } from "react-icons/fa6";
 import { MdOutlineSettings } from "react-icons/md";
 import { MdOutlineMessage } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
-import { GoDotFill } from "react-icons/go";
-import { FaUserLarge } from "react-icons/fa6";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../../store/store";
 import { selectLoggedInUser } from "../../../store/Slice/authSlice";
 
 type SidebarProps = {
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void; // Add setIsOpen prop
+  setIsOpen: (isOpen: boolean) => void;
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
@@ -24,11 +21,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Retrieve user information directly from Redux
   const user = useSelector(selectLoggedInUser);
 
   const [counter, setCounter] = useState(7);
-  const [isSmallScreen, setIsSmallScreen] = useState(false); // New state to track screen size
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   // Effect to apply dark mode class
   useEffect(() => {
@@ -42,21 +38,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   // Effect to detect screen size
   useEffect(() => {
     const checkScreenSize = () => {
-      // Define your breakpoint. Tailwind's 'md' is typically 768px, 'lg' is 1024px.
-      // Let's use 1024px as the breakpoint for "small screen" where sidebar should close.
-      // Adjust this value based on your specific TailwindCSS breakpoints if needed.
       setIsSmallScreen(window.innerWidth < 1024);
     };
 
-    // Set initial screen size
     checkScreenSize();
 
-    // Add event listener for window resize
     window.addEventListener("resize", checkScreenSize);
 
-    // Clean up event listener on component unmount
     return () => window.removeEventListener("resize", checkScreenSize);
-  }, []); // Empty dependency array means this effect runs once on mount and cleans up on unmount
+  }, []);
 
   const menuItems = [
     {
@@ -100,15 +90,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   const handleMenuItemClick = (redirectTo: string) => {
     navigate(redirectTo);
-    // If on a small screen, close the sidebar
     if (isSmallScreen) {
       setIsOpen(false);
     }
   };
 
+  // Get the first letter of the username
+  const usernameInitial = user?.username ? user.username.charAt(0).toUpperCase() : '';
+
   return (
     <div
-      className={`bg-white max-h-screen dark:bg-zinc-800 dark:text-white  text-white transition-all duration-300 sm:duration-300 flex flex-col justify-between ${
+      className={`bg-white max-h-screen dark:bg-zinc-800 dark:text-white text-white transition-all duration-300 sm:duration-300 flex flex-col justify-between ${
         isOpen
           ? "lg:w-64 xl:w-64 md:w-64 w-screen p-6 pr-0 "
           : "w-0 p-0 overflow-hidden"
@@ -123,7 +115,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               return (
                 <li
                   key={item.id}
-                  onClick={() => handleMenuItemClick(item.redirectTo)} // Use the new handler
+                  onClick={() => handleMenuItemClick(item.redirectTo)}
                   className={`p-3 duration-200 cursor-pointer flex items-center dark:text-white font-semibold ${
                     isActive
                       ? "bg-gray-100 dark:bg-zinc-700 dark:text-white text-[var(--theme-color)] rounded-l-full font-semibold border-l-4 border-[var(--theme-color)] dark:border-black pl-2"
@@ -149,18 +141,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           </ul>
         )}
       </div>
-      <div className="w-11/12 shadow-lg rounded-xl  flex p-3 gap-2 cursor-pointer bg-gray-200 dark:bg-zinc-900 dark:text-zinc-300   text-black duration-300">
-        <img
-          src="/images/user-pic.png"
-          alt="user"
-          className="w-[50px] rounded-full bg-white"
-        />
+      <div className="w-11/12 rounded-xl flex p-3 gap-2 bg-gray-200 dark:bg-zinc-900 dark:text-zinc-300 text-black duration-300">
+        {/* Replaced img with div for username initial */}
+        {user?.profilePic ? ( // Check if a profile picture exists in the user object
+          <img
+            src={user.profilePic}
+            alt={user.username || 'User'}
+            className="w-[50px] h-[50px] rounded-full object-cover bg-white" // Added h-[50px] for consistent sizing
+          />
+        ) : (
+          <div
+            className="w-[50px] h-[50px] rounded-full flex items-center justify-center font-bold text-lg text-gray-800" // Increased text size, changed text color
+            style={{ backgroundColor: 'white' }} // Explicitly set background to white
+          >
+            {usernameInitial}
+          </div>
+        )}
         <div className="flex flex-col">
           <span className="text-lg font-semibold text-start">
-            {useSelector(selectLoggedInUser).username}
+            {user?.username} {/* Use optional chaining for safety */}
           </span>
           <span className="text-sm w-fit text-start ">
-            {useSelector(selectLoggedInUser).userType.toUpperCase()}
+            {user?.userType?.toUpperCase()} {/* Use optional chaining for safety */}
           </span>
         </div>
       </div>
