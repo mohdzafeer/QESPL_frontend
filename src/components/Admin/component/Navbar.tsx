@@ -29,6 +29,10 @@ const getRandomColor = () => {
 };
 
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
+  const notifications = useSelector(
+      (state: RootState) => state.notifications.notifications
+    );
+    const notificationCount=notifications.length;
   const { user } = useSelector((state: RootState) => state.auth);
   const [backgroundColor, setBackgroundColor] = useState("");
   const usernameInitial = user.username
@@ -59,11 +63,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
   // Example notifications (these are not coming from Redux state in this component)
   // NOTE: Your Notification component is already reading notifications from Redux.
   // This array here is likely just for local testing/placeholder in Navbar.
-  const notifications = [
-    { id: 1, message: "New PO #123 created.", time: "2 min ago" },
-    { id: 2, message: "PO #122 marked as completed.", time: "10 min ago" },
-    { id: 3, message: "PO #121 delayed.", time: "1 hour ago" },
-  ];
+  // const notifications = [
+  //   { id: 1, message: "New PO #123 created.", time: "2 min ago" },
+  //   { id: 2, message: "PO #122 marked as completed.", time: "10 min ago" },
+  //   { id: 3, message: "PO #121 delayed.", time: "1 hour ago" },
+  // ];
 
   const handleLogout = () => {
     dispatch(logout());
@@ -143,9 +147,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
               <span className="absolute -inset-1.5" />
               <span className="sr-only">View notifications</span>
               <BellIcon aria-hidden="true" className="h-7 w-7 sm:h-8 sm:w-8" />
-              <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                3
+              {notificationCount > 0 ? (
+                <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                {notificationCount}
               </span>
+              ) : ''}
             </button>
 
             {showNotifications && (

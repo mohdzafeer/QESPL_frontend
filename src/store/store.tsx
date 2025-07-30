@@ -9,9 +9,8 @@ import orderSearchReducer from './Slice/orderSearchSlice';
 import userReducer from "../store/Slice/subadminSlice";
 import filterReducer from "./Slice/filterSlice"
 import themeReducer  from "./Slice/themeSlice"
-// import recycleBinReducer from './Slice/recycleBinSlice';
-// import notificationReducer from '../store/Slice/notificationSlice';
-import notificationReducer from './Slice/NotificationSlice';
+import recycleBinReducer from './Slice/recycleBinSlice';
+import notificationReducer from '../store/Slice/NotificationSlice';
 
 
 
@@ -31,7 +30,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   filter:filterReducer,
   theme:themeReducer,
-  // recycleBin: recycleBinReducer, // Add recycleBin reducer
+  recycleBin: recycleBinReducer, // Add recycleBin reducer
   notifications: notificationReducer,
 });
 
@@ -59,4 +58,5 @@ export type AppDispatch = typeof store.dispatch;
 
 // Add default export
 export default store;
+
 

@@ -10,6 +10,8 @@ export default defineConfig({
   ],
   mode: 'development',
   build: {
-    sourcemap: true, // Explicitly enable source maps
+    sourcemap: true,
+    outDir: 'dist',           // Ensure output goes to Electron's expected folder
+    emptyOutDir: true,        // Clean old builds // Explicitly enable source maps
   },
 })

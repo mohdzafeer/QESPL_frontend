@@ -73,7 +73,7 @@ export const initSocket = (userId: string, token: string) => {
 
   socket.on("disconnect", () => {
     console.log("Disconnected from Socket.IO server");
-    toast.warn("Disconnected from notification server. Reconnecting...");
+    // toast.warn("Disconnected from notification server. Reconnecting...");
   });
 
 

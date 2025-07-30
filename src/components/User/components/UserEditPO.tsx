@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { MdPrint } from "react-icons/md";
-import { handleDownload } from "./downlaod";
-import { toast } from "react-toastify";
+// import { handleDownload } from "./downlaod";
 
 
 
@@ -71,18 +70,9 @@ interface PODetailsProps {
 //// pdf downloader handlers
  
 
-const PODetails: React.FC<PODetailsProps> = ({ order }) => {
-  const [status] = useState(order.status||"complete");
-  const [loading, setLoading] = useState(false);
-  const loadingFun=()=>{
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    toast.success("PO Downloaded Successfully");
-  }
-
-
+const UserEditPO= () => {
+  const [status] = useState("complete");
+  
   return (
     <div className="lg:w-4xl xl:w-4xl w-sm  lg:max-h-[600px] xl:max-h-[600px] max-h-[700px] overflow-y-auto overflow-x-hidden no-scrollbar rounded-xl bg-white py-5 px-10 flex flex-col dark:text-white dark:bg-zinc-900">
       {/* PO Details */}
@@ -93,20 +83,24 @@ const PODetails: React.FC<PODetailsProps> = ({ order }) => {
         <div className="text-end flex flex-col w-full mt-5">
           <span className="text-xs font-semibold">PO Number</span>
           <span className="text-blue-600 underline text-lg font-semibold font-mono">
-            #{order.orderNumber || "N/A"}
+            {/* #{order.orderNumber || "N/A"} */}
+            1234
           </span>
           <span className="text-xs font-semibold mt-2">
             Order Date :{" "}
-            <span className="font-bold">{formatDate(order.createdAt)}</span>
+            {/* <span className="font-bold">{formatDate(order.createdAt)}</span> */}
+            12 july
           </span>
           <span className="text-xs font-semibold">
             Estimated Dispatch Date :{" "}
-            <span className="font-bold">
-              {formatDate(order.estimatedDispatchDate)}
-            </span>
+            <input type="text" defaultValue={'12 july'} className="font-bold max-w-fit text-end">
+              {/* {formatDate(order.estimatedDispatchDate)} */}
+              
+            </input>
           </span>
           <span className="text-xs my-2">
-            <span
+            <input
+            defaultValue={status.toUpperCase()}
               className={`font-semibold rounded-full px-2 py-1 text-xs text-white ${
                 status === "completed"
                   ? "bg-green-500"
@@ -119,8 +113,8 @@ const PODetails: React.FC<PODetailsProps> = ({ order }) => {
                   : "bg-gray-500"
               }`}
             >
-              {status.toUpperCase()}
-            </span>
+              {/* {status.toUpperCase()} */}
+            </input>
           </span>
         </div>
       </div>
@@ -139,14 +133,16 @@ const PODetails: React.FC<PODetailsProps> = ({ order }) => {
           />
           <span className="flex w-full">
             <span className="min-w-fit">Employee Name :{" "}</span>
-            <span className="font-semibold">
-              {order.generatedBy?.username || "N/A"}
-            </span>
+            <input defaultValue={'John Doe'} className="font-semibold">
+              {/* {order.generatedBy?.username || "N/A"} */}
+                {/* John Doe */}
+            </input>
           </span>
           <span>
             Employee Id :{" "}
             <span className="font-semibold text-blue-500 underline">
-              {order.generatedBy?.employeeId || "N/A"}
+              {/* {order.generatedBy?.employeeId || "N/A"} */}
+                12345
             </span>
           </span>
           {/* Designation not in JSON, omitting or using placeholder */}
@@ -167,14 +163,16 @@ const PODetails: React.FC<PODetailsProps> = ({ order }) => {
           />
           <span>
             Employee Name :{" "}
-            <span className="font-semibold">
-              {order.orderThrough?.username || "N/A"}
-            </span>
+            <input defaultValue={'Jane Smith'} className="font-semibold">
+              {/* {order.orderThrough?.username || "N/A"} */}
+               
+            </input>
           </span>
           <span>
             Employee Id :{" "}
             <span className="font-semibold text-blue-500 underline">
-              {order.orderThrough?.employeeId || "N/A"}
+              {/* {order.orderThrough?.employeeId || "N/A"} */}
+                67890
             </span>
           </span>
           <span>
@@ -192,32 +190,38 @@ const PODetails: React.FC<PODetailsProps> = ({ order }) => {
           <div className="flex flex-col text-start">
             <span>
               Client Name :{" "}
-              <span className="font-semibold">{order.clientName || "N/A"}</span>
+              {/* <span className="font-semibold">{order.clientName || "N/A"}</span> */}
+              <input defaultValue={'XYZ'}></input>
             </span>
             <span>
               Company Name :{" "}
-              <span className="font-semibold">{order.companyName || "N/A"}</span>
+              {/* <span className="font-semibold">{order.companyName || "N/A"}</span> */}
+                <input defaultValue={'ABC pvt ltd'}></input>
             </span>
           </div>
           <div className="flex flex-col text-start min-w-sm">
             <span className="max-w-sm">
               Address :{" "}
-              <span className="font-semibold break-words">
-                {order.address || "N/A"}
-              </span>
+              <input defaultValue={'123 Main street, New York'} className="font-semibold break-words">
+                {/* {order.address || "N/A"} */}
+                
+              </input>
             </span>
             <span>
-              Zipcode : <span className="font-semibold">{order.zipCode || "N/A"}</span>
+              {/* Zipcode : <span className="font-semibold">{order.zipCode || "N/A"}</span> */}
+                Zipcode : <input defaultValue={'12345'} className="font-semibold"></input>
             </span>
             <span>
               Contact No. :{" "}
-              <span className="font-semibold">{order.contact || "N/A"}</span>
+              {/* <span className="font-semibold">{order.contact || "N/A"}</span> */}
+                <input defaultValue={'1234512345'} className="font-semibold"></input>
             </span>
             <span>
               GST No. :{" "}
-              <span className="font-semibold text-blue-500 underline">
-                {order.gstNumber || "N/A"}
-              </span>
+              <input defaultValue={'123-123-123'} className="font-semibold text-blue-500 ">
+                {/* {order.gstNumber || "N/A"} */}
+                
+              </input>
             </span>
           </div>
         </div>
@@ -233,7 +237,7 @@ const PODetails: React.FC<PODetailsProps> = ({ order }) => {
             <th className="px-4 py-2 border">Remark</th>
           </tr>
         </thead>
-        <tbody>
+        {/* <tbody>
           {order.products && order.products.length > 0 ? (
             order.products.map((product) => (
               <tr key={product._id} className="hover:bg-gray-50 dark:hover:bg-zinc-950">
@@ -252,23 +256,17 @@ const PODetails: React.FC<PODetailsProps> = ({ order }) => {
               </td>
             </tr>
           )}
-        </tbody>
+        </tbody> */}
       </table>
 
-      <div className="flex justify-center items-center">
-        {loading===false ? (
-          <button onClick={()=>{loadingFun(),handleDownload(order)}} className="px-3 py-2 bg-blue-500 mt-5 rounded-lg text-white text-sm max-w-fit flex items-center gap-4 font-semibold cursor-pointer hover:bg-blue-300 duration-300 active:bg-blue-600">
-          Download
+      {/* <div className="flex justify-center items-center">
+        <button  className="px-3 py-2 bg-blue-500 mt-5 rounded-lg text-white text-sm max-w-fit flex items-center gap-4 font-semibold cursor-pointer hover:bg-blue-300 duration-300 active:bg-blue-600">
+          Print <MdPrint />
         </button>
-        ):(
-          <button className="px-3 py-2 bg-gray-700 mt-5 rounded-lg text-white text-sm max-w-fit flex items-center gap-4 font-semibold cursor-not-allowed ">
-          Downloading..
-        </button>
-        )}
-      </div>
+      </div> */}
     </div>
     
   );
 };
 
-export default PODetails;
+export default UserEditPO;

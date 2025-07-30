@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
-import { createOrderAsync } from "../../../../store/Slice/orderSlice";
+import { createOrderAsync} from "../../../../store/Slice/orderSlice";
 
 import { toast } from "react-toastify";
-import { set } from "lodash";
+
 
 type UserCreatePOFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,12 +17,9 @@ type Product = {
   quantity: number;
   price: number;
   remark: string;
-  dispatchDate: string;
+  
 };
-type generatedBy = {
-  username: string;
-  employeeId: string;
-};
+
 
 type OrderFormData = {
   orderNumber: string; // This will now store only the sequential number
@@ -46,7 +43,9 @@ type OrderFormData = {
     username: string;
     employeeId: string;
   };
+  estimatedDispatchDate?: string; // Optional, can be added later
 };
+
 
 const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
   const [loading, setLoading] = useState(false)
@@ -54,6 +53,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
   const { status, error } = useSelector((state: RootState) => state.orders);
+  console.log(user, "User data in UserCreatePOForm ejhwfgwefigwiefgiewfg");
 
   // Function to get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
@@ -102,8 +102,9 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     },
     contactNumber: "",
     products: [
-      { id: 1, name: "", quantity: 0, price: 0, remark: "", dispatchDate: "" },
+      { id: 1, name: "", quantity: 1, price: 0, remark: "" },
     ],
+    estimatedDispatchDate: "", // Optional, can be added later
   });
 
   // Update formData when user changes (for async Redux updates)
@@ -179,6 +180,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     if (status === "succeeded") {
       // setShowForm(false); // Close form on success
       // After successful submission, increment the stored counter for the *next* order
+      
       const today = new Date();
       const currentMonthAbbr = getMonthAbbreviation(today);
       const currentYearShort = today.getFullYear() % 100;
@@ -206,8 +208,9 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       );
     } else if (status === "failed" && error) {
       console.log(error, "Error creating order:");
-      toast.error(error);
-      return
+      toast.error("Order creation failed. This order number might already exist. Please try again with a different Order Number.");
+     
+    
     } 
   }, [ ]);
 
@@ -274,7 +277,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
           quantity: 0,
           price: 0,
           remark: "",
-          dispatchDate: "",
+          // dispatchDate: "",
         },
       ],
     }));
@@ -319,7 +322,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
         price: product.price,
         remark: product.remark,
       })),
-      estimatedDispatchDate: formData.products[0]?.dispatchDate || "",
+      estimatedDispatchDate: formData.estimatedDispatchDate || "",
       generatedBy: {
         username: formData.generatedBy.username,
         employeeId: formData.generatedBy.employeeId,
@@ -343,6 +346,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       setShowForm(false)
       
       setLoading(false);
+      window.location.reload(); // Reload the page to reflect changes
       // The increment of localStorage is now handled in the success useEffect
     } catch (err) {
       toast.error("Failed to create order. Please try again.");
@@ -355,17 +359,18 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     return <div>Please log in to access this form.</div>;
   }
 
+  console.log(user.employeeId, "User data in UserCreatePOForm");
   
 
   return (
     <div className="w-screen h-screen flex justify-center items-center pt-20">
-      <div className="bg-white w-11/12 max-h-10/12 rounded-lg p-5 my-10 no-scrollbar overflow-y-scroll">
+      <div className="bg-white dark:bg-zinc-900 w-11/12 max-h-10/12 rounded-lg p-5 my-10 no-scrollbar overflow-y-scroll">
         <div className="flex justify-between items-center w-full ">
-          <h1 className="text-[#0A2975] font-bold text-lg mb-5 uppercase">
+          <h1 className="text-[#0A2975] dark:text-white font-bold text-xl+ mb-5 uppercase">
             Create PO
           </h1>
           <button
-            className="text-gray-700 text-2xl px-3 py-2 rounded-lg cursor-pointer"
+            className="text-gray-700 dark:text-white text-2xl px-3 py-2 rounded-lg cursor-pointer"
             onClick={handleClose}
           >
             &times;
@@ -715,6 +720,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                       required
                       value={product.quantity.toString()} // Convert number to string for input value
                       onChange={(e) => handleProductChange(product.id, e)}
+                      
                     />
                     <label
                       htmlFor={`Product_Quantity_${index}`}
@@ -765,23 +771,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 </div>
 
                 {/* Dispatch Date Input */}
-                <div className="relative z-0 w-full mb-5 group">
-                  <input
-                    type="date"
-                    name="dispatchDate"
-                    id={`Dispatch_Date_${index}`}
-                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
-                    required
-                    value={product.dispatchDate}
-                    onChange={(e) => handleProductChange(product.id, e)}
-                  />
-                  <label
-                    htmlFor={`Dispatch_Date_${index}`}
-                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
-                  >
-                    Dispatch Date
-                  </label>
-                </div>
+                
 
                 {/* Delete Button */}
                 {formData.products.length > 1 && (
@@ -795,7 +785,23 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 )}
               </div>
             ))}
-
+            <div className="relative z-0 w-full mb-5 group">
+                  <input
+                    type="date"
+                    name="dispatchDate"
+                    id={'estimatedDispatchDate'}
+                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                    required
+                    value={formData.estimatedDispatchDate}
+                    onChange={handleInputChange}
+                  />
+                  <label
+                    htmlFor={'estimatedDispatchDate'}
+                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+                  >
+                    Dispatch Date
+                  </label>
+                </div>
             {/* Add Product Button */}
             <div className="flex justify-between">
               <button
@@ -805,6 +811,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
               >
                 + Add Product
               </button>
+              
               {loading===false ? (
                 <button
                 type="submit"

@@ -87,7 +87,7 @@ const DashboardCards = () => {
               } text-3xl font-bold`}
             >
               {/* {counts.total} */}
-              N/A
+              4
             </p>
             {/* <p
                       className={`${
@@ -132,7 +132,7 @@ const DashboardCards = () => {
               } text-3xl font-bold`}
             >
               {/* {counts.completed} */}
-              N/A
+              3
             </p>
             {/* <p className="text-green-500 text-sm">
                       <span className="font-bold  ">+3%</span> from last month
@@ -175,7 +175,7 @@ const DashboardCards = () => {
               } text-3xl font-bold`}
             >
               {/* {counts.pending} */}
-              N/A
+              1
             </p>
             {/* <p className="text-yellow-400 text-sm">
                       <span className="font-bold  ">+2%</span> from last month
@@ -216,7 +216,7 @@ const DashboardCards = () => {
               } text-3xl font-bold`}
             >
               {/* {counts.delayed} */}
-              N/A
+              1
             </p>
             {/* <p className="font-bold text-2xl">20</p> */}
             {/* <p className="text-orange-400 text-sm">
@@ -258,7 +258,7 @@ const DashboardCards = () => {
               } text-3xl font-bold`}
             >
               {/* {counts.rejected} */}
-              N/A
+              0
             </p>
             {/* <p className="font-bold text-2xl">20</p> */}
             {/* <p className="text-red-600 text-sm">

@@ -61,18 +61,18 @@ export const fetchAllOrders = async (page: number = 1, limit: number = 10) => {
   }
 };
 
-export const deleteOrders = async (orderId: string) => {
-  try {
-    const response = await api.delete(`/order/api/delete-order/${orderId}`, {
-      withCredentials: true,
-    });
-    console.log(response, "api call");
-    return { orderId };
-  } catch (error) {
-    console.error("Delete order error:", error);
-    throw error;
-  }
-};
+// export const deleteOrders = async (orderId: string) => {
+//   try {
+//     const response = await api.delete(`/order/api/delete-order/${orderId}`, {
+//       withCredentials: true,
+//     });
+//     console.log(response, "api call");
+//     return { orderId };
+//   } catch (error) {
+//     console.error("Delete order error:", error);
+//     throw error;
+//   }
+// };
 
 /// search orders by query parameter
 export const searchOrderApi = async (
@@ -107,6 +107,8 @@ export const adminSignup = async (UserData: {
   email: string;
   password: string;
   userType: string;
+  profilePicture?: string;
+  employeeId?: string;
 }) => {
   const response = await api.post("/user/api/admin-signup", UserData);
   return response.data;
@@ -379,16 +381,67 @@ export const createOrder = async (orderData: any) => {
 };
 
 
+
+
+
+
+export const deleteOrders = async (orderId: string) => {
+  try {
+    console.log(orderId, "api call shariq khan");
+    const response = await api.delete(`/order/api/delete-order/${orderId}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Delete order error:", error);
+    throw error;
+  }
+};
+
+
 export const fetchRecycleBinOrdersApi = async () => {
   const response = await api.get("/order/api/user-recycle-bin-order/");
-  console.log(response, "api call calling");
   return response;
 };
 
+
 ////
 export const restoreOps = async (orderIds: string[]) => {
-  const response = await api.post("/order/api/restore-orders/", {
-    ids: orderIds,
-  });
-  return response.data;
+  if (orderIds.length === 1) {
+    console.log(orderIds[0], "orderIds in restoreOps");
+    const response = await api.post(
+      `/order/api/user-restore-order/${orderIds[0]}`
+    );
+    return response.data;
+  } else if (orderIds.length > 1) {
+    const response = await api.post(`/order/api/restore-orders/`, {
+      ids: orderIds,
+      withCredentials: true,
+    });
+    return response.data;
+  }
 };
+
+
+
+
+//// create a function to fetch order for the delete order single order and multiple orders
+export const deleteOrdersMultiple1 = async (orderIds: string[]) => {
+  if (orderIds.length === 1) {
+    console.log(orderIds[0], "orderIds in deleteOrdersMultiple1");
+    const response = await api.delete(`/order/api/user-delete-permanently/${orderIds[0]}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } else if (orderIds.length > 1) {
+      const response = await api.delete(`/order/api/user-delete-permanently/`, {
+        data: { ids: orderIds }, // Send ids in the request body
+        withCredentials: true,
+      });
+      return response.data;
+  }
+}
+
+
+
+

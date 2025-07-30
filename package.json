@@ -4,10 +4,32 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "build": "tsc && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.qespo.id",
+    "productName": "QESPO",
+    "files": [
+      "dist",
+      "electron"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "mohdzafeer",
+        "repo": "QESPL_fron"
+      }
+    ]
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.3.0",
