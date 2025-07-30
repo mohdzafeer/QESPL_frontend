@@ -115,7 +115,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
         employeeId: user.employeeId,
       }));
     }
-    console.log(formData,"zafeeeeeeeeeeerrrrrrr")
+    // console.log(formData,"zafeeeeeeeeeeerrrrrrr")
   }, [user]);
 
   // Effect for generating and managing the orderNumber prefix (QESPL/MMM/YY) and incrementing counter
@@ -178,8 +178,6 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
   useEffect(() => {
     if (status === "succeeded") {
       // setShowForm(false); // Close form on success
-      
-
       // After successful submission, increment the stored counter for the *next* order
       const today = new Date();
       const currentMonthAbbr = getMonthAbbreviation(today);
@@ -209,8 +207,9 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     } else if (status === "failed" && error) {
       console.log(error, "Error creating order:");
       toast.error(error);
-    }
-  }, [status, error]);
+      return
+    } 
+  }, [ ]);
 
   // Handles input changes for top-level form fields
   const handleInputChange = (
@@ -342,11 +341,12 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       
       await dispatch(createOrderAsync(apiOrderData));
       setShowForm(false)
-      toast.success("Order created successfully!");
+      
       setLoading(false);
       // The increment of localStorage is now handled in the success useEffect
     } catch (err) {
       toast.error("Failed to create order. Please try again.");
+      setLoading(false)
     }
   };
 
@@ -355,9 +355,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     return <div>Please log in to access this form.</div>;
   }
 
-  useEffect(()=>{
-    console.log("User is : ",user)
-  })
+  
 
   return (
     <div className="w-screen h-screen flex justify-center items-center pt-20">

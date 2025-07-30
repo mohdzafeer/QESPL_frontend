@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react"; // Import useRef
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { BellIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/solid";
@@ -19,14 +19,46 @@ type NavbarProps = {
   isSidebarOpen: boolean;
 };
 
+const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const [backgroundColor, setBackgroundColor] = useState("");
+  const usernameInitial = user.username
+    ? user.username.charAt(0).toUpperCase()
+    : "";
+  const localStorageKey = `userColor_${user.username}`; // Unique key for each user
+
+  useEffect(() => {
+    let storedColor = localStorage.getItem(localStorageKey);
+
+    if (storedColor) {
+      setBackgroundColor(storedColor);
+    } else {
+      const newColor = getRandomColor();
+      localStorage.setItem(localStorageKey, newColor);
+      setBackgroundColor(newColor);
+    }
+  }, [user.username, localStorageKey]);
+
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const { user } = useSelector((state: RootState) => state.auth);
+
+  const notificationRef = useRef<HTMLDivElement>(null); // Create a ref for the notification area
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Example notifications
+  // Example notifications (these are not coming from Redux state in this component)
+  // NOTE: Your Notification component is already reading notifications from Redux.
+  // This array here is likely just for local testing/placeholder in Navbar.
   const notifications = [
     { id: 1, message: "New PO #123 created.", time: "2 min ago" },
     { id: 2, message: "PO #122 marked as completed.", time: "10 min ago" },
@@ -37,6 +69,29 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
     dispatch(logout());
     navigate("/login", { replace: true });
   };
+
+  // --- Click outside handler for Notifications ---
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // If the notification div exists and the click is outside of it
+      // AND the click is not on the bell icon itself
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('[aria-label="View notifications"]') // Check if click is on the bell button
+      ) {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showNotifications]); // Re-run effect when showNotifications changes
 
   return (
     <>
@@ -77,20 +132,16 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
         {/* Right section */}
         <div className="flex items-center gap-2 order-3 ml-auto relative">
           {/* Bell Icon with Notification Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={notificationRef}> {/* Attach the ref here */}
             <button
               type="button"
               className="relative rounded-full bg-white dark:bg-zinc-800 dark:text-white p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-light-wheat focus:outline-none mr-1 sm:mr-4"
               onClick={() => setShowNotifications((prev) => !prev)}
+              aria-label="View notifications" // Added for better accessibility and click-outside logic
             >
-              {/* Accessibility */}
               <span className="absolute -inset-1.5" />
               <span className="sr-only">View notifications</span>
-
-              {/* Bell Icon */}
               <BellIcon aria-hidden="true" className="h-7 w-7 sm:h-8 sm:w-8" />
-
-              {/* 🔴 Notification Counter */}
               <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                 3
               </span>
@@ -98,19 +149,29 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
 
             {showNotifications && (
               <Notification
-                notifications={notifications}
+                notifications={notifications} // Note: This is a placeholder array. Your Notification component uses Redux state.
                 onClose={() => setShowNotifications(false)}
               />
             )}
           </div>
-          {/* User Menu */}
+          {/* User Menu (existing) */}
           <Menu as="div" className="relative ">
             <MenuButton className="flex items-center focus:outline-none">
-              <img
-                alt=""
-                src="/images/user-pic.png"
-                className="h-10 w-10 sm:h-12 sm:w-13 rounded-full mr-2 object-cover"
-              />
+              {user.profilePic ? (
+                <img
+                  alt={user.username}
+                  src={user.profilePic}
+                  className="h-10 w-10 sm:h-12 sm:w-12 rounded-full mr-2 object-cover"
+                />
+              ) : (
+                <div
+                  className="h-10 w-10 sm:h-12 sm:w-12 rounded-full mr-2 flex items-center justify-center font-bold text-white text-lg sm:text-xl"
+                  style={{ backgroundColor: backgroundColor }}
+                >
+                  {usernameInitial}
+                </div>
+              )}
+
               <div className="hidden sm:block text-left">
                 <div className="text-gray-800 text-base sm:text-lg font-semibold dark:text-white">
                   {user.username}
@@ -132,8 +193,10 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
                     href="#"
                     onClick={() => setShowProfile(true)}
                     className={classNames(
-                      active ? "bg-gray-100 dark:bg-zinc-600 dark:text-zinc-300" : "",
-                      "block  w-full px-4 py-2 text-sm text-gray-700 dark:text-zinc-300"
+                      active
+                        ? "bg-gray-100 dark:bg-zinc-600 dark:text-zinc-300"
+                        : "",
+                      "block w-full px-4 py-2 text-sm text-gray-700 dark:text-zinc-300"
                     )}
                   >
                     View Profile
@@ -148,7 +211,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
                     onClick={handleLogout}
                     className={classNames(
                       active ? "bg-gray-100" : "",
-                      "block px-4 py-2 text-sm text-gray- hover:bg-red-600 hover:text-white "
+                      "block px-4 py-2 text-sm text-gray-700 dark:text-zinc-300 hover:bg-red-600 hover:text-white "
                     )}
                   >
                     Sign out
@@ -174,7 +237,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen }) => {
               name="Mohd Sufian"
               email="sufian@gmail.com"
               imageUrl="/images/user-pic.png"
-              // onUpdatePassword={() => alert('Update password clicked!')}
             />
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchAllOrders, deleteOrders ,createOrder} from '../../utils/api';
+import { toast } from 'react-toastify';
 
 
 
@@ -117,6 +118,7 @@ export const createOrderAsync = createAsyncThunk<
   async (orderData: Order, { rejectWithValue }) => {
     try {
       const response = await createOrder(orderData);
+      toast.success("Order created successfully!");
       return response as Order;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

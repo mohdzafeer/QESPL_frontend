@@ -129,12 +129,12 @@ const AddUserForm: React.FC = () => {
 
   return (
     <form
-      className="max-w-screen px-1 py-4 bg-gray-100 rounded-lg space-y-4 lg:mb-10 mb-1"
+      className="max-w-screen px-1 py-4  rounded-lg space-y-4 lg:mb-10 mb-1"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="w-full">
         <div className="grid lg:grid-cols-2 grid-cols-1 max-w-screen gap-8">
-          <div className="lg:text-xl text-sm flex flex-col gap-6 justify-start shadow-lg bg-white lg:px-20 px-2 lg:py-10 py-2 rounded-xl">
+          <div className="lg:text-xl text-sm flex flex-col gap-6 justify-start shadow-lg bg-white dark:bg-zinc-800 lg:px-20 px-2 lg:py-10 py-2 rounded-xl">
             <h2 className="text-2xl font-semibold text-start">User Details</h2>
             <div className="flex justify-start">
               <div className="relative w-24 h-24 border-2 border-gray-400 rounded-full">
@@ -194,13 +194,13 @@ const AddUserForm: React.FC = () => {
               </div>
               <p className="text-red-500 text-sm">{errors.password?.message}</p>
             </div>
-            <div className="w-full font-semibold text-gray-600">
+            <div className="w-full font-semibold text-gray-600 dark:text-white">
               <div className="flex justify-start items-center gap-4 text-sm">
                 <p className="w-fit font-semibold lg:text-lg text-sm">User Type:</p>
                 <select
                   value={userType}
                   onChange={handleChangeUserType}
-                  className="w-fit px-5 py-2 border border-gray-300 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
+                  className="w-fit px-5 py-2 border border-gray-300 rounded-md text-gray-700 dark:text-white bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
                 >
                   <option value="user">User</option>
                   <option value="subadmin">Sub Admin</option>
@@ -208,7 +208,7 @@ const AddUserForm: React.FC = () => {
               </div>
 
               {/* These fields are now always visible */}
-              <div className="mt-5">
+              <div className="mt-5 dark:text-white">
                 <input
                   type="text"
                   placeholder="Employee ID"
@@ -255,19 +255,19 @@ const AddUserForm: React.FC = () => {
             </div>
           </div>
           <div className="flex flex-col h-full gap-6 justify-start items-start">
-            <div className="flex flex-col gap-2 items-start bg-white lg:px-20 px-2 lg:py-10 py-4 rounded-xl shadow-xl min-w-full max-h-fit">
+            <div className="flex flex-col gap-2 items-start bg-white dark:bg-zinc-800 lg:px-20 px-2 lg:py-10 py-4 rounded-xl shadow-xl min-w-full max-h-fit">
               <h2 className="text-2xl font-semibold text-start mb-5">Permissions of Actions</h2>
               <select
                 value={resource}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
+                className="w-full p-2 border border-gray-300 rounded-md text-gray-700 dark:text-white bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
               >
                 <option value="none">None</option>
                 <option value="orders">Orders</option>
                 <option value="repairs">Repairs</option>
               </select>
               {resource !== "none" && (
-                <div className="flex flex-col gap-4 text-gray-500">
+                <div className="flex flex-col gap-4 text-gray-500 dark:text-white">
                   <div className="flex gap-2 items-center w-[250px]">
                     <input
                       type="checkbox"
@@ -275,7 +275,7 @@ const AddUserForm: React.FC = () => {
                       checked={permissions.readOnly}
                       onChange={() => handlePermissionChange("readOnly")}
                     />
-                    <label className="text-lg font-semibold text-gray-500" htmlFor="readOnly">
+                    <label className="text-lg font-semibold text-gray-500 dark:text-white" htmlFor="readOnly">
                       Read Only
                     </label>
                   </div>

@@ -54,7 +54,7 @@ const Notification: React.FC<NotificationProps> = ({ onClose }) => {
           <li className="px-4 py-4 text-gray-500 dark:text-white text-sm sm:text-base">No notifications</li>
         ) : (
           displayedNotifications.map((notification: NotificationItem) => (
-            <li key={notification.id} className="flex items-center gap-3 px-4 py-4 hover:bg-gray-50">
+            <li key={notification.id} className="flex items-center gap-3 px-4 py-4 hover:bg-gray-50 dark:hover:bg-zinc-700">
               <img
                 src={notification.imageUrl || '/images/profile.png'}
                 alt={notification.user || 'User'}

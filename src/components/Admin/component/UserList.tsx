@@ -84,13 +84,13 @@ const UserDetailsForm: React.FC = () => {
 
 
   return (
-    <div>
+    <div className="">
       <AddUserForm />
       <hr />
       <div>
         <h1 className="text-lg font-bold">User List</h1>
         <div>
-          <div className="p-4 bg-gray-100 min-h-screen">
+          <div className="p-4  min-h-screen">
             {/* Mobile Card View (default) */}
             <div className="md:hidden space-y-4">
               {users.map((user) => (
@@ -145,9 +145,9 @@ const UserDetailsForm: React.FC = () => {
 
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto shadow-md rounded-lg">
-              <table className="min-w-full bg-white table-auto">
+              <table className="min-w-full bg-white dark:bg-zinc-800 table-auto">
                 <thead>
-                  <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  <tr className="bg-gray-200 dark:bg-zinc-900 text-gray-600 dark:text-white uppercase text-sm leading-normal">
                     <th className="py-3 px-6 text-left">User</th>
                     <th className="py-3 px-6 text-left">Email</th>
                     <th className="py-3 px-6 text-left">User Type</th>
@@ -156,11 +156,11 @@ const UserDetailsForm: React.FC = () => {
                     <th className="py-3 px-6 text-center">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="text-gray-600 text-sm font-light">
+                <tbody className="text-gray-600 dark:text-white text-sm font-light">
                   {users.map((user) => (
                     <tr
                       key={user._id.$oid}
-                      className="border-b border-gray-200 hover:bg-gray-100"
+                      className="border-b border-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-600"
                     >
                       <td className="py-3 px-6 text-left whitespace-nowrap">
                         <div className="flex items-center">

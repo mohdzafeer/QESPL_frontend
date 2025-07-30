@@ -8,6 +8,24 @@ import { useSelector } from 'react-redux';
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  useEffect(() => {
+    const handleResize = () => {
+      // Set a breakpoint for mobile vs. desktop (e.g., 768px)
+      setIsSidebarOpen(window.innerWidth >= 768);
+    };
+
+    // Set initial state based on current window width
+    handleResize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
