@@ -15,6 +15,7 @@ interface RegisterFormData {
   password: string;
   userType: string;
   employeeId:string;
+  
 }
 
 const RegisterForm = () => {

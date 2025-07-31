@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch, RootState } from '../../store/store'; // Adjust path to your store
+import type { AppDispatch, RootState } from '../../../store/store'; // Adjust path to your store
 import { getRecycleBinOrders ,restoreOrdersMultiple,deleteOrdersMultiple} from '../../../store/Slice/recycleBinSlice';
 
 
@@ -262,7 +262,7 @@ const RecycleBin: React.FC = () => {
                       : 'text-red-500'
                   }`}
                 >
-                  {data.status.charAt(0).toUpperCase() + data.status.slice(1)} {/* Capitalize status */}
+                  {data.status?.charAt(0)?.toUpperCase() + data.status?.slice(1)} {/* Capitalize status */}
                 </td>
                 <td className="p-2">{calculateTimeRemaining(data.estimatedDispatchDate)}</td>
               </tr>
@@ -342,7 +342,7 @@ const RecycleBin: React.FC = () => {
                     : 'text-red-500'
                 }`}
               >
-                {data.status.charAt(0).toUpperCase() + data.status.slice(1)} {/* Capitalize status */}
+                {data.status?.charAt(0)?.toUpperCase() + data.status?.slice(1)} {/* Capitalize status */}
               </span>
             </div>
             <div className="flex p-2">

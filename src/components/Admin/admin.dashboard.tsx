@@ -210,6 +210,10 @@ const DashBoard = () => {
         });
       setShowAlert(false);
       setUserToDelete(null);
+      toast.warning("PO moving to Recycle Bin....")
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
       // window.location.reload()
     }
   };

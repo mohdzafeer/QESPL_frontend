@@ -6,6 +6,8 @@ import {
   deleteOrdersMultiple1,
   deleteOrders,
 } from "../../utils/api"; // Adjust path to your API file
+import { set } from "lodash";
+import { toast } from "react-toastify";
 
 
 // Define the shape of the state
@@ -95,8 +97,13 @@ export const restoreOrdersMultiple = createAsyncThunk(
     try {
       const response = await restoreOps(orderIds);
       if (response.success) {
+        toast.success("Restoring PO......");
+        setTimeout(()=>{
+        window.location.reload();
+      },3000)
         return { orderIds, message: response.message };
       }
+      
       return rejectWithValue(response.message || "Failed to restore orders");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -223,7 +230,3 @@ const recycleBinSlice = createSlice({
 // Export actions and reducer
 export const { resetRecycleBinState,resetRecycleBinStatus } = recycleBinSlice.actions;
 export default recycleBinSlice.reducer;
-
-
-
-
