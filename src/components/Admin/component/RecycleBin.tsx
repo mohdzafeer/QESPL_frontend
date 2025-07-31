@@ -180,8 +180,8 @@ const RecycleBin: React.FC = () => {
                   : 'bg-red-300 cursor-not-allowed'
               }`}
               disabled={!selected.length}
-              // onClick={deleteSelected }
-              onClick={() => setConfirmDlete(true)}
+              onClick={deleteSelected }
+              // onClick={() => setConfirmDlete(true)}
             >
               Delete Selected
             </button>
