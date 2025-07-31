@@ -210,7 +210,7 @@ const DashBoard = () => {
         });
       setShowAlert(false);
       setUserToDelete(null);
-      window.location.reload()
+      // window.location.reload()
     }
   };
  
