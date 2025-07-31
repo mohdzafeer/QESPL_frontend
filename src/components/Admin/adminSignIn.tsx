@@ -32,7 +32,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (status === "succeeded" && user) {
-      if (user.userType === "admin") {
+      if (user.userType === "admin" || user.userType === "subadmin") {
         // console.log("LoginForm - Redirecting to /admin/dashboard"); // Debug
         navigate("/admin/dashboard");
       } else if (user.userType === "user") {

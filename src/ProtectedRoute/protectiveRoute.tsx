@@ -27,7 +27,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
   }
 
   if (!allowedRoles.includes(user.userType)) {
-    const redirectPath = user.userType === "admin" ? "/admin/dashboard" : "/user/dashboard";
+    const redirectPath = user.userType === "admin" || "subadmin" ? "/admin/dashboard" : "/user/dashboard";
     return <Navigate to={redirectPath} state={{ from: location }} replace />;
   }
 
