@@ -39,8 +39,8 @@ interface Order {
   orderNumber?: string;
   orderId?: string;
   generatedBy?: {
-    name?: string;
-    user?: { username?: string };
+    username?: string;
+    
     employeeId?: string;
   };
   formGeneratedBy?: string;
@@ -253,18 +253,16 @@ const DashBoard = () => {
     <>
       <div className="flex flex-col h-screen scrollbar-hide">
         <div className="flex flex-1">
-          <div className="flex-1 bg-gray-100">
-            <div className="dash p-2 sm:p-4 md:p-6 m-1 sm:m-2 md:m-4 rounded bg-gray-100 h-fit max-w-screen relative overflow-auto scrollbar-hide">
-              {showAlert && (
+          <div className="flex-1 ">
+            <div className="dash p-2 sm:p-4 md:p-6 m-1 sm:m-2 md:m-4 rounded h-fit max-w-screen relative overflow-auto scrollbar-hide">
+              {/* {showAlert && (
                 <div className="absolute inset-0 z-40 bg-black/30 backdrop-blur-sm transition-all duration-300" />
-              )}
-              <div
+              )} */}
+              {showAlert && (
+                <div
                 id="alert-additional-content-2"
-                className={`fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-black dark:text-red-400 dark:border-red-800 transition-all duration-余300 ease-in-out w-[90vw] max-w-sm sm:max-w-md md:max-w-lg
-                ${showAlert
-                    ? "opacity-100 scale-100 pointer-events-auto"
-                    : "opacity-0 scale-95 pointer-events-none"
-                  }`}
+                className={`fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-black dark:text-red-400 dark:border-red-800 transition-all duration-余300 ease-in-out w-[90vw] max-w-sm sm:max-w-md md:max-w-lg backdrop-blur-2xl
+                `}
                 role="alert"
               >
                 <div className="flex items-center">
@@ -306,6 +304,7 @@ const DashBoard = () => {
                   </button>
                 </div>
               </div>
+              )}
               {showReport && selectedUser && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
                   <div className="relative">
@@ -326,40 +325,40 @@ const DashBoard = () => {
                 <motion.div
                   initial={{ y: 0 }}
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                  className={`${statusFilter == "all" ? "bg-[#0A2975]" : "bg-white"
-                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] flex justify-between cursor-pointer font-semibold`}
+                  className={`${statusFilter == "all" ? "bg-[#0A2975]" : "bg-white dark:bg-zinc-950"
+                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("all")}
                 >
                   <div className="flex flex-col text-white items-start gap-3">
                     <p
-                      className={`${statusFilter == "all" ? "text-white" : "text-[#0A2975]"
+                      className={`${statusFilter == "all" ? "text-white" : "text-[#0A2975] dark:text-white"
                         }`}
                     >
                       Total POs
                     </p>
                     <p
-                      className={`${statusFilter == "all" ? "text-white" : "text-[#0A2975]"
+                      className={`${statusFilter == "all" ? "text-white" : "text-[#0A2975] dark:text-white"
                         } text-3xl font-bold`}
                     >
                       {counts.total}
                     </p>
                   </div>
                   <div className="w-16 flex justify-center">
-                    <IoDocumentTextOutline className="text-white text-5xl w-fit bg-blue-900 rounded-lg p-2" />
+                    <IoDocumentTextOutline className="text-black text-5xl w-fit bg-white rounded-lg p-2" />
                   </div>
                 </motion.div>
                 <motion.div
                   initial={{ y: 0 }}
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                  className={`${statusFilter == "completed" ? "bg-[#0A2975]" : "bg-white"
-                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] flex justify-between cursor-pointer font-semibold`}
+                  className={`${statusFilter == "completed" ? "bg-[#0A2975]" : "bg-white dark:bg-zinc-950"
+                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("completed")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
                       className={`${statusFilter == "completed"
                         ? "text-white"
-                        : "text-[#0A2975]"
+                        : "text-[#0A2975] dark:text-white"
                         }`}
                     >
                       Completed POs
@@ -378,15 +377,15 @@ const DashBoard = () => {
                 <motion.div
                   initial={{ y: 0 }}
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                  className={`${statusFilter == "pending" ? "bg-[#0A2975]" : "bg-white"
-                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] flex justify-between cursor-pointer font-semibold`}
+                  className={`${statusFilter == "pending" ? "bg-[#0A2975]" : "bg-white dark:bg-zinc-950"
+                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("pending")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
                       className={`${statusFilter == "pending"
                         ? "text-white"
-                        : "text-[#0A2975]"
+                        : "text-[#0A2975] dark:text-white"
                         }`}
                     >
                       Pending POs
@@ -405,15 +404,15 @@ const DashBoard = () => {
                 <motion.div
                   initial={{ y: 0 }}
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                  className={`${statusFilter == "delayed" ? "bg-[#0A2975]" : "bg-white"
-                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] flex justify-between cursor-pointer font-semibold`}
+                  className={`${statusFilter == "delayed" ? "bg-[#0A2975]" : "bg-white dark:bg-zinc-950"
+                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("delayed")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
                       className={`${statusFilter == "delayed"
                         ? "text-white"
-                        : "text-[#0A2975]"
+                        : "text-[#0A2975] dark:text-white"
                         }`}
                     >
                       Delayed POs
@@ -432,15 +431,15 @@ const DashBoard = () => {
                 <motion.div
                   initial={{ y: 0 }}
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                  className={`${statusFilter == "rejected" ? "bg-[#0A2975]" : "bg-white"
-                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] flex justify-between cursor-pointer font-semibold`}
+                  className={`${statusFilter == "rejected" ? "bg-[#0A2975]" : "bg-white dark:bg-zinc-900"
+                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("rejected")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
                       className={`${statusFilter == "rejected"
                         ? "text-white"
-                        : "text-[#0A2975]"
+                        : "text-[#0A2975] dark:text-white"
                         }`}
                     >
                       Rejected POs
@@ -552,12 +551,12 @@ const DashBoard = () => {
               <div className="border-2 border-gray-300 rounded-lg p-5 mt-10 mb-5 overflow-x-auto lg:text-lg md:text-sm text-xs">
                 <div className="flex justify-between text-sm items-start mb-4">
                   <div>
-                    <p className="font-semibold lg:text-lg xl:text-xl text-sm text-gray-600">
+                    <p className="font-semibold lg:text-lg xl:text-xl text-sm text-gray-600 dark:text-white">
                       Recent Purchase Orders
                     </p>
                   </div>
                   <div className="flex items-end gap-4">
-                    <span className="search bg-white w-full flex items-center justify-center rounded-lg relative">
+                    <span className="search bg-white dark:bg-zinc-800 w-full flex items-center justify-center rounded-lg relative">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -610,7 +609,7 @@ const DashBoard = () => {
                       <div className="flex flex-col w-full md:w-1/2">
                         <label
                           htmlFor="from-date"
-                          className="text-sm text-gray-700 font-medium mb-1"
+                          className="text-sm text-gray-700 dark:text-white font-medium mb-1"
                         >
                           From Date
                         </label>
@@ -621,7 +620,7 @@ const DashBoard = () => {
                           onChange={(e) =>
                             handleDateChange("fromDate", e.target.value)
                           }
-                          className={`p-2 border bg-white ${errors.fromDate
+                          className={`p-2 border bg-white dark:bg-zinc-800 ${errors.fromDate
                             ? "border-red-500"
                             : "border-gray-300"
                             } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
@@ -638,7 +637,7 @@ const DashBoard = () => {
                       <div className="flex flex-col w-full md:w-1/2">
                         <label
                           htmlFor="to-date"
-                          className="text-sm text-gray-700 font-medium mb-1"
+                          className="text-sm text-gray-700 dark:text-white font-medium mb-1"
                         >
                           End Date
                         </label>
@@ -649,7 +648,7 @@ const DashBoard = () => {
                           onChange={(e) =>
                             handleDateChange("toDate", e.target.value)
                           }
-                          className={`p-2 border bg-white ${errors.toDate ? "border-red-500" : "border-gray-300"
+                          className={`p-2 border bg-white dark:bg-zinc-800 ${errors.toDate ? "border-red-500" : "border-gray-300"
                             } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                           max={today}
                         />
@@ -663,7 +662,7 @@ const DashBoard = () => {
                     <select
                       value={statusFilter}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
+                      className="w-full p-2 border border-gray-300 rounded-md text-gray-700 dark:text-white bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
                     >
                       <option value="all">All Status</option>
                       <option value="completed">Completed</option>
@@ -681,7 +680,7 @@ const DashBoard = () => {
                 <div className="w-full">
                   <table className="w-full text-xs mb-4">
                     <thead>
-                      <tr className="bg-gray-200">
+                      <tr className="bg-gray-200 dark:bg-zinc-950">
                         <th className="p-2">PO Number</th>
                         <th className="p-2 text-start">Generated By</th>
                         <th className="p-2">Company</th>
@@ -696,10 +695,10 @@ const DashBoard = () => {
                         paginatedData.map((data: Order) => (
                           <tr
                             key={data._id}
-                            className="border-b border-gray-200 odd:bg-white even:bg-gray-50"
+                            className="border-b border-gray-200 odd:bg-white dark:odd:bg-zinc-800 even:bg-gray-50 dark:even:bg-zinc-900"
                           >
                             <td>
-                              <span className="p-2 text-blue-800 font-bold hover:underline">
+                              <span className="p-2 text-blue-800 dark:text-blue-400 font-bold hover:underline">
                                 {data.orderNumber || data.orderId || "N/A"}
                               </span>
                             </td>
@@ -707,7 +706,7 @@ const DashBoard = () => {
                               <img
                                 src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
                                 alt={
-                                  data.generatedBy?.name ||
+                                  data.generatedBy?.username ||
                                   data.formGeneratedBy ||
                                   "Unknown"
                                 }
@@ -715,9 +714,7 @@ const DashBoard = () => {
                               />
                               <div className="flex flex-col">
                                 <span>
-                                  {data.generatedBy?.name ||
-                                    data.formGeneratedBy ||
-                                    data.generatedBy?.user?.username ||
+                                  {data.generatedBy?.username ||
                                     "Unknown"}
                                 </span>
                                 <span>{data.generatedBy?.employeeId || "N/A"}</span>
@@ -777,7 +774,7 @@ const DashBoard = () => {
                     <button
                       onClick={() => changePage(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className="px-2 py-1 rounded bg-gray-200 text-sm hover:bg-[#0A2975] hover:opacity-100 disabled:opacity-50"
+                      className="px-2 py-1 rounded bg-gray-200 dark:bg-zinc-950 dark:hover:bg-zinc-900 text-sm hover:bg-[#0A2975] hover:opacity-100 disabled:opacity-50"
                     >
                       ←
                     </button>
@@ -787,7 +784,7 @@ const DashBoard = () => {
                         onClick={() => changePage(i + 1)}
                         className={`px-3 py-1 rounded-full text-sm ${currentPage === i + 1
                           ? "bg-blue-600 text-white font-semibold"
-                          : "bg-gray-100 hover:bg-blue-100"
+                          : "bg-gray-100 dark:bg-zinc-950 dark:hover:bg-zinc-900 hover:bg-blue-100"
                           }`}
                       >
                         {i + 1}
@@ -796,7 +793,7 @@ const DashBoard = () => {
                     <button
                       onClick={() => changePage(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className="px-2 py-1 rounded bg-gray-200 text-sm hover:bg-blue-200 disabled:opacity-50"
+                      className="px-2 py-1 rounded bg-gray-200 dark:bg-zinc-950 dark:hover:bg-zinc-900 text-sm hover:bg-blue-200 disabled:opacity-50"
                     >
                       →
                     </button>

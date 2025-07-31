@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { BarGraph } from "./GrpahComponents/Bargraph";
 import DonutChart from "./GrpahComponents/DonutChart";
 import { motion } from "motion/react";

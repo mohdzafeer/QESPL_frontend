@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MdPrint } from "react-icons/md";
+// import { MdPrint } from "react-icons/md";
 import { handleDownload } from "./downlaod";
 import { toast } from "react-toastify";
 
@@ -247,7 +247,7 @@ const PODetails: React.FC<PODetailsProps> = ({ order }) => {
             ))
           ) : (
             <tr>
-              <td colSpan="4" className="px-4 py-2 border text-center">
+              <td  className="px-4 py-2 border text-center">
                 No products available
               </td>
             </tr>

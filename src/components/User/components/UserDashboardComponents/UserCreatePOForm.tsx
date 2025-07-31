@@ -3,10 +3,9 @@ import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
-import { createOrderAsync} from "../../../../store/Slice/orderSlice";
+import { createOrderAsync } from "../../../../store/Slice/orderSlice";
 
 import { toast } from "react-toastify";
-
 
 type UserCreatePOFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,17 +16,13 @@ type Product = {
   quantity: number;
   price: number;
   remark: string;
-  
 };
-
 
 type OrderFormData = {
   orderNumber: string; // This will now store only the sequential number
   fullOrderNumber: string; // This will store the generated full format
   orderDate: string;
   invoiceNumber: string;
-  // employeeName: string;
-  // employeeId: string;
   clientName: string;
   companyName: string;
   gstNumber: string;
@@ -46,9 +41,8 @@ type OrderFormData = {
   estimatedDispatchDate?: string; // Optional, can be added later
 };
 
-
 const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -101,9 +95,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       employeeId: user.employeeId || "Not Available", // Use actual employeeId from user if available
     },
     contactNumber: "",
-    products: [
-      { id: 1, name: "", quantity: 1, price: 0, remark: "" },
-    ],
+    products: [{ id: 1, name: "", quantity: 1, price: 0, remark: "" }],
     estimatedDispatchDate: "", // Optional, can be added later
   });
 
@@ -180,7 +172,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     if (status === "succeeded") {
       // setShowForm(false); // Close form on success
       // After successful submission, increment the stored counter for the *next* order
-      
+
       const today = new Date();
       const currentMonthAbbr = getMonthAbbreviation(today);
       const currentYearShort = today.getFullYear() % 100;
@@ -208,11 +200,11 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       );
     } else if (status === "failed" && error) {
       console.log(error, "Error creating order:");
-      toast.error("Order creation failed. This order number might already exist. Please try again with a different Order Number.");
-     
-    
-    } 
-  }, [ ]);
+      // toast.error(
+      //   "Order creation failed. This order number might already exist. Please try again with a different Order Number."
+      // );
+    }
+  }, []);
 
   // Handles input changes for top-level form fields
   const handleInputChange = (
@@ -300,8 +292,6 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
     e.preventDefault();
-
-    // Ensure orderNumber is a valid number before submission
     const sequentialOrderNum = parseInt(formData.orderNumber, 10);
     if (isNaN(sequentialOrderNum) || sequentialOrderNum <= 0) {
       toast.error("Please enter a valid Order Number (sequential part).");
@@ -309,7 +299,6 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }
 
     const apiOrderData = {
-      
       clientName: formData.clientName,
       companyName: formData.companyName,
       gstNumber: formData.gstNumber,
@@ -341,16 +330,14 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     };
 
     try {
-      
       await dispatch(createOrderAsync(apiOrderData));
-      setShowForm(false)
-      
+      setShowForm(false);
       setLoading(false);
-      window.location.reload(); // Reload the page to reflect changes
-      // The increment of localStorage is now handled in the success useEffect
+      // window.location.reload();
+      // toast.success("Order created successfully!");
     } catch (err) {
-      toast.error("Failed to create order. Please try again.");
-      setLoading(false)
+      // toast.error("Failed to create order. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -360,7 +347,6 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
   }
 
   console.log(user.employeeId, "User data in UserCreatePOForm");
-  
 
   return (
     <div className="w-screen h-screen flex justify-center items-center pt-20">
@@ -720,7 +706,6 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                       required
                       value={product.quantity.toString()} // Convert number to string for input value
                       onChange={(e) => handleProductChange(product.id, e)}
-                      
                     />
                     <label
                       htmlFor={`Product_Quantity_${index}`}
@@ -771,7 +756,6 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 </div>
 
                 {/* Dispatch Date Input */}
-                
 
                 {/* Delete Button */}
                 {formData.products.length > 1 && (
@@ -786,22 +770,22 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
               </div>
             ))}
             <div className="relative z-0 w-full mb-5 group">
-                  <input
-                    type="date"
-                    name="dispatchDate"
-                    id={'estimatedDispatchDate'}
-                    className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
-                    required
-                    value={formData.estimatedDispatchDate}
-                    onChange={handleInputChange}
-                  />
-                  <label
-                    htmlFor={'estimatedDispatchDate'}
-                    className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
-                  >
-                    Dispatch Date
-                  </label>
-                </div>
+              <input
+                type="date"
+                name="estimatedDispatchDate"
+                id={"estimatedDispatchDate"}
+                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                required
+                value={formData.estimatedDispatchDate}
+                onChange={handleInputChange}
+              />
+              <label
+                htmlFor={"estimatedDispatchDate"}
+                className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
+              >
+                Dispatch Date
+              </label>
+            </div>
             {/* Add Product Button */}
             <div className="flex justify-between">
               <button
@@ -811,21 +795,21 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
               >
                 + Add Product
               </button>
-              
-              {loading===false ? (
+
+              {loading === false ? (
                 <button
-                type="submit"
-                className="text-end max-w-fit bg-[#0A2975] text-white px-2 py-1 font-semibold text-xl rounded-md hover:bg-[#092060] transition duration-300 cursor-pointer"
-              >
-                Submit
-              </button>
-              ):(
+                  type="submit"
+                  className="text-end max-w-fit bg-[#0A2975] text-white px-2 py-1 font-semibold text-xl rounded-md hover:bg-[#092060] transition duration-300 cursor-pointer"
+                >
+                  Submit
+                </button>
+              ) : (
                 <button
-                // type="submit"
-                className="text-end max-w-fit bg-gray-400 text-white px-2 py-1 font-semibold text-xl rounded-md cursor-not-allowed"
-              >
-                Submiting...
-              </button>
+                  // type="submit"
+                  className="text-end max-w-fit bg-gray-400 text-white px-2 py-1 font-semibold text-xl rounded-md cursor-not-allowed"
+                >
+                  Submiting...
+                </button>
               )}
             </div>
           </section>
