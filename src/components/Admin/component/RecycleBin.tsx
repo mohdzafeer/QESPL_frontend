@@ -122,7 +122,7 @@ const RecycleBin: React.FC = () => {
       dispatch(deleteOrdersMultiple(orderIds));
       setSelected([]);
       setSelectAll(false);
-      window.location.reload()
+      // window.location.reload()
     }
     else {
       const singleOrderIds = orders
@@ -132,7 +132,7 @@ const RecycleBin: React.FC = () => {
         dispatch(deleteOrdersMultiple(singleOrderIds));
         setSelected([]);
         setSelectAll(false);
-        window.location.reload()
+        // window.location.reload()
       }
     }
   };
