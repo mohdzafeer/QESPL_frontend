@@ -99,7 +99,7 @@ const RecycleBin: React.FC = () => {
       dispatch(restoreOrdersMultiple(orderIds));
       setSelected([]); // Clear selection after restoration
       setSelectAll(false);
-      window.location.reload();// Reset select all state
+      // window.location.reload();// Reset select all state
     }else{
       const singleOrderIds = orders.filter((order: Order) => order.orderNumber === selected[0])
       .map((order: Order) => order._id);
@@ -107,7 +107,7 @@ const RecycleBin: React.FC = () => {
         dispatch(restoreOrdersMultiple(singleOrderIds));
         setSelected([]); // Clear selection after restoration
         setSelectAll(false);
-        window.location.reload()// Reset select all state
+        // window.location.reload()// Reset select all state
       }
     }
   }
