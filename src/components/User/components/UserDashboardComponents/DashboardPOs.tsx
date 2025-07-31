@@ -374,7 +374,7 @@ const DashboardPOs = () => {
                           className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                         />
                         <BsDownload onClick={()=>handleDownload(data)} className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer" />
-                        <RiDeleteBinLine className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer" />
+                        {/* <RiDeleteBinLine className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer" /> */}
                       </td>
                     </tr>
                   ))
@@ -466,7 +466,7 @@ const DashboardPOs = () => {
                       className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                     />
                     <BsDownload onClick={()=>handleDownload(data)}  className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer" />
-                    <RiDeleteBinLine className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer" />
+                    {/* <RiDeleteBinLine className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer" /> */}
                   </div>
                 </div>
               ))
