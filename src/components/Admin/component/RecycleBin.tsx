@@ -137,6 +137,7 @@ const RecycleBin: React.FC = () => {
     }
   };
 
+  const [confirmDlete, setConfirmDlete] = useState(false)
 
   return (
     <div className="flex flex-col gap-4">
@@ -179,7 +180,8 @@ const RecycleBin: React.FC = () => {
                   : 'bg-red-300 cursor-not-allowed'
               }`}
               disabled={!selected.length}
-              onClick={deleteSelected }
+              // onClick={deleteSelected }
+              onClick={() => setConfirmDlete(true)}
             >
               Delete Selected
             </button>
@@ -187,6 +189,18 @@ const RecycleBin: React.FC = () => {
         </div>
       )}
 
+      {confirmDlete && (
+        <div className='fixed w-screen flex   h-screen'>
+        {/* <div className='fixed z-[999999] w-screen h-screen backdrop-blur-sm bg-black/10'/> */}
+        <div className='fixed mx-auto top-8 left-0 right-0 w-sm max-h-fit bg-red-100 text-red-500 flex flex-col gap-4 p-4 rounded-lg'>
+            <span className='text-lg font-semibold'>Are you sure You want to delete PO(s)</span>
+            <div className='flex gap-4 justify-end mt-4'>
+              <button onClick={deleteSelected} className='bg-red-500 text-white px-3 py-2 rounded-lg font-semibold hover:bg-red-600 duration-300 cursor-pointer'>Yes, Delete</button>
+              <button onClick={()=>setConfirmDlete(false)} className='bg-red-200 text-red-500 px-3 py-2 rounded-lg font-semibold border hover:bg-red-100 hover:border hover:border-red-400 cursor-pointer duration-300' >No, Cancel</button>
+            </div>
+        </div>
+        </div>
+      )}
 
       {/* Desktop Table */}
       <div className="hidden lg:block overflow-x-auto">
@@ -346,5 +360,3 @@ const RecycleBin: React.FC = () => {
 
 
 export default RecycleBin;
-
-

@@ -295,6 +295,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     const sequentialOrderNum = parseInt(formData.orderNumber, 10);
     if (isNaN(sequentialOrderNum) || sequentialOrderNum <= 0) {
       toast.error("Please enter a valid Order Number (sequential part).");
+      setLoading(false)
       return;
     }
 

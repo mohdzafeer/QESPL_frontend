@@ -125,7 +125,7 @@ export const createOrderAsync = createAsyncThunk<
       return response as Order;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      toast.error("Failed to create order. Please try again.");
+      toast.error("Failed to create order. Either you have entered an existing order number or You do not have permission to create an order.");
       return rejectWithValue(error.response.data.message || 'Failed to create order');
     }
   }
