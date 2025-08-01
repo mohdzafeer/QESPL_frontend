@@ -1,6 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchAllOrders, deleteOrders ,createOrder} from '../../utils/api';
-import { toast } from 'react-toastify';
+
+
+
+
+
+
 
 
 
@@ -48,10 +53,6 @@ export interface Order {
 
 
 
-
-
-
-
 interface Pagination {
   currentPage: number;
   totalPages: number;
@@ -60,17 +61,27 @@ interface Pagination {
 }
 
 
+
+
 interface OrderState {
   orders: Order[];
   pagination: Pagination;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+  message: string | null;
+  success: boolean | null; // Added to track success state
 }
+
+
 
 
 interface DeleteOrderResponse {
   orderId: string;
 }
+
+
+
+
 
 
 
@@ -86,6 +97,8 @@ export const fetchOrdersAsync = createAsyncThunk(
     }
   }
 );
+
+
 
 
 export const deleteOrder = createAsyncThunk<
@@ -108,6 +121,10 @@ export const deleteOrder = createAsyncThunk<
 
 
 
+
+
+
+
 //// create redux thunk for the orders create
 export const createOrderAsync = createAsyncThunk<
   Order, // Return type
@@ -118,18 +135,17 @@ export const createOrderAsync = createAsyncThunk<
   async (orderData: Order, { rejectWithValue }) => {
     try {
       const response = await createOrder(orderData);
-      toast.success("Order created successfully!");
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 2000);
       return response as Order;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      toast.error("Failed to create order. Either you have entered an existing order number or You do not have permission to create an order.");
       return rejectWithValue(error.response.data.message || 'Failed to create order');
     }
   }
 );
+
+
+
+
 
 
 
@@ -144,7 +160,11 @@ const initialState: OrderState = {
   },
   status: 'idle',
   error: null,
+  message: null,
+  success: null,
 };
+
+
 
 
 const orderSlice = createSlice({
@@ -156,6 +176,13 @@ const orderSlice = createSlice({
       state.pagination = { currentPage: 1, totalPages: 1, totalOrders: 0, limit: 10 };
       state.status = 'idle';
       state.error = null;
+      state.message = null;
+      state.success = null;
+    },
+    clearMessages: (state) => {
+      state.error = null;
+      state.message = null;
+      state.success = null;
     },
   },
   extraReducers: (builder) => {
@@ -201,11 +228,21 @@ const orderSlice = createSlice({
         console.log(action.payload,"slices error")
         state.status = 'failed';
         state.error = action.payload as string;
+        state.message = action.payload as string; // Store the error message
+        state.error = action.payload as string;
+        state.success = false; // Set success to false on error
       });
   },
 });
 
 
-export const { resetOrders } = orderSlice.actions;
+
+
+export const { resetOrders,clearMessages } = orderSlice.actions;
 export default orderSlice.reducer;
+
+
+
+
+
 

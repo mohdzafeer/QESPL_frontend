@@ -740,7 +740,7 @@ const DashBoard = () => {
                     </div>
 
                     {/* Date Pickers */}
-                    <div className="flex flex-row justify-between md:flex-row gap-4 w-full">
+                    <div className="flex flex-row justify-end md:flex-row gap-4 w-full">
                       {/* From Date */}
                       <div className="flex max-w-fit flex-col w-full md:w-1/2">
                         <label

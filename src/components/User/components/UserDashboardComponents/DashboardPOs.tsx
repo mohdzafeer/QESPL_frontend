@@ -31,12 +31,10 @@ interface GeneratedBy {
 //   username: string;
 // }
 
-interface orderThrough{
-  username:string,
-  employeeId:string
-
+interface orderThrough {
+  username: string;
+  employeeId: string;
 }
-
 
 interface Order {
   _id: string;
@@ -60,7 +58,7 @@ interface Order {
   // createdBy?: CreatedBy; // Optional
   deletedAt?: string; // Optional
   formGeneratedBy?: string; // Some orders have this field
-  orderThrough?:orderThrough
+  orderThrough?: orderThrough;
 }
 
 interface Pagination {
@@ -76,7 +74,7 @@ interface FetchedOrdersData {
 }
 // --- END INTERFACES ---
 
-const DashboardPOs = () => {
+const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
   const dispatch = useDispatch();
   const statusFilter = useSelector(
     (state: RootState) => state.filter.statusFilter
@@ -94,56 +92,77 @@ const DashboardPOs = () => {
   const [showPODetails, setShowPODetails] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null); // State to hold the order for PODetails modal
 
-  const rowsPerPage = 10; 
-  const [currentPage, setCurrentPage] = useState(1); 
+  const rowsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch orders when component mounts or currentPage changes
   useEffect(() => {
-    const getOrders = async () => {
-      try {
-        setLoading(true);
-        const result = await fetchAllOrders(currentPage, rowsPerPage); 
-        setOrdersData(result);
-      } catch (err: any) {
-        console.error("Error fetching orders in DashboardPOs:", err);
-        setError(err.message || "Failed to fetch orders.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    getOrders();
-  }, [currentPage]); 
+  const getOrders = async () => {
+    try {
+      setLoading(true);
+      const result = await fetchAllOrders(currentPage, rowsPerPage);
+      setOrdersData(result);
+    } catch (err: any) {
+      console.error("Error fetching orders in DashboardPOs:", err);
+      setError(err.message || "Failed to fetch orders.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  
+  getOrders();
+}, [currentPage, refreshTrigger]); 
+
   // Update Redux filter state and reset pagination
-  const handleStatusFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleStatusFilterChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     dispatch(setStatusFilter(e.target.value));
     setCurrentPage(1); // Reset to first page when filter changes
   };
 
   // Filter orders based on statusFilter and search query (frontend filtering)
-  const filteredOrders = ordersData?.orders?.filter((order) => {
-    const matchesStatus = statusFilter === "all" || 
-                          order.status?.toLowerCase().trim() === statusFilter.toLowerCase().trim();
-    
-    const matchesSearch = searchQuery.toLowerCase().trim() === "" ||
-                          order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.clientName.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.companyName.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.generatedBy.username?.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.generatedBy.name?.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.generatedBy.employeeId.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.products.some(p => p.name.toLowerCase().includes(searchQuery.toLowerCase().trim()));
+  const filteredOrders =
+    ordersData?.orders?.filter((order) => {
+      const matchesStatus =
+        statusFilter === "all" ||
+        order.status?.toLowerCase().trim() ===
+          statusFilter.toLowerCase().trim();
 
-    // Date filtering (optional, implement if needed, currently filtering on frontend)
-    const orderDate = new Date(order.createdAt);
-    const from = fromDate ? new Date(fromDate) : null;
-    const to = toDate ? new Date(toDate) : null;
+      const matchesSearch =
+        searchQuery.toLowerCase().trim() === "" ||
+        order.orderNumber
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.clientName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.companyName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.generatedBy.username
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.generatedBy.name
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.generatedBy.employeeId
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.products.some((p) =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
+        );
 
-    const matchesDate = (!from || orderDate >= from) && (!to || orderDate <= to);
+      // Date filtering (optional, implement if needed, currently filtering on frontend)
+      const orderDate = new Date(order.createdAt);
+      const from = fromDate ? new Date(fromDate) : null;
+      const to = toDate ? new Date(toDate) : null;
 
-    return matchesStatus && matchesSearch && matchesDate;
-  }) || []; 
+      const matchesDate =
+        (!from || orderDate >= from) && (!to || orderDate <= to);
+
+      return matchesStatus && matchesSearch && matchesDate;
+    }) || [];
 
   // Pagination logic for filtered data (frontend pagination)
   const totalFilteredPages = Math.ceil(filteredOrders.length / rowsPerPage);
@@ -164,7 +183,7 @@ const DashboardPOs = () => {
   const validateDates = (field: "fromDate" | "toDate", value: string) => {
     const dateValue = new Date(value);
     const todayDate = new Date(today);
-    
+
     if (dateValue > todayDate) {
       setDateErrors((prev) => ({
         ...prev,
@@ -198,14 +217,20 @@ const DashboardPOs = () => {
   };
 
   if (loading) {
-    return <div className="p-5 text-center text-gray-600 dark:text-gray-300">Loading purchase orders...</div>;
+    return (
+      <div className="p-5 text-center text-gray-600 dark:text-gray-300">
+        Loading purchase orders...
+      </div>
+    );
   }
 
   if (error) {
     return (
       <div className="p-5 text-center text-red-600">
         Error loading orders: {error}
-        <p className="text-sm text-gray-500 mt-2">Please try logging in again or check your network connection.</p>
+        <p className="text-sm text-gray-500 mt-2">
+          Please try logging in again or check your network connection.
+        </p>
       </div>
     );
   }
@@ -263,7 +288,9 @@ const DashboardPOs = () => {
                   validateDates("fromDate", e.target.value);
                 }}
                 className={`p-2 border bg-white dark:bg-zinc-800 ${
-                  dateErrors.fromDate ? "border-red-500" : "border-gray-300 dark:border-zinc-600"
+                  dateErrors.fromDate
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-zinc-600"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 max={today}
               />
@@ -291,7 +318,9 @@ const DashboardPOs = () => {
                   validateDates("toDate", e.target.value);
                 }}
                 className={`p-2 border bg-white dark:bg-zinc-800 ${
-                  dateErrors.toDate ? "border-red-500" : "border-gray-300 dark:border-zinc-600"
+                  dateErrors.toDate
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-zinc-600"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 max={today}
               />
@@ -337,7 +366,7 @@ const DashboardPOs = () => {
                 {paginatedOrders.length > 0 ? (
                   paginatedOrders.map((data) => (
                     <tr
-                      key={data._id} 
+                      key={data._id}
                       className="border-b border-gray-200 dark:border-zinc-600 odd:bg-white dark:odd:bg-zinc-800 even:bg-gray-50 even:dark:bg-zinc-900"
                     >
                       <td className="text-start">
@@ -347,14 +376,22 @@ const DashboardPOs = () => {
                       </td>
                       <td className="p-2 flex items-center gap-3">
                         <div className="flex flex-col">
-                          <span className="text-start">{data.generatedBy?.username || data.generatedBy?.name || 'N/A'}</span>
-                          <span className="text-start">{data.generatedBy?.employeeId || 'N/A'}</span>
+                          <span className="text-start">
+                            {data.generatedBy?.username ||
+                              data.generatedBy?.name ||
+                              "N/A"}
+                          </span>
+                          <span className="text-start">
+                            {data.generatedBy?.employeeId || "N/A"}
+                          </span>
                         </div>
                       </td>
                       <td className="lg:p-2 p-1">{data.companyName}</td>
                       <td className="lg:p-2 p-1">{data.clientName}</td>
                       <td className="lg:p-2 p-1">
-                        {data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}
+                        {data.createdAt
+                          ? new Date(data.createdAt).toLocaleDateString()
+                          : "N/A"}
                       </td>
                       <td
                         className={`lg:p-2 p-1 ${
@@ -364,17 +401,23 @@ const DashboardPOs = () => {
                             ? "text-orange-500"
                             : data.status === "pending"
                             ? "text-yellow-500"
-                            : "text-red-500" 
+                            : "text-red-500"
                         }`}
                       >
-                        {data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1) : 'N/A'}
+                        {data.status
+                          ? data.status.charAt(0).toUpperCase() +
+                            data.status.slice(1)
+                          : "N/A"}
                       </td>
                       <td className="lg:p-2 p-1 lg:gap-3 gap-1 lg:text-3xl text-lg flex justify-center items-center pr-5">
                         <IoEyeOutline
-                          onClick={() => handleViewPODetails(data)} 
+                          onClick={() => handleViewPODetails(data)}
                           className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                         />
-                        <BsDownload onClick={()=>handleDownload(data)} className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer" />
+                        <BsDownload
+                          onClick={() => handleDownload(data)}
+                          className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
+                        />
                         {/* <RiDeleteBinLine className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer" /> */}
                       </td>
                     </tr>
@@ -395,7 +438,7 @@ const DashboardPOs = () => {
             {paginatedOrders.length > 0 ? (
               paginatedOrders.map((data) => (
                 <div
-                  key={data._id} 
+                  key={data._id}
                   className="border border-gray-300 rounded-md text-xs"
                 >
                   <div className="flex border-b p-2">
@@ -413,8 +456,10 @@ const DashboardPOs = () => {
                     </span>
                     <div className="w-2/3 flex gap-2 items-center text-left">
                       <div className="text-left">
-                        <p>{data.generatedBy?.username  || 'N/A'}</p>
-                        <p className="text-gray-500 dark:text-gray-300">{data.generatedBy?.employeeId}</p>
+                        <p>{data.generatedBy?.username || "N/A"}</p>
+                        <p className="text-gray-500 dark:text-gray-300">
+                          {data.generatedBy?.employeeId}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -438,7 +483,9 @@ const DashboardPOs = () => {
                       Date:
                     </span>
                     <span className="w-2/3 text-left">
-                      {data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}
+                      {data.createdAt
+                        ? new Date(data.createdAt).toLocaleDateString()
+                        : "N/A"}
                     </span>
                   </div>
 
@@ -457,16 +504,22 @@ const DashboardPOs = () => {
                           : "text-red-500"
                       }`}
                     >
-                      {data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1) : 'N/A'}
+                      {data.status
+                        ? data.status.charAt(0).toUpperCase() +
+                          data.status.slice(1)
+                        : "N/A"}
                     </span>
                   </div>
 
                   <div className="flex justify-end gap-4 p-2 text-lg">
                     <IoEyeOutline
-                      onClick={() => handleViewPODetails(data)} 
+                      onClick={() => handleViewPODetails(data)}
                       className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                     />
-                    <BsDownload onClick={()=>handleDownload(data)}  className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer" />
+                    <BsDownload
+                      onClick={() => handleDownload(data)}
+                      className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
+                    />
                     {/* <RiDeleteBinLine className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer" /> */}
                   </div>
                 </div>
@@ -480,7 +533,7 @@ const DashboardPOs = () => {
         </>
 
         {/* ⏮️ Pagination */}
-        {totalFilteredPages > 1 && ( 
+        {totalFilteredPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-4">
             <button
               onClick={() => changePage(currentPage - 1)}
@@ -527,7 +580,10 @@ const DashboardPOs = () => {
               &times;
             </button>
             {/* Pass selectedOrder to PODetails component */}
-            <PODetails orderData={selectedOrder} onClose={() => setShowPODetails(false)} /> 
+            <PODetails
+              orderData={selectedOrder}
+              onClose={() => setShowPODetails(false)}
+            />
           </div>
         </div>
       )}

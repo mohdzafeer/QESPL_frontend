@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "./Navbar";
-import Sidebar from "./sidebar";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setTheme } from "../../../store/Slice/themeSlice";
@@ -71,7 +69,7 @@ const Settings = () => {
         </div>
       </div>
       <div className="flex justify-start w-full mt-10 px-3">
-        <button className="text-start bg-blue-500 text-white px-2 py-1 rounded-sm font-semibold hover:bg-blue-400 duration-300 active:bg-blue-500 cursor-pointer">
+        <button className="text-start bg-blue-500 text-white px-2 py-1 rounded-sm font-semibold hover:bg-blue-600 duration-300 active:bg-blue-500 cursor-pointer">
           Save Changes
         </button>
       </div>

@@ -444,5 +444,15 @@ export const deleteOrdersMultiple1 = async (orderIds: string[]) => {
 }
 
 
+export const fetchLoginUser = async () => {
+  const response = await api.get("/user/api/get-login-user", {
+    withCredentials: true,
+  });
+  return response.data;
+}
+
+
+
+
 
 
