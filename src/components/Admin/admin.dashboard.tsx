@@ -281,10 +281,10 @@ const DashBoard = () => {
   // console
   return (
     <>
-      <div className="flex flex-col h-screen scrollbar-hide">
+      <div className="flex flex-col h-screen max-w-screen scrollbar-hide ">
         <div className="flex flex-1">
-          <div className="flex-1 ">
-            <div className="dash p-2 sm:p-4 md:p-6 m-1 sm:m-2 md:m-4 rounded h-fit max-w-screen relative overflow-auto scrollbar-hide">
+          <div className="flex-1 w-full">
+            <div className="dash p-2 sm:p-4 md:p-6  rounded h-fit  relative overflow-auto scrollbar-hide">
               {/* {showAlert && (
                 <div className="absolute inset-0 z-40 bg-black/30 backdrop-blur-sm transition-all duration-300" />
               )} */}
@@ -367,13 +367,18 @@ const DashBoard = () => {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-6 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-6 text-sm max-w-full">
                 <motion.div
-                  initial={{ y: 0 }}
-                  whileHover={{ y: -5, transition: { duration: 0.3 } }}
+                  initial={{
+                    y: 0,
+                  }}
+                  whileHover={{
+                    y: -5,
+                    transition: { duration: 0.3 },
+                  }}
                   className={`${
                     statusFilter == "all"
-                      ? "bg-[#0A2975]"
+                      ? "bg-[var(--theme-color)]"
                       : "bg-white dark:bg-zinc-950"
                   } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("all")}
@@ -382,8 +387,8 @@ const DashBoard = () => {
                     <p
                       className={`${
                         statusFilter == "all"
-                          ? "text-white"
-                          : "text-[#0A2975] dark:text-white"
+                          ? "text-white dark:text-white"
+                          : "text-[var(--theme-color)] dark:text-white"
                       }`}
                     >
                       Total POs
@@ -391,23 +396,35 @@ const DashBoard = () => {
                     <p
                       className={`${
                         statusFilter == "all"
-                          ? "text-white"
-                          : "text-[#0A2975] dark:text-white"
+                          ? "text-white dark:text-white"
+                          : "text-[var(--theme-color)] dark:text-white"
                       } text-3xl font-bold`}
                     >
-                      {counts.total}
+                      {/* {counts.total} */}4
                     </p>
+                    {/* <p
+                                    className={`${
+                                      statusFilter == "all" ? "text-white" : "text-[var(--theme-color)]"
+                                    } text-sm`}
+                                  >
+                                    <span className="font-bold ">+12.5%</span> from last month
+                                  </p> */}
                   </div>
-                  <div className="w-16 flex justify-center">
-                    <IoDocumentTextOutline className="text-black text-5xl w-fit bg-white rounded-lg p-2" />
+                  <div className="w-16 flex justify-center ">
+                    <IoDocumentTextOutline className="text-black text-5xl w-fit bg-gray-200 dark:bg-zinc-700 rounded-lg p-2" />
                   </div>
                 </motion.div>
                 <motion.div
-                  initial={{ y: 0 }}
-                  whileHover={{ y: -5, transition: { duration: 0.3 } }}
+                  initial={{
+                    y: 0,
+                  }}
+                  whileHover={{
+                    y: -5,
+                    transition: { duration: 0.3 },
+                  }}
                   className={`${
                     statusFilter == "completed"
-                      ? "bg-[#0A2975]"
+                      ? "bg-[var(--theme-color)]"
                       : "bg-white dark:bg-zinc-950"
                   } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("completed")}
@@ -416,62 +433,84 @@ const DashBoard = () => {
                     <p
                       className={`${
                         statusFilter == "completed"
-                          ? "text-white"
-                          : "text-[#0A2975] dark:text-white"
+                          ? "text-white "
+                          : "text-[var(--theme-color)] dark:text-white"
                       }`}
                     >
                       Completed POs
                     </p>
                     <p
                       className={`text-green-500 ${
-                        statusFilter == "completed" ? "" : "text-[#0A2975]"
+                        statusFilter == "completed"
+                          ? ""
+                          : "text-[var(--theme-color)] "
                       } text-3xl font-bold`}
                     >
-                      {counts.completed}
+                      {/* {counts.completed} */}3
                     </p>
+                    {/* <p className="text-green-500 text-sm">
+                                    <span className="font-bold  ">+3%</span> from last month
+                                  </p> */}
                   </div>
-                  <div className="w-16 flex justify-center">
+                  <div className="w-16 flex justify-center ">
                     <SiTicktick className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
                   </div>
                 </motion.div>
                 <motion.div
-                  initial={{ y: 0 }}
-                  whileHover={{ y: -5, transition: { duration: 0.3 } }}
+                  initial={{
+                    y: 0,
+                  }}
+                  whileHover={{
+                    y: -5,
+                    transition: { duration: 0.3 },
+                  }}
                   className={`${
                     statusFilter == "pending"
-                      ? "bg-[#0A2975]"
+                      ? "bg-[var(--theme-color)]"
                       : "bg-white dark:bg-zinc-950"
                   } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
-                  onClick={() => setStatusFilter("pending")}
+                  onClick={() => {
+                    setStatusFilter("pending");
+                  }}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
                       className={`${
                         statusFilter == "pending"
                           ? "text-white"
-                          : "text-[#0A2975] dark:text-white"
+                          : "text-[var(--theme-color)] dark:text-white"
                       }`}
                     >
                       Pending POs
                     </p>
                     <p
                       className={`text-yellow-400 ${
-                        statusFilter == "pending" ? "" : "text-[#0A2975]"
+                        statusFilter == "pending"
+                          ? ""
+                          : "text-[var(--theme-color)] "
                       } text-3xl font-bold`}
                     >
-                      {counts.pending}
+                      {/* {counts.pending} */}1
                     </p>
+                    {/* <p className="text-yellow-400 text-sm">
+                                    <span className="font-bold  ">+2%</span> from last month
+                                  </p> */}
                   </div>
-                  <div className="w-16 flex justify-center">
+                  <div className="w-16 flex justify-center ">
                     <IoMdTime className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
                   </div>
                 </motion.div>
                 <motion.div
-                  initial={{ y: 0 }}
-                  whileHover={{ y: -5, transition: { duration: 0.3 } }}
+                  initial={{
+                    y: 0,
+                  }}
+                  whileHover={{
+                    y: -5,
+                    transition: { duration: 0.3 },
+                  }}
                   className={`${
                     statusFilter == "delayed"
-                      ? "bg-[#0A2975]"
+                      ? "bg-[var(--theme-color)] "
                       : "bg-white dark:bg-zinc-950"
                   } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("delayed")}
@@ -481,59 +520,76 @@ const DashBoard = () => {
                       className={`${
                         statusFilter == "delayed"
                           ? "text-white"
-                          : "text-[#0A2975] dark:text-white"
+                          : "text-[var(--theme-color)] dark:text-white"
                       }`}
                     >
                       Delayed POs
                     </p>
                     <p
                       className={`text-orange-500 ${
-                        statusFilter == "delayed" ? "" : "text-[#0A2975]"
+                        statusFilter == "delayed"
+                          ? ""
+                          : "text-[var(--theme-color)] "
                       } text-3xl font-bold`}
                     >
-                      {counts.delayed}
+                      {/* {counts.delayed} */}1
                     </p>
+                    {/* <p className="font-bold text-2xl">20</p> */}
+                    {/* <p className="text-orange-400 text-sm">
+                                    <span className="font-bold  ">+2%</span> from last month
+                                  </p> */}
                   </div>
-                  <div className="w-16 flex justify-center">
+                  <div className="w-16 flex justify-center ">
                     <CgSandClock className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
                   </div>
                 </motion.div>
                 <motion.div
-                  initial={{ y: 0 }}
-                  whileHover={{ y: -5, transition: { duration: 0.3 } }}
+                  initial={{
+                    y: 0,
+                  }}
+                  whileHover={{
+                    y: -5,
+                    transition: { duration: 0.3 },
+                  }}
                   className={`${
                     statusFilter == "rejected"
-                      ? "bg-[#0A2975]"
-                      : "bg-white dark:bg-zinc-900"
+                      ? "bg-[var(--theme-color)] "
+                      : "bg-white dark:bg-zinc-950"
                   } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("rejected")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
-                      className={`${
+                      className={` ${
                         statusFilter == "rejected"
                           ? "text-white"
-                          : "text-[#0A2975] dark:text-white"
+                          : "text-[var(--theme-color)] dark:text-white"
                       }`}
                     >
                       Rejected POs
                     </p>
                     <p
                       className={`text-red-500 ${
-                        statusFilter == "rejected" ? "" : "text-[#0A2975]"
+                        statusFilter == "rejected"
+                          ? ""
+                          : "text-[var(--theme-color)] "
                       } text-3xl font-bold`}
                     >
-                      {counts.rejected}
+                      {/* {counts.rejected} */}0
                     </p>
+                    {/* <p className="font-bold text-2xl">20</p> */}
+                    {/* <p className="text-red-600 text-sm">
+                                    <span className="font-bold  ">+2%</span> from last month
+                                  </p> */}
                   </div>
-                  <div className="w-16 flex justify-center">
+                  <div className="w-16 flex justify-center ">
                     <RxCross2 className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
                   </div>
                 </motion.div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 max-w-screen p-10">
+            <div className="flex flex-col gap-4 max-w-screen p-5">
               {statusFilter === "all" && (
                 <>
                   <div className="flex justify-between lg:flex-row flex-col gap-2">
@@ -622,63 +678,71 @@ const DashBoard = () => {
                 </>
               )}
               <div className="border-2 border-gray-300 rounded-lg p-5 mt-10 mb-5 overflow-x-auto lg:text-lg md:text-sm text-xs">
-                <div className="flex justify-between text-sm items-start mb-4">
-                  <div>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-sm mb-4 gap-4">
+                  {/* Title */}
+                  <div className="min-w-fit md:w-auto">
                     <p className="font-semibold lg:text-lg xl:text-xl text-sm text-gray-600 dark:text-white">
                       Recent Purchase Orders
                     </p>
                   </div>
-                  <div className="flex items-end gap-4">
-                    <span className="search bg-white dark:bg-zinc-800 w-full flex items-center justify-center rounded-lg relative">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="p-2 size-10"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <input
-                        id="search"
-                        name="search"
-                        value={localSearchQuery}
-                        onChange={(e) => setLocalSearchQuery(e.target.value)}
-                        type="search"
-                        placeholder="Search Users..."
-                        className="w-full p-2 font-semibold lg:text-sm text-xs"
-                      />
-                      {searchLoading && (
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                          <svg
-                            className="animate-spin h-5 w-5 text-gray-500"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                        </div>
-                      )}
-                    </span>
 
-                    <div className="flex flex-col md:flex-row gap-4 w-full">
-                      <div className="flex flex-col w-full md:w-1/2">
+                  {/* Filters & Search Section */}
+                  <div className="flex flex-col md:flex-row w-full gap-4 items-end">
+                    {/* Search Box */}
+                    <div className="w-full md:w-auto relative ">
+                      <span className="search bg-white dark:bg-zinc-800 w-full flex items-center rounded-lg relative">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="p-2 size-10"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <input
+                          id="search"
+                          name="search"
+                          value={localSearchQuery}
+                          onChange={(e) => setLocalSearchQuery(e.target.value)}
+                          type="search"
+                          placeholder="Search Users..."
+                          className="w-full p-2 font-semibold lg:text-sm text-xs bg-transparent outline-none"
+                        />
+                        {searchLoading && (
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                            <svg
+                              className="animate-spin h-5 w-5 text-gray-500"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                          </div>
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Date Pickers */}
+                    <div className="flex flex-row justify-between md:flex-row gap-4 w-full">
+                      {/* From Date */}
+                      <div className="flex max-w-fit flex-col w-full md:w-1/2">
                         <label
                           htmlFor="from-date"
                           className="text-sm text-gray-700 dark:text-white font-medium mb-1"
@@ -706,7 +770,8 @@ const DashBoard = () => {
                         )}
                       </div>
 
-                      <div className="flex flex-col w-full md:w-1/2">
+                      {/* To Date */}
+                      <div className="flex max-w-fit flex-col w-full md:w-1/2">
                         <label
                           htmlFor="to-date"
                           className="text-sm text-gray-700 dark:text-white font-medium mb-1"
@@ -732,24 +797,37 @@ const DashBoard = () => {
                         )}
                       </div>
                     </div>
-                    <select
-                      value={statusFilter}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md text-gray-700 dark:text-white bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
-                    >
-                      <option value="all">All Status</option>
-                      <option value="completed">Completed</option>
-                      <option value="pending">Pending</option>
-                      <option value="delayed">Delayed</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
+
+                    {/* Status Filter */}
+                    <div className="min-w-fit w-full md:w-auto">
+                      <label
+                        htmlFor="status-filter"
+                        className="text-sm text-gray-700 dark:text-white font-medium mb-1 block"
+                      >
+                        Filter by Status
+                      </label>
+                      <select
+                        id="status-filter"
+                        value={statusFilter}
+                        onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded-md text-gray-700 dark:text-white bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#0A2975]"
+                      >
+                        <option value="all">All Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="delayed">Delayed</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
+
                 {searchError && (
                   <div className="text-red-500 text-sm mb-4">{searchError}</div>
                 )}
-                <div className="w-full">
-                  <table className="w-full text-xs mb-4">
+                <div className="max-w-full">
+                  {/* TABLE FOR DESKTOP */}
+                  <table className="w-full text-xs mb-4 hidden sm:table">
                     <thead>
                       <tr className="bg-gray-200 dark:bg-zinc-950">
                         <th className="p-2">PO Number</th>
@@ -830,7 +908,7 @@ const DashBoard = () => {
                               />
                               <RiDeleteBinLine
                                 onClick={() => {
-                                  setUserToDelete(data._id); // _id is now guaranteed to be string
+                                  setUserToDelete(data._id);
                                   setShowAlert(true);
                                 }}
                                 className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer"
@@ -848,6 +926,98 @@ const DashBoard = () => {
                     </tbody>
                   </table>
 
+                  {/* CARD FORMAT FOR MOBILE */}
+                  <div className="sm:hidden space-y-4">
+                    {paginatedData.length > 0 ? (
+                      paginatedData.map((data: Order) => (
+                        <div
+                          key={data._id}
+                          className="border rounded-lg p-4 shadow-sm bg-white dark:bg-zinc-900"
+                        >
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-blue-700 dark:text-blue-300 font-semibold">
+                              PO: {data.orderNumber || data.orderId || "N/A"}
+                            </span>
+                            <div className="flex gap-2 text-lg">
+                              <IoEyeOutline
+                                onClick={() => handleViewDetails(data)}
+                                className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
+                              />
+                              <BsDownload
+                                onClick={() => handleDownload(data)}
+                                className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
+                              />
+                              <RiDeleteBinLine
+                                onClick={() => {
+                                  setUserToDelete(data._id);
+                                  setShowAlert(true);
+                                }}
+                                className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="text-sm space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">
+                                Generated By
+                              </span>
+                              <span>
+                                {data.generatedBy?.username || "Unknown"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Employee ID</span>
+                              <span>
+                                {data.generatedBy?.employeeId || "N/A"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Company</span>
+                              <span>{data.companyName || "N/A"}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Client</span>
+                              <span>{data.clientName || "N/A"}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Date</span>
+                              <span>
+                                {new Date(
+                                  data.createdAt || data.date || ""
+                                ).toLocaleDateString() || "N/A"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Status</span>
+                              <span
+                                className={`${
+                                  data.status === "completed"
+                                    ? "text-green-500"
+                                    : data.status === "delayed"
+                                    ? "text-orange-500"
+                                    : data.status === "pending"
+                                    ? "text-yellow-500"
+                                    : "text-red-500"
+                                }`}
+                              >
+                                {data.status
+                                  ? data.status.charAt(0).toUpperCase() +
+                                    data.status.slice(1)
+                                  : "N/A"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4">
+                        {searchLoading ? "Loading..." : "No orders found"}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Pagination stays the same */}
                   <div className="flex justify-center items-center gap-2 mt-4">
                     <button
                       onClick={() => changePage(currentPage - 1)}

@@ -4,6 +4,8 @@ import Sidebar from "./sidebar";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setTheme } from "../../../store/Slice/themeSlice";
+import type { RootState } from "../../../store/store";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const [recycleBinTime, setRecycleBinTime] = useState("30"); //30 Days default Recycle bin time
@@ -18,6 +20,8 @@ const Settings = () => {
   useEffect(() => {
     console.log(theme);
   }, [theme]);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col items-center min-w-full gap-3">
@@ -71,6 +75,21 @@ const Settings = () => {
           Save Changes
         </button>
       </div>
+      {user.userType === "admin" && (
+        <div className="w-full flex justify-start items-center gap-4 mt-10 px-3">
+          <span className="font-semibold text-xl">Redirect To : </span>
+          <button 
+          onClick={() => navigate("/subadmin/dashboard")}
+          className="text-lg bg-blue-500 text-white px-3 py-2 rounded-sm hover:bg-blue-600 duration-200 cursor-pointer font-semibold">
+            Subadmin Pannel
+          </button>
+          <button 
+          onClick={() => navigate("/user/dashboard")}
+          className="text-lg bg-blue-500 text-white px-3 py-2 rounded-sm hover:bg-blue-600 duration-200 cursor-pointer font-semibold">
+            User Pannel
+          </button>
+        </div>
+      )}
     </div>
   );
 };

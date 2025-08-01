@@ -31,7 +31,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register_66890483088780765823" element={<RegisterForm />} />
 
-          <Route element={<ProtectedRoute allowedRoles={["admin","subadmin"]} />}>
+          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
             <Route path="/admin/dashboard" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="tasks" element={<Tasks />} />
