@@ -119,9 +119,9 @@ export const createOrderAsync = createAsyncThunk<
     try {
       const response = await createOrder(orderData);
       toast.success("Order created successfully!");
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 2000);
       return response as Order;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

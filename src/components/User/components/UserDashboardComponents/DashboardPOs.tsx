@@ -114,6 +114,7 @@ const DashboardPOs = () => {
     getOrders();
   }, [currentPage]); 
 
+  
   // Update Redux filter state and reset pagination
   const handleStatusFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch(setStatusFilter(e.target.value));

@@ -1,5 +1,3 @@
-
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "./assets/css/admin.css";
 import UserReport from "./component/UserReport";
@@ -18,20 +16,18 @@ import { POChart } from "./component/POGraph";
 import { CgSandClock } from "react-icons/cg";
 import DonutChart from "./component/PODistribution";
 import PODetails from "./component/PODetails";
-import {
-  fetchOrdersAsync,
-  resetOrders,
-} from "../../store/Slice/orderSlice";
+import { fetchOrdersAsync, resetOrders } from "../../store/Slice/orderSlice";
 import { handleDownload } from "./component/downlaod";
 import {
   searchOrders,
   clearSearchResults,
 } from "../../store/Slice/orderSearchSlice";
-import { softDeleteOrder, resetRecycleBinStatus } from "../../store/Slice/recycleBinSlice";
+import {
+  softDeleteOrder,
+  resetRecycleBinStatus,
+} from "../../store/Slice/recycleBinSlice";
 import { toast } from "react-toastify";
-
-
-
+import UserCreatePOForm from "../User/components/UserDashboardComponents/UserCreatePOForm";
 
 ////// orders create funcatios
 interface Order {
@@ -40,7 +36,7 @@ interface Order {
   orderId?: string;
   generatedBy?: {
     username?: string;
-    
+
     employeeId?: string;
   };
   formGeneratedBy?: string;
@@ -52,7 +48,6 @@ interface Order {
   isdeleted?: boolean;
 }
 
-
 // Custom debounce hook
 const useDebounce = <T,>(value: T, delay: number): T => {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -61,28 +56,31 @@ const useDebounce = <T,>(value: T, delay: number): T => {
       setDebouncedValue(value);
     }, delay);
 
-
     return () => {
       clearTimeout(handler);
     };
   }, [value, delay]);
 
-
   return debouncedValue;
 };
 
-
 const USERS_PER_PAGE = 5;
-
 
 const DashBoard = () => {
   const [statusFilter, setStatusFilter] = useState<
     "all" | "pending" | "completed" | "delayed" | "rejected"
   >("all");
-  const [timeFilter, setTimeFilter] = useState<"weekly" | "monthly" | "yearly">("monthly");
+  const [timeFilter, setTimeFilter] = useState<"weekly" | "monthly" | "yearly">(
+    "monthly"
+  );
   const dispatch = useDispatch<AppDispatch>();
   const { orders } = useSelector((state: RootState) => state.orders);
-  const { orders: searchResults, loading: searchLoading, error: searchError, query: searchQuery } = useSelector((state: RootState) => state.orderSearch);
+  const {
+    orders: searchResults,
+    loading: searchLoading,
+    error: searchError,
+    query: searchQuery,
+  } = useSelector((state: RootState) => state.orderSearch);
   const [showAlert, setShowAlert] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -94,20 +92,14 @@ const DashBoard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showPODetails, setShowPODetails] = useState(false);
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
- 
-  ///// accesss errror and status from recycle bin slice
- 
 
+  ///// accesss errror and status from recycle bin slice
 
   // Debounce the search query with 500ms delay
   const debouncedSearchQuery = useDebounce(localSearchQuery, 500);
-  const { status, error, message } = useSelector((state: RootState) => state.recycleBin);
- 
-
-
-
-
-
+  const { status, error, message } = useSelector(
+    (state: RootState) => state.recycleBin
+  );
 
   useEffect(() => {
     if (status === "succeeded" && message) {
@@ -119,18 +111,9 @@ const DashBoard = () => {
     }
   }, [status, message, error, dispatch]);
 
-
-
-
- 
-
-
-
-
-  useEffect(() => {
+  const fetchOrders = () => {
     dispatch(fetchOrdersAsync({ page: currentPage, limit: USERS_PER_PAGE }));
-  }, [dispatch, currentPage]);
-
+  };
 
   useEffect(() => {
     return () => {
@@ -139,19 +122,26 @@ const DashBoard = () => {
     };
   }, [dispatch]);
 
-
-
-
   // Calculate counts for dashboard cards
-  const counts = useMemo(() => ({
-    total: orders.length,
-    pending: orders.filter((order) => order.status === "pending" && !order.isdeleted).length,
-    completed: orders.filter((order) => order.status === "completed" && !order.isdeleted).length,
-    delayed: orders.filter((order) => order.status === "delayed" && !order.isdeleted).length,
-    rejected: orders.filter((order) => order.status === "rejected" && !order.isdeleted).length,
-    deleted: orders.filter((order) => order.isdeleted).length,
-  }), [orders]);
-
+  const counts = useMemo(
+    () => ({
+      total: orders.length,
+      pending: orders.filter(
+        (order) => order.status === "pending" && !order.isdeleted
+      ).length,
+      completed: orders.filter(
+        (order) => order.status === "completed" && !order.isdeleted
+      ).length,
+      delayed: orders.filter(
+        (order) => order.status === "delayed" && !order.isdeleted
+      ).length,
+      rejected: orders.filter(
+        (order) => order.status === "rejected" && !order.isdeleted
+      ).length,
+      deleted: orders.filter((order) => order.isdeleted).length,
+    }),
+    [orders]
+  );
 
   // Trigger search when debounced query or filters change
   useEffect(() => {
@@ -169,16 +159,28 @@ const DashBoard = () => {
     }
   }, [dispatch, debouncedSearchQuery, fromDate, toDate, statusFilter]);
 
-
   const filteredOrders = useMemo(() => {
-    if (statusFilter === "all" && !debouncedSearchQuery.trim() && !fromDate && !toDate) {
+    if (
+      statusFilter === "all" &&
+      !debouncedSearchQuery.trim() &&
+      !fromDate &&
+      !toDate
+    ) {
       return orders.filter((order) => !order.isdeleted);
     }
     return searchResults && Array.isArray(searchResults.data)
-      ? searchResults.data.filter((order: { isdeleted: any; }) => !order.isdeleted)
+      ? searchResults.data.filter(
+          (order: { isdeleted: any }) => !order.isdeleted
+        )
       : [];
-  }, [orders, searchResults, statusFilter, debouncedSearchQuery, fromDate, toDate]);
-
+  }, [
+    orders,
+    searchResults,
+    statusFilter,
+    debouncedSearchQuery,
+    fromDate,
+    toDate,
+  ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value as
@@ -190,7 +192,6 @@ const DashBoard = () => {
     setStatusFilter(selected);
   };
 
-
   const handleDateChange = (field: "fromDate" | "toDate", value: string) => {
     if (field === "fromDate") {
       setFromDate(value);
@@ -200,24 +201,49 @@ const DashBoard = () => {
     validateDates(field, value);
   };
 
-
- const confirmDelete = () => {
+  // const confirmDelete = () => {
+  //   if (userToDelete) {
+  //     dispatch(softDeleteOrder(userToDelete))
+  //       .unwrap()
+  //       .catch((err) => {
+  //         toast.error(`Unexpected error: ${err}`, {
+  //           toastId: "delete-unexpected-error",
+  //         });
+  //       });
+  //     setShowAlert(false);
+  //     setUserToDelete(null);
+  //     toast.error("PO moved to Recycle Bin");
+  //     // setTimeout(() => {
+  //     //   window.location.reload();
+  //     // }, 3000);
+  //     // window.location.reload()
+  //     // fetchOrders();
+  //   }
+  // };
+  const confirmDelete = () => {
     if (userToDelete) {
       dispatch(softDeleteOrder(userToDelete))
         .unwrap()
+        .then(() => {
+          toast.error("PO moved to Recycle Bin", {
+            toastId: "po-deleted",
+          });
+          fetchOrders(); // ✅ Fetch fresh data after deletion
+        })
         .catch((err) => {
-          toast.error(`Unexpected error: ${err}`, { toastId: "delete-unexpected-error" });
+          toast.error(`Unexpected error: ${err}`, {
+            toastId: "delete-unexpected-error",
+          });
         });
+
       setShowAlert(false);
       setUserToDelete(null);
-      toast.warning("PO moving to Recycle Bin....")
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
-      // window.location.reload()
     }
   };
- 
+  useEffect(() => {
+    dispatch(fetchOrdersAsync({ page: currentPage, limit: USERS_PER_PAGE }));
+  }, [dispatch, currentPage]);
+
   const validateDates = (field: "fromDate" | "toDate", value: string) => {
     const isFutureDate = new Date(value) > new Date(today);
     const isEndDateBeforeStartDate =
@@ -227,11 +253,10 @@ const DashBoard = () => {
       [field]: isFutureDate
         ? "Date cannot be in the future."
         : isEndDateBeforeStartDate
-          ? "End date cannot be before start date."
-          : "",
+        ? "End date cannot be before start date."
+        : "",
     }));
   };
-
 
   const totalPages = Math.ceil(filteredOrders.length / USERS_PER_PAGE);
   const paginatedData = filteredOrders.slice(
@@ -239,20 +264,21 @@ const DashBoard = () => {
     currentPage * USERS_PER_PAGE
   );
 
-
   const changePage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
 
-
   const handleViewDetails = (order: any) => {
     setSelectedUser(order);
     setShowPODetails(true);
   };
 
+  const { user } = useSelector((state: RootState) => state.auth);
+  const [showForm, setShowForm] = useState(false);
 
+  // console
   return (
     <>
       <div className="flex flex-col h-screen scrollbar-hide">
@@ -264,50 +290,50 @@ const DashBoard = () => {
               )} */}
               {showAlert && (
                 <div
-                id="alert-additional-content-2"
-                className={`fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-black dark:text-red-400 dark:border-red-800 transition-all duration-余300 ease-in-out w-[90vw] max-w-sm sm:max-w-md md:max-w-lg backdrop-blur-2xl
+                  id="alert-additional-content-2"
+                  className={`fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-black dark:text-red-400 dark:border-red-800 transition-all duration-余300 ease-in-out w-[90vw] max-w-sm sm:max-w-md md:max-w-lg backdrop-blur-2xl
                 `}
-                role="alert"
-              >
-                <div className="flex items-center">
-                  <svg
-                    className="shrink-0 w-4 h-4 me-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                  </svg>
-                  <span className="sr-only">Info</span>
-                  <h3 className="text-lg font-medium">
-                    Are you sure you want to remove this user?
-                  </h3>
+                  role="alert"
+                >
+                  <div className="flex items-center">
+                    <svg
+                      className="shrink-0 w-4 h-4 me-2"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                    </svg>
+                    <span className="sr-only">Info</span>
+                    <h3 className="text-lg font-medium">
+                      Are you sure you want to remove this user?
+                    </h3>
+                  </div>
+                  <div className="mt-2 mb-4 text-sm">
+                    Click on "Delete" to remove the user or "Dismiss" to close
+                    this alert.
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <button
+                      type="button"
+                      className="text-white bg-red-800 hover:bg-red-900 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                      onClick={confirmDelete}
+                    >
+                      Delete
+                    </button>
+                    <button
+                      type="button"
+                      className="text-red-800 bg-transparent border border-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-red-600 dark:border-red-600 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800"
+                      onClick={() => {
+                        setShowAlert(false);
+                        setUserToDelete(null);
+                      }}
+                    >
+                      Dismiss
+                    </button>
+                  </div>
                 </div>
-                <div className="mt-2 mb-4 text-sm">
-                  Click on "Delete" to remove the user or "Dismiss" to close
-                  this alert.
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <button
-                    type="button"
-                    className="text-white bg-red-800 hover:bg-red-900 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-                    onClick={confirmDelete}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    type="button"
-                    className="text-red-800 bg-transparent border border-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-red-600 dark:border-red-600 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800"
-                    onClick={() => {
-                      setShowAlert(false);
-                      setUserToDelete(null);
-                    }}
-                  >
-                    Dismiss
-                  </button>
-                </div>
-              </div>
               )}
               {showReport && selectedUser && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
@@ -323,26 +349,51 @@ const DashBoard = () => {
                   </div>
                 </div>
               )}
-
+              {user.userType === "subadmin" && (
+                <div className="w-full text-right">
+                  <button
+                    className="text-white bg-[var(--theme-color)] px-3 py-2 rounded-lg mb-10 font-semibold cursor-pointer"
+                    onClick={() => setShowForm(true)}
+                  >
+                    Create PO
+                  </button>
+                  {showForm && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm w-full">
+                      <div className="relative w-full">
+                        <UserCreatePOForm setShowForm={setShowForm} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-6 text-sm">
                 <motion.div
                   initial={{ y: 0 }}
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                  className={`${statusFilter == "all" ? "bg-[#0A2975]" : "bg-white dark:bg-zinc-950"
-                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
+                  className={`${
+                    statusFilter == "all"
+                      ? "bg-[#0A2975]"
+                      : "bg-white dark:bg-zinc-950"
+                  } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("all")}
                 >
                   <div className="flex flex-col text-white items-start gap-3">
                     <p
-                      className={`${statusFilter == "all" ? "text-white" : "text-[#0A2975] dark:text-white"
-                        }`}
+                      className={`${
+                        statusFilter == "all"
+                          ? "text-white"
+                          : "text-[#0A2975] dark:text-white"
+                      }`}
                     >
                       Total POs
                     </p>
                     <p
-                      className={`${statusFilter == "all" ? "text-white" : "text-[#0A2975] dark:text-white"
-                        } text-3xl font-bold`}
+                      className={`${
+                        statusFilter == "all"
+                          ? "text-white"
+                          : "text-[#0A2975] dark:text-white"
+                      } text-3xl font-bold`}
                     >
                       {counts.total}
                     </p>
@@ -354,22 +405,27 @@ const DashBoard = () => {
                 <motion.div
                   initial={{ y: 0 }}
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                  className={`${statusFilter == "completed" ? "bg-[#0A2975]" : "bg-white dark:bg-zinc-950"
-                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
+                  className={`${
+                    statusFilter == "completed"
+                      ? "bg-[#0A2975]"
+                      : "bg-white dark:bg-zinc-950"
+                  } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("completed")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
-                      className={`${statusFilter == "completed"
-                        ? "text-white"
-                        : "text-[#0A2975] dark:text-white"
-                        }`}
+                      className={`${
+                        statusFilter == "completed"
+                          ? "text-white"
+                          : "text-[#0A2975] dark:text-white"
+                      }`}
                     >
                       Completed POs
                     </p>
                     <p
-                      className={`text-green-500 ${statusFilter == "completed" ? "" : "text-[#0A2975]"
-                        } text-3xl font-bold`}
+                      className={`text-green-500 ${
+                        statusFilter == "completed" ? "" : "text-[#0A2975]"
+                      } text-3xl font-bold`}
                     >
                       {counts.completed}
                     </p>
@@ -381,22 +437,27 @@ const DashBoard = () => {
                 <motion.div
                   initial={{ y: 0 }}
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                  className={`${statusFilter == "pending" ? "bg-[#0A2975]" : "bg-white dark:bg-zinc-950"
-                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
+                  className={`${
+                    statusFilter == "pending"
+                      ? "bg-[#0A2975]"
+                      : "bg-white dark:bg-zinc-950"
+                  } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("pending")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
-                      className={`${statusFilter == "pending"
-                        ? "text-white"
-                        : "text-[#0A2975] dark:text-white"
-                        }`}
+                      className={`${
+                        statusFilter == "pending"
+                          ? "text-white"
+                          : "text-[#0A2975] dark:text-white"
+                      }`}
                     >
                       Pending POs
                     </p>
                     <p
-                      className={`text-yellow-400 ${statusFilter == "pending" ? "" : "text-[#0A2975]"
-                        } text-3xl font-bold`}
+                      className={`text-yellow-400 ${
+                        statusFilter == "pending" ? "" : "text-[#0A2975]"
+                      } text-3xl font-bold`}
                     >
                       {counts.pending}
                     </p>
@@ -408,22 +469,27 @@ const DashBoard = () => {
                 <motion.div
                   initial={{ y: 0 }}
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                  className={`${statusFilter == "delayed" ? "bg-[#0A2975]" : "bg-white dark:bg-zinc-950"
-                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
+                  className={`${
+                    statusFilter == "delayed"
+                      ? "bg-[#0A2975]"
+                      : "bg-white dark:bg-zinc-950"
+                  } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("delayed")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
-                      className={`${statusFilter == "delayed"
-                        ? "text-white"
-                        : "text-[#0A2975] dark:text-white"
-                        }`}
+                      className={`${
+                        statusFilter == "delayed"
+                          ? "text-white"
+                          : "text-[#0A2975] dark:text-white"
+                      }`}
                     >
                       Delayed POs
                     </p>
                     <p
-                      className={`text-orange-500 ${statusFilter == "delayed" ? "" : "text-[#0A2975]"
-                        } text-3xl font-bold`}
+                      className={`text-orange-500 ${
+                        statusFilter == "delayed" ? "" : "text-[#0A2975]"
+                      } text-3xl font-bold`}
                     >
                       {counts.delayed}
                     </p>
@@ -435,22 +501,27 @@ const DashBoard = () => {
                 <motion.div
                   initial={{ y: 0 }}
                   whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                  className={`${statusFilter == "rejected" ? "bg-[#0A2975]" : "bg-white dark:bg-zinc-900"
-                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
+                  className={`${
+                    statusFilter == "rejected"
+                      ? "bg-[#0A2975]"
+                      : "bg-white dark:bg-zinc-900"
+                  } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("rejected")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
-                      className={`${statusFilter == "rejected"
-                        ? "text-white"
-                        : "text-[#0A2975] dark:text-white"
-                        }`}
+                      className={`${
+                        statusFilter == "rejected"
+                          ? "text-white"
+                          : "text-[#0A2975] dark:text-white"
+                      }`}
                     >
                       Rejected POs
                     </p>
                     <p
-                      className={`text-red-500 ${statusFilter == "rejected" ? "" : "text-[#0A2975]"
-                        } text-3xl font-bold`}
+                      className={`text-red-500 ${
+                        statusFilter == "rejected" ? "" : "text-[#0A2975]"
+                      } text-3xl font-bold`}
                     >
                       {counts.rejected}
                     </p>
@@ -462,93 +533,91 @@ const DashBoard = () => {
               </div>
             </div>
 
-
             <div className="flex flex-col gap-4 max-w-screen p-10">
               {statusFilter === "all" && (
                 <>
                   <div className="flex justify-between lg:flex-row flex-col gap-2">
                     <motion.div
-                        initial={{ y: 0 }}
-                        whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                        className="xl:w-1/2 lg:w-1/2 w-full gap-3 border-2 border-gray-300 rounded-lg p-5 max-w-full overflow-hidden dark:border-zinc-600 dark:bg-zinc-800"
-                      >
-                        <div className="flex gap-4 justify-between flex-wrap">
-                          {" "}
-                          {/* Added flex-wrap */}
-                          <div>
-                            <span className="font-semibold text-xs md:text-sm lg:text-sm xl:text-sm">
-                              POs Status over time
-                            </span>
-                          </div>
-                          <div className="flex gap-2 flex-wrap justify-end">
-                            {" "}
-                            {/* Added flex-wrap and justify-end */}
-                            <button
-                              className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                                timeFilter === "weekly"
-                                  ? "bg-[var(--theme-color)] text-white"
-                                  : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
-                              }`}
-                              onClick={() => setTimeFilter("weekly")}
-                            >
-                              Weekly
-                            </button>
-                            <button
-                              className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                                timeFilter === "monthly"
-                                  ? "bg-[var(--theme-color)] text-white"
-                                  : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
-                              }`}
-                              onClick={() => setTimeFilter("monthly")}
-                            >
-                              Monthly
-                            </button>
-                            <button
-                              className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                                timeFilter === "yearly"
-                                  ? "bg-[var(--theme-color)] text-white"
-                                  : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
-                              }`}
-                              onClick={() => setTimeFilter("yearly")}
-                            >
-                              Yearly
-                            </button>
-                          </div>
+                      initial={{ y: 0 }}
+                      whileHover={{ y: -5, transition: { duration: 0.3 } }}
+                      className="xl:w-1/2 lg:w-1/2 w-full gap-3 border-2 border-gray-300 rounded-lg p-5 max-w-full overflow-hidden dark:border-zinc-600 dark:bg-zinc-800"
+                    >
+                      <div className="flex gap-4 justify-between flex-wrap">
+                        {" "}
+                        {/* Added flex-wrap */}
+                        <div>
+                          <span className="font-semibold text-xs md:text-sm lg:text-sm xl:text-sm">
+                            POs Status over time
+                          </span>
                         </div>
-                        {/* Assuming POChart is defined elsewhere and responsive */}
-                        {/* @ts-ignore */}
-                        <POChart
-                          className="w-full h-64"
-                          type="bar"
-                          orders={filteredOrders}
-                          timeFilter={timeFilter}
-                          statusFilter={statusFilter}
-                          startDate={fromDate}
-                          endDate={toDate}
-                          query={debouncedSearchQuery}
-                        />
-                      </motion.div>
-
+                        <div className="flex gap-2 flex-wrap justify-end">
+                          {" "}
+                          {/* Added flex-wrap and justify-end */}
+                          <button
+                            className={`py-2 px-3 rounded-lg text-sm font-semibold ${
+                              timeFilter === "weekly"
+                                ? "bg-[var(--theme-color)] text-white"
+                                : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
+                            }`}
+                            onClick={() => setTimeFilter("weekly")}
+                          >
+                            Weekly
+                          </button>
+                          <button
+                            className={`py-2 px-3 rounded-lg text-sm font-semibold ${
+                              timeFilter === "monthly"
+                                ? "bg-[var(--theme-color)] text-white"
+                                : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
+                            }`}
+                            onClick={() => setTimeFilter("monthly")}
+                          >
+                            Monthly
+                          </button>
+                          <button
+                            className={`py-2 px-3 rounded-lg text-sm font-semibold ${
+                              timeFilter === "yearly"
+                                ? "bg-[var(--theme-color)] text-white"
+                                : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
+                            }`}
+                            onClick={() => setTimeFilter("yearly")}
+                          >
+                            Yearly
+                          </button>
+                        </div>
+                      </div>
+                      {/* Assuming POChart is defined elsewhere and responsive */}
+                      {/* @ts-ignore */}
+                      <POChart
+                        className="w-full h-64"
+                        type="bar"
+                        orders={filteredOrders}
+                        timeFilter={timeFilter}
+                        statusFilter={statusFilter}
+                        startDate={fromDate}
+                        endDate={toDate}
+                        query={debouncedSearchQuery}
+                      />
+                    </motion.div>
 
                     <motion.div
-                        initial={{ y: 0 }}
-                        whileHover={{ y: -5, transition: { duration: 0.3 } }}
-                        className="xl:w-1/2 lg:w-1/2 w-full border-2 border-gray-300 rounded-lg p-5 overflow-hidden dark:border-zinc-600 dark:bg-zinc-800"
-                      >
-                        <span className="font-semibold mb-4 block text-xs lg:text-sm md:text-sm xl:text-sm">
-                          PO Status Distribution
-                        </span>
-                        {/* Assuming DonutChart is defined elsewhere and responsive */}
-                        {/* @ts-ignore */}
-                        <DonutChart
-                          className="w-full h-64"
-                          orders={filteredOrders}
-                          statusFilter={statusFilter}
-                          startDate={fromDate}
-                          endDate={toDate}
-                          query={debouncedSearchQuery}
-                        />
-                      </motion.div>
+                      initial={{ y: 0 }}
+                      whileHover={{ y: -5, transition: { duration: 0.3 } }}
+                      className="xl:w-1/2 lg:w-1/2 w-full border-2 border-gray-300 rounded-lg p-5 overflow-hidden dark:border-zinc-600 dark:bg-zinc-800"
+                    >
+                      <span className="font-semibold mb-4 block text-xs lg:text-sm md:text-sm xl:text-sm">
+                        PO Status Distribution
+                      </span>
+                      {/* Assuming DonutChart is defined elsewhere and responsive */}
+                      {/* @ts-ignore */}
+                      <DonutChart
+                        className="w-full h-64"
+                        orders={filteredOrders}
+                        statusFilter={statusFilter}
+                        startDate={fromDate}
+                        endDate={toDate}
+                        query={debouncedSearchQuery}
+                      />
+                    </motion.div>
                   </div>
                 </>
               )}
@@ -608,7 +677,6 @@ const DashBoard = () => {
                       )}
                     </span>
 
-
                     <div className="flex flex-col md:flex-row gap-4 w-full">
                       <div className="flex flex-col w-full md:w-1/2">
                         <label
@@ -624,10 +692,11 @@ const DashBoard = () => {
                           onChange={(e) =>
                             handleDateChange("fromDate", e.target.value)
                           }
-                          className={`p-2 border bg-white dark:bg-zinc-800 ${errors.fromDate
-                            ? "border-red-500"
-                            : "border-gray-300"
-                            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                          className={`p-2 border bg-white dark:bg-zinc-800 ${
+                            errors.fromDate
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                           max={today}
                         />
                         {errors.fromDate && (
@@ -636,7 +705,6 @@ const DashBoard = () => {
                           </span>
                         )}
                       </div>
-
 
                       <div className="flex flex-col w-full md:w-1/2">
                         <label
@@ -652,8 +720,9 @@ const DashBoard = () => {
                           onChange={(e) =>
                             handleDateChange("toDate", e.target.value)
                           }
-                          className={`p-2 border bg-white dark:bg-zinc-800 ${errors.toDate ? "border-red-500" : "border-gray-300"
-                            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                          className={`p-2 border bg-white dark:bg-zinc-800 ${
+                            errors.toDate ? "border-red-500" : "border-gray-300"
+                          } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                           max={today}
                         />
                         {errors.toDate && (
@@ -677,9 +746,7 @@ const DashBoard = () => {
                   </div>
                 </div>
                 {searchError && (
-                  <div className="text-red-500 text-sm mb-4">
-                    {searchError}
-                  </div>
+                  <div className="text-red-500 text-sm mb-4">{searchError}</div>
                 )}
                 <div className="w-full">
                   <table className="w-full text-xs mb-4">
@@ -718,16 +785,23 @@ const DashBoard = () => {
                               />
                               <div className="flex flex-col">
                                 <span>
-                                  {data.generatedBy?.username ||
-                                    "Unknown"}
+                                  {data.generatedBy?.username || "Unknown"}
                                 </span>
-                                <span>{data.generatedBy?.employeeId || "N/A"}</span>
+                                <span>
+                                  {data.generatedBy?.employeeId || "N/A"}
+                                </span>
                               </div>
                             </td>
-                            <td className="lg:p-2 p-1">{data.companyName || "N/A"}</td>
-                            <td className="lg:p-2 p-1">{data.clientName || "N/A"}</td>
                             <td className="lg:p-2 p-1">
-                              {new Date(data.createdAt || data.date || "").toLocaleDateString() || "N/A"}
+                              {data.companyName || "N/A"}
+                            </td>
+                            <td className="lg:p-2 p-1">
+                              {data.clientName || "N/A"}
+                            </td>
+                            <td className="lg:p-2 p-1">
+                              {new Date(
+                                data.createdAt || data.date || ""
+                              ).toLocaleDateString() || "N/A"}
                             </td>
                             <td
                               className={`lg:p-2 p-1 ${
@@ -741,7 +815,8 @@ const DashBoard = () => {
                               }`}
                             >
                               {data.status
-                                ? data.status.charAt(0).toUpperCase() + data.status.slice(1)
+                                ? data.status.charAt(0).toUpperCase() +
+                                  data.status.slice(1)
                                 : "N/A"}
                             </td>
                             <td className="lg:p-2 p-1 lg:gap-3 gap-1 lg:text-3xl text-lg flex justify-center items-center pr-5">
@@ -773,7 +848,6 @@ const DashBoard = () => {
                     </tbody>
                   </table>
 
-
                   <div className="flex justify-center items-center gap-2 mt-4">
                     <button
                       onClick={() => changePage(currentPage - 1)}
@@ -786,10 +860,11 @@ const DashBoard = () => {
                       <button
                         key={i}
                         onClick={() => changePage(i + 1)}
-                        className={`px-3 py-1 rounded-full text-sm ${currentPage === i + 1
-                          ? "bg-blue-600 text-white font-semibold"
-                          : "bg-gray-100 dark:bg-zinc-950 dark:hover:bg-zinc-900 hover:bg-blue-100"
-                          }`}
+                        className={`px-3 py-1 rounded-full text-sm ${
+                          currentPage === i + 1
+                            ? "bg-blue-600 text-white font-semibold"
+                            : "bg-gray-100 dark:bg-zinc-950 dark:hover:bg-zinc-900 hover:bg-blue-100"
+                        }`}
                       >
                         {i + 1}
                       </button>
@@ -826,9 +901,4 @@ const DashBoard = () => {
   );
 };
 
-
 export default DashBoard;
-
-
-
-

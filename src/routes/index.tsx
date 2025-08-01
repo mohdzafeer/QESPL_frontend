@@ -9,6 +9,7 @@ import Tasks from "../components/Admin/component/Tasks";
 import Activity from "../components/Admin/component/Activity";
 import Settings from "../components/Admin/component/Settings";
 import AdminLayout from "../components/Admin/component/AdminLayout";
+import SubadminLayout from "../components/Subadmin/SubadminLayout";
 import Messages from "../components/Admin/component/Messages";
 import RecycleBin from "../components/Admin/component/RecycleBin";
 import UserLayout from "../components/User/UserLayout";
@@ -35,6 +36,17 @@ export const AppRoutes: React.FC = () => {
               <Route index element={<AdminDashboard />} />
               <Route path="tasks" element={<Tasks />} />
               <Route path="activity" element={<Activity />} />
+              <Route path="users" element={<UserList />} />
+              <Route path="messages" element={<Messages />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="recycle-bin" element={<RecycleBin />} />
+            </Route>
+          </Route>
+          <Route element={<ProtectedRoute allowedRoles={["subadmin","admin"]} />}>
+            <Route path="/subadmin/dashboard" element={<SubadminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="tasks" element={<Tasks />} />
+              {/* <Route path="activity" element={<Activity />} /> */}
               <Route path="users" element={<UserList />} />
               <Route path="messages" element={<Messages />} />
               <Route path="settings" element={<Settings />} />

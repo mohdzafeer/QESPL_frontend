@@ -46,7 +46,7 @@ export const fetchAllOrders = async (page: number = 1, limit: number = 10) => {
       params: { page, limit },
       withCredentials: true,
     });
-    console.log(response, "api call");
+    // console.log(response, "api call");
     const orders = response?.data?.data?.orders || [];
     const pagination = response?.data?.data?.pagination || {
       currentPage: 1,
@@ -412,6 +412,7 @@ export const restoreOps = async (orderIds: string[]) => {
     const response = await api.post(
       `/order/api/user-restore-order/${orderIds[0]}`
     );
+    console.log(response, "restoreOps response");
     return response.data;
   } else if (orderIds.length > 1) {
     const response = await api.post(`/order/api/restore-orders/`, {

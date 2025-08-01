@@ -32,12 +32,15 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (status === "succeeded" && user) {
-      if (user.userType === "admin" || user.userType === "subadmin") {
+      if (user.userType === "admin") {
         // console.log("LoginForm - Redirecting to /admin/dashboard"); // Debug
         navigate("/admin/dashboard");
       } else if (user.userType === "user") {
         // console.log("LoginForm - Redirecting to /user/dashboard"); // Debug
         navigate("/user/dashboard");
+      } else if(user.userType === "subadmin") {
+        // console.log("LoginForm - Redirecting to /superadmin/dashboard"); // Debug
+        navigate("/subadmin/dashboard");
       }
     } else if (status === "failed" && error) {
       const toastOptions = {

@@ -97,10 +97,10 @@ export const restoreOrdersMultiple = createAsyncThunk(
     try {
       const response = await restoreOps(orderIds);
       if (response.success) {
-        toast.success("Restoring PO......");
-        setTimeout(()=>{
-        window.location.reload();
-      },3000)
+      //   toast.success("Restoring PO......");
+      //   setTimeout(()=>{
+      //   window.location.reload();
+      // },3000)
         return { orderIds, message: response.message };
       }
       
@@ -181,6 +181,7 @@ const recycleBinSlice = createSlice({
         state.error = null;
       })
       .addCase(restoreOrdersMultiple.fulfilled, (state, action) => {
+        console.log("Restore orders successful:", action.payload);
         state.orders = [...state.orders, ...action.payload.orderIds];
         state.status = "succeeded";
       })
