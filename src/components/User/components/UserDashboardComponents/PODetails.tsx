@@ -210,7 +210,7 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
           {orderData.orderThrough ? (
             <>
               <span>
-                Employee Name :{" "}
+                Name :{" "}
                 <span className="font-semibold">
                   {orderData.orderThrough.username}
                 </span>
@@ -305,7 +305,7 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
                 key={product._id || product.name}
                 className="hover:bg-gray-50 dark:hover:bg-zinc-800 "
               >
-                <td className="px-4 py-2 border">{product.name}</td>
+                <td className="px-4 py-2 border w-fit">{product.name}</td>
                 <td className="px-4 py-2 border">
                   ₹{product.price?.toLocaleString()}/-
                 </td>{" "}

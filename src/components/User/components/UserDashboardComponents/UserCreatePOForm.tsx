@@ -497,7 +497,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({
                   htmlFor="order_through_username"
                   className="absolute text-lg text-black dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-[#0A2975]"
                 >
-                  Order Through Username{" "}
+                  Name{" "}
                   <span className="text-red-500 m-2">*</span>
                 </label>
               </div>
@@ -735,8 +735,8 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({
 
                 {/* Remark Input */}
                 <div className="relative z-0 w-full mb-5 group">
-                  <input
-                    type="text"
+                  <textarea
+                    // type="text"
                     name="remark"
                     id={`Remark_${index}`}
                     className="block pt-5 px-0 w-full text-lg text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#0A2975] focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"

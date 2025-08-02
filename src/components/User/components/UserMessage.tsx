@@ -61,7 +61,7 @@ const UserMessage = () => {
             isDrawerOpen ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="bg-white dark:bg-zinc-800 p-4 border-t border-gray-300 text-start">
+          <div className="bg-white dark:bg-zinc-800 p-4 border-t border-gray-300 text-start mb-10">
             This is the message content from the admin. It will appear when the drawer is open.
           </div>
         </div>

@@ -81,7 +81,7 @@ export const handleDownload = (order: any) => {
   doc.setFontSize(14); // Larger font
   doc.setFont("helvetica", "bold");
   doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]); // Blue color
-  doc.text(order.companyName.toUpperCase() || "no Company Name provided", sectionMargin, currentY);
+  doc.text(order.companyName.toUpperCase() || "No company name provided", sectionMargin, currentY);
   doc.setTextColor(0, 0, 0); // Reset to black
   currentY += 8; // Space after company name
 

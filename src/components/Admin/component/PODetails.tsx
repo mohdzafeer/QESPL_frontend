@@ -166,7 +166,7 @@ const PODetails: React.FC<PODetailsProps> = ({ order }) => {
             alt="Order Through"
           />
           <span>
-            Employee Name :{" "}
+            Name :{" "}
             <span className="font-semibold">
               {order.orderThrough?.username || "N/A"}
             </span>
