@@ -3,13 +3,14 @@ import "../../App.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { IoGridOutline } from "react-icons/io5";
 import { FaTasks } from "react-icons/fa";
-import { VscGraphLine } from "react-icons/vsc";
+// import { VscGraphLine } from "react-icons/vsc";
 import { FaRegUser } from "react-icons/fa6";
 import { MdOutlineSettings } from "react-icons/md";
 import { MdOutlineMessage } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { selectLoggedInUser } from "../../store/Slice/authSlice";
+import { IoIosList } from "react-icons/io";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -75,14 +76,20 @@ const subadminSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       redirectTo: "/subadmin/dashboard/messages",
     },
     {
-      name: "Settings",
+      name: "MY POs",
       id: 6,
+      icon: <IoIosList />,
+      redirectTo: "/subadmin/dashboard/mypos",
+    },
+    {
+      name: "Settings",
+      id: 7,
       icon: <MdOutlineSettings />,
       redirectTo: "/subadmin/dashboard/settings",
     },
     {
       name: "Recycle Bin",
-      id: 7,
+      id: 8,
       icon: <MdDeleteOutline />,
       redirectTo: "/subadmin/dashboard/recycle-bin",
     },

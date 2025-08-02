@@ -63,18 +63,18 @@ const Notification: React.FC<NotificationProps> = ({ onClose }) => {
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-gray-800 dark:text-white text-sm sm:text-base">
-                    {notification.user || 'Unknown'}
+                    {/* {notification.user || 'Unknown'} */}
                   </span>
                   <span className="text-xs sm:text-sm text-gray-500 dark:text-white">
                     {new Date(notification.time).toLocaleTimeString()}
                   </span>
                 </div>
-                <div className="text-gray-700 dark:text-white text-sm sm:text-base mt-1 line-clamp-2">
+                <div className="text-gray-700 dark:text-white text-sm sm:text-base mt-1 line-clamp-2 text-start">
                   {notification.message}
                 </div>
                 <button
                   onClick={() => dispatch(removeNotification(notification.id))}
-                  className="text-red-600 hover:text-red-800 text-xs mt-1"
+                  className="text-red-600 hover:text-red-800 text-xs mt-1 text-end  min-w-full"
                 >
                   Dismiss
                 </button>

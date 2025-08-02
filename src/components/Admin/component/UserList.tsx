@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import AddUserForm from "./AddUserForm";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store/store";
+import SubadminAddUserForm from "../../Subadmin/SubadminAddUserForm";
 
 interface User {
   _id: { $oid: string };
@@ -81,11 +84,16 @@ const UserDetailsForm: React.FC = () => {
   };
 
   
-
+const { user } = useSelector((state: RootState) => state.auth);
 
   return (
     <div className="">
-      <AddUserForm />
+      {/* <AddUserForm /> */}
+      {user.userType === "admin" ? (
+        <AddUserForm/>
+      ):(
+        <SubadminAddUserForm/>
+      )}
       <hr />
       <div>
         <h1 className="text-lg font-bold">User List</h1>

@@ -73,21 +73,21 @@ const Settings = () => {
           Save Changes
         </button>
       </div>
-      {user.userType === "admin" && (
+      
         <div className="w-full flex justify-start items-center gap-4 mt-10 px-3">
-          <span className="font-semibold text-xl">Redirect To : </span>
-          <button 
+          <span className="font-semibold lg:text-xl xl:text-xl text-sm">For PO Creation Redirect To : </span>
+          {/* <button 
           onClick={() => navigate("/subadmin/dashboard")}
           className="text-lg bg-blue-500 text-white px-3 py-2 rounded-sm hover:bg-blue-600 duration-200 cursor-pointer font-semibold">
             Subadmin Pannel
-          </button>
+          </button> */}
           <button 
           onClick={() => navigate("/user/dashboard")}
-          className="text-lg bg-blue-500 text-white px-3 py-2 rounded-sm hover:bg-blue-600 duration-200 cursor-pointer font-semibold">
+          className="lg:text-lg xl:text-lg text-sm bg-blue-500 text-white px-3 py-2 rounded-sm hover:bg-blue-600 duration-200 cursor-pointer font-semibold">
             User Pannel
           </button>
         </div>
-      )}
+      
     </div>
   );
 };

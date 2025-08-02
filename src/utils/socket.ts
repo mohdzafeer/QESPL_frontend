@@ -22,18 +22,6 @@ export const initSocket = (userId: string, token: string) => {
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
   });
- 
-
-
-
-
-
-
-
-
-
-
-  
 
   socket.on("connect", () => {
     console.log("Connected to Socket.IO server:", socket?.id);
@@ -51,19 +39,19 @@ export const initSocket = (userId: string, token: string) => {
         message: notification.message,
       })
     );
-    toast.info(notification.message, { autoClose: 5000 }); // Show toast for new notifications
+    // toast.info(notification.message, { autoClose: 5000 }); // Show toast for new notifications
   });
 
 
   socket.on("connect_error", (error) => {
     console.error("Socket connection error:", error);
-    toast.error("Failed to connect to notification server. Retrying...");
+    // toast.error("Failed to connect to notification server. Retrying...");
   });
 
 
   socket.on("error", (error) => {
     console.error("Socket error:", error.message);
-    toast.error(error.message);
+    // toast.error(error.message);
     if (error.message.includes("token")) {
       // Optionally redirect to login
       store.dispatch({ type: "auth/logout" }); // Adjust based on your auth slice

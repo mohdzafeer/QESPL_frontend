@@ -3,10 +3,13 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { useValidationForm } from "../../validationComponent/validationSchema";
+// import { useValidationForm } from "../../validationComponent/validationSchema";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch ,RootState} from "../../../store/store";
-import { createSubAdminUser, createNormalUser, resetUserState } from "../../../store/Slice/subadminSlice";
+import { useValidationForm } from "../validationComponent/validationSchema";
+import { createNormalUser,  resetUserState } from "../../store/Slice/subadminSlice";
+import type { AppDispatch, RootState } from "../../store/store";
+// import type { AppDispatch ,RootState} from "../../../store/store";
+// import { createSubAdminUser, createNormalUser, resetUserState } from "../../../store/Slice/subadminSlice";
 
 interface FormData {
   username: string;
@@ -16,9 +19,9 @@ interface FormData {
   designation?: string;
 }
 
-const AddUserForm: React.FC = () => {
+const SubadminAddUserForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [userType, setUserType] = useState<"user" | "subadmin">("subadmin");
+  const [userType, setUserType] = useState<"user" | "subadmin">("user");
   const [imagePreview, setImagePreview] = useState<string>(
     "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
   );
@@ -42,13 +45,13 @@ const AddUserForm: React.FC = () => {
   } = useForm<FormData>({
     resolver: yupResolver(useValidationForm),
     context: { userType },
-    defaultValues: { userType: "subadmin" },
+    defaultValues: { userType: "user" },
   });
 
   useEffect(() => {
     if (success) {
       reset();
-      setUserType("subadmin");
+      setUserType("user");
       setSelectedDepartment("");
       setResource("none");
       setPermissions({ readOnly: true, create: false, update: false, delete: false });
@@ -64,7 +67,7 @@ const AddUserForm: React.FC = () => {
         username: data.username,
         email: data.email,
         password: data.password,
-        userType,
+        userType:"user",
         profilePicture: profileFile,
         employeeId: data.employeeId,
         designation: data.designation,
@@ -78,10 +81,10 @@ const AddUserForm: React.FC = () => {
           },
         }),
       };
-      if (userType === "subadmin") {
-        await dispatch(createSubAdminUser(formData)).unwrap();
-      } else {
+      if (userType === "user") {
         await dispatch(createNormalUser(formData)).unwrap();
+      } else {
+        // await dispatch(createNormalUser(formData)).unwrap();
       }
     } catch (err: any) {
       console.error("Form submission error:", err.message);
@@ -158,7 +161,7 @@ const AddUserForm: React.FC = () => {
                   className="hidden"
                 />
               </div>
-              <div className="flex justify-start items-center gap-4 text-sm">
+              {/* <div className="flex justify-start items-center gap-4 text-sm">
                 <p className="w-fit font-semibold lg:text-lg text-sm">User Type:</p>
                 <select
                   value={userType}
@@ -168,7 +171,7 @@ const AddUserForm: React.FC = () => {
                   <option value="user">User</option>
                   <option value="subadmin">Sub Admin</option>
                 </select>
-              </div>
+              </div> */}
             </div>
             <div>
               <input
@@ -333,4 +336,4 @@ const AddUserForm: React.FC = () => {
   );
 };
 
-export default AddUserForm;
+export default SubadminAddUserForm;

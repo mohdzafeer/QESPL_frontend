@@ -28,6 +28,7 @@ import {
 } from "../../store/Slice/recycleBinSlice";
 import { toast } from "react-toastify";
 import UserCreatePOForm from "../User/components/UserDashboardComponents/UserCreatePOForm";
+import { set } from "lodash";
 
 ////// orders create funcatios
 interface Order {
@@ -275,7 +276,7 @@ const DashBoard = () => {
     setShowPODetails(true);
   };
 
-  const { user } = useSelector((state: RootState) => state.auth);
+  
   const [showForm, setShowForm] = useState(false);
 
   // console
@@ -289,49 +290,31 @@ const DashBoard = () => {
                 <div className="absolute inset-0 z-40 bg-black/30 backdrop-blur-sm transition-all duration-300" />
               )} */}
               {showAlert && (
-                <div
-                  id="alert-additional-content-2"
-                  className={`fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-black dark:text-red-400 dark:border-red-800 transition-all duration-余300 ease-in-out w-[90vw] max-w-sm sm:max-w-md md:max-w-lg backdrop-blur-2xl
-                `}
-                  role="alert"
-                >
-                  <div className="flex items-center">
-                    <svg
-                      className="shrink-0 w-4 h-4 me-2"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                    </svg>
-                    <span className="sr-only">Info</span>
-                    <h3 className="text-lg font-medium">
-                      Are you sure you want to remove this user?
+                <div className="fixed inset-0 flex items-center justify-center p-4 backdrop-filter backdrop-blur-md z-10">
+                  <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full border-4 border-red-500">
+                    <h3 className="text-xl font-bold text-red-600 mb-4">
+                      Confirm Deletion
                     </h3>
-                  </div>
-                  <div className="mt-2 mb-4 text-sm">
-                    Click on "Delete" to remove the user or "Dismiss" to close
-                    this alert.
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <button
-                      type="button"
-                      className="text-white bg-red-800 hover:bg-red-900 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-                      onClick={confirmDelete}
-                    >
-                      Delete
-                    </button>
-                    <button
-                      type="button"
-                      className="text-red-800 bg-transparent border border-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-red-600 dark:border-red-600 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800"
-                      onClick={() => {
-                        setShowAlert(false);
-                        setUserToDelete(null);
-                      }}
-                    >
-                      Dismiss
-                    </button>
+                    <p className="mb-4 text-gray-700">
+                      Are you sure you want to delete this PO ?
+                    </p>
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => {
+                          setShowAlert(false);
+                          setUserToDelete(null);
+                        }}
+                        className="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={confirmDelete}
+                        className="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-colors"
+                      >
+                        Confirm Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -349,23 +332,7 @@ const DashBoard = () => {
                   </div>
                 </div>
               )}
-              {user.userType === "subadmin" && (
-                <div className="w-full text-right">
-                  <button
-                    className="text-white bg-[var(--theme-color)] px-3 py-2 rounded-lg mb-10 font-semibold cursor-pointer"
-                    onClick={() => setShowForm(true)}
-                  >
-                    Create PO
-                  </button>
-                  {showForm && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm w-full">
-                      <div className="relative w-full">
-                        <UserCreatePOForm setShowForm={setShowForm} />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+              
 
               <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-6 text-sm max-w-full">
                 <motion.div
@@ -689,7 +656,7 @@ const DashBoard = () => {
                   {/* Filters & Search Section */}
                   <div className="flex flex-col md:flex-row w-full gap-4 items-end">
                     {/* Search Box */}
-                    <div className="w-full md:w-auto relative ">
+                    <div className="w-full md:w-auto relative z-0">
                       <span className="search bg-white dark:bg-zinc-800 w-full flex items-center rounded-lg relative">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

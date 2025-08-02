@@ -49,6 +49,7 @@ export const AppRoutes: React.FC = () => {
               {/* <Route path="activity" element={<Activity />} /> */}
               <Route path="users" element={<UserList />} />
               <Route path="messages" element={<Messages />} />
+              <Route path="mypos" element={<UserMyPOs />} />
               <Route path="settings" element={<Settings />} />
               <Route path="recycle-bin" element={<RecycleBin />} />
             </Route>
