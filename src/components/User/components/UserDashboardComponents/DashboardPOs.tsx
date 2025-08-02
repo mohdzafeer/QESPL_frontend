@@ -370,13 +370,13 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                       className="border-b border-gray-200 dark:border-zinc-600 odd:bg-white dark:odd:bg-zinc-800 even:bg-gray-50 even:dark:bg-zinc-900"
                     >
                       <td className="text-start">
-                        <span className="p-2 text-blue-800 font-bold hover:underline">
+                        <span className="p-2 text-blue-800 dark:text-blue-400 font-bold hover:underline">
                           {data.orderNumber}
                         </span>
                       </td>
                       <td className="p-2 flex items-center gap-3">
                         <div className="flex flex-col">
-                          <span className="text-start">
+                          <span className="text-start font-semibold text-sm">
                             {data.generatedBy?.username ||
                               data.generatedBy?.name ||
                               "N/A"}

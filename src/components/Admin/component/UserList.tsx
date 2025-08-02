@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddUserForm from "./AddUserForm";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
 import SubadminAddUserForm from "../../Subadmin/SubadminAddUserForm";
+import { apiDeleteUser, apiSearchUser, fetchLoginUser, getAllUsers } from "../../../utils/api";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
 
 interface User {
   _id: { $oid: string };
@@ -18,45 +21,45 @@ interface User {
 }
 
 const UserDetailsForm: React.FC = () => {
-  const users: User[] = [
-    {
-      _id: { $oid: "688723296d314bb00b3bb0fb" },
-      username: "john.doe",
-      email: "john.doe@example.com",
-      userType: "user",
-      employeeId: "EMP-001",
-      profilePicture: null,
-      designation: "Software Engineer",
-      createdAt: { $date: "2025-07-28T07:13:45.760Z" },
-      updatedAt: { $date: "2025-07-28T07:13:45.760Z" },
-      __v: 0,
-    },
-    {
-      _id: { $oid: "688723296d314bb00b3bb0fc" },
-      username: "jane.smith",
-      email: "jane.smith@example.com",
-      userType: "subadmin",
-      employeeId: "ADM-001",
-      profilePicture: null,
-      designation: "Project Manager",
-      createdAt: { $date: "2025-07-28T07:14:00.000Z" },
-      updatedAt: { $date: "2025-07-28T07:14:00.000Z" },
-      __v: 0,
-    },
-    {
-      _id: { $oid: "688723296d314bb00b3bb0fd" },
-      username: "peter.jones",
-      email: "peter.jones@example.com",
-      userType: "user",
-      employeeId: "EMP-002",
-      profilePicture: null,
-      designation: "UX Designer",
-      createdAt: { $date: "2025-07-28T07:15:00.000Z" },
-      updatedAt: { $date: "2025-07-28T07:15:00.000Z" },
-      __v: 0,
-    },
-  ];
-
+  // const users: User[] = [
+  //   {
+  //     _id: { $oid: "688723296d314bb00b3bb0fb" },
+  //     username: "john.doe",
+  //     email: "john.doe@example.com",
+  //     userType: "user",
+  //     employeeId: "EMP-001",
+  //     profilePicture: null,
+  //     designation: "Software Engineer",
+  //     createdAt: { $date: "2025-07-28T07:13:45.760Z" },
+  //     updatedAt: { $date: "2025-07-28T07:13:45.760Z" },
+  //     __v: 0,
+  //   },
+  //   {
+  //     _id: { $oid: "688723296d314bb00b3bb0fc" },
+  //     username: "jane.smith",
+  //     email: "jane.smith@example.com",
+  //     userType: "subadmin",
+  //     employeeId: "ADM-001",
+  //     profilePicture: null,
+  //     designation: "Project Manager",
+  //     createdAt: { $date: "2025-07-28T07:14:00.000Z" },
+  //     updatedAt: { $date: "2025-07-28T07:14:00.000Z" },
+  //     __v: 0,
+  //   },
+  //   {
+  //     _id: { $oid: "688723296d314bb00b3bb0fd" },
+  //     username: "peter.jones",
+  //     email: "peter.jones@example.com",
+  //     userType: "user",
+  //     employeeId: "EMP-002",
+  //     profilePicture: null,
+  //     designation: "UX Designer",
+  //     createdAt: { $date: "2025-07-28T07:15:00.000Z" },
+  //     updatedAt: { $date: "2025-07-28T07:15:00.000Z" },
+  //     __v: 0,
+  //   },
+  // ];
+  const dispatch=useDispatch()
   const colors = ["bg-red-500", "bg-blue-500", "bg-green-500", "bg-yellow-500"];
 
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -67,14 +70,15 @@ const UserDetailsForm: React.FC = () => {
     setShowDeleteModal(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async() => {
     if (userToDelete) {
-      console.log(`Deleting user with ID: ${userToDelete._id.$oid}`);
-      // In a real application, you would dispatch a Redux action or
-      // call an API here to delete the user.
-      // E.g., dispatch(deleteUser(userToDelete._id.$oid));
+      console.log(`Deleting user with ID: ${userToDelete._id}`);
+      await apiDeleteUser(userToDelete._id).then(()=>console.log(`User : ${userToDelete.username} with EmployeeID : ${userToDelete.employeeId} has been deleted and cannot be undone now`))
+      toast.success(`User : ${userToDelete.username} is deleted`)
+      
       setShowDeleteModal(false);
       setUserToDelete(null);
+      // dispatch(getAllUsers())
     }
   };
 
@@ -85,6 +89,28 @@ const UserDetailsForm: React.FC = () => {
 
   
 const { user } = useSelector((state: RootState) => state.auth);
+const [userData, setUserData] = useState([])
+useEffect(()=>{
+  try {
+    const allUsers=getAllUsers();
+    allUsers.then((data) => {
+      // console.log(data,"zafeer..................");
+      setUserData(data.data);
+      console.log(data, "Fetched Users Data");
+      // You can set the fetched users to state if needed
+      // setUsers(data);
+    }).catch((error) => {
+      console.error("Error fetching users:", error);
+    });
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    
+  }
+},[])
+
+
+
+
 
   return (
     <div className="">
@@ -101,9 +127,9 @@ const { user } = useSelector((state: RootState) => state.auth);
           <div className="p-4  min-h-screen">
             {/* Mobile Card View (default) */}
             <div className="md:hidden space-y-4">
-              {users.map((user) => (
+              {userData.map((user:any) => (
                 <div
-                  key={user._id.$oid}
+                  key={user._id}
                   className="bg-white p-4 rounded-lg shadow-md"
                 >
                   <div className="text-sm text-gray-700">
@@ -135,7 +161,7 @@ const { user } = useSelector((state: RootState) => state.auth);
                       <span className="font-semibold text-gray-500 w-32 flex-shrink-0 text-start">
                         Designation:
                       </span>
-                      <span>{user.designation}</span>
+                      <span>{user.desgination}</span>
                     </div>
                     {/* Actions Button for Mobile View */}
                     <div className="mt-4 pt-4 border-t">
@@ -165,9 +191,9 @@ const { user } = useSelector((state: RootState) => state.auth);
                   </tr>
                 </thead>
                 <tbody className="text-gray-600 dark:text-white text-sm font-light">
-                  {users.map((user) => (
+                  {userData.map((user:any) => (
                     <tr
-                      key={user._id.$oid}
+                      key={user?._id}
                       className="border-b border-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-600"
                     >
                       <td className="py-3 px-6 text-left whitespace-nowrap">
@@ -196,7 +222,7 @@ const { user } = useSelector((state: RootState) => state.auth);
                       <td className="py-3 px-6 text-left">{user.userType}</td>
                       <td className="py-3 px-6 text-left">{user.employeeId}</td>
                       <td className="py-3 px-6 text-left">
-                        {user.designation}
+                        {user.desgination}
                       </td>
                       <td className="py-3 px-6 text-center">
                         <button

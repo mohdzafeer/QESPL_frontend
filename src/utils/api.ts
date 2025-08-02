@@ -161,6 +161,14 @@ export const apiSearchUser = async (query: string) => {
   return response.data;
 };
 
+
+export const getAllUsers=async ()=>{
+  const response = await api.get(`/user/api/admin-get-all-user`, {
+    withCredentials: true,
+  });
+  return response.data;
+}
+
 export const adminChangePassword = async (passwordChange: {
   email: string;
   oldPassword: string;

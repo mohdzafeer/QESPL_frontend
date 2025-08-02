@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store"; // adjust the import path as needed
 import { setStatusFilter } from "../../../../store/Slice/filterSlice"; // adjust the import path as needed
+import { fetchAllOrders } from "../../../../utils/api";
 // adjust the import path as needed
 
 const DashboardCards = () => {
@@ -49,6 +50,7 @@ const DashboardCards = () => {
   useEffect(() => {
     console.log(statusFilter);
   }, [statusFilter]);
+
 
   return (
     <div>

@@ -109,7 +109,7 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
     }
 
   return (
-    <div className="lg:w-4xl xl:w-4xl w-sm lg:max-h-[600px] xl:max-h-[700px] max-h-[700px] overflow-y-auto overflow-x-hidden no-scrollbar rounded-xl bg-white dark:bg-zinc-900 dark:text-white py-5 px-10 flex flex-col">
+    <div className="lg:w-4xl xl:w-4xl w-sm lg:max-h-[600px] xl:max-h-[700px] max-h-[700px] overflow-y-auto overflow-x-hidden no-scrollbar rounded-xl bg-white dark:bg-zinc-800 dark:text-white py-5 px-10 flex flex-col">
       {/* Close button for the modal */}
       <button
         className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl font-bold z-10"
@@ -126,7 +126,7 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
         </span>
         <div className="text-end flex flex-col w-full mt-5">
           <span className="text-xs font-semibold">PO Number</span>
-          <span className="text-blue-600 underline text-lg font-semibold font-mono">
+          <span className="text-blue-600 dark:text-blue-400 underline text-lg font-semibold font-mono">
             #{orderData.orderNumber} {/* Display dynamic PO Number */}
           </span>
           <span className="text-xs font-semibold mt-2">
@@ -236,7 +236,7 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
       </div>
 
       {/* Company Details Section */}
-      <div className="bg-gray-100 dark:bg-zinc-800 text-start px-2 py-4 text-sm mt-4 rounded-lg">
+      <div className="bg-gray-100 dark:bg-zinc-900 text-start px-2 py-4 text-sm mt-4 rounded-lg">
         <span className="font-mono font-semibold text-lg text-start">
           Company Details
         </span>

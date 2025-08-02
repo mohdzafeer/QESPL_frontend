@@ -376,7 +376,7 @@ const DashBoard = () => {
                           : "text-[var(--theme-color)] dark:text-white"
                       } text-3xl font-bold`}
                     >
-                      {/* {counts.total} */}4
+                      {counts.total}
                     </p>
                     {/* <p
                                     className={`${
@@ -422,7 +422,7 @@ const DashBoard = () => {
                           : "text-[var(--theme-color)] "
                       } text-3xl font-bold`}
                     >
-                      {/* {counts.completed} */}3
+                      {counts.completed}
                     </p>
                     {/* <p className="text-green-500 text-sm">
                                     <span className="font-bold  ">+3%</span> from last month
@@ -466,7 +466,7 @@ const DashBoard = () => {
                           : "text-[var(--theme-color)] "
                       } text-3xl font-bold`}
                     >
-                      {/* {counts.pending} */}1
+                      {counts.pending}
                     </p>
                     {/* <p className="text-yellow-400 text-sm">
                                     <span className="font-bold  ">+2%</span> from last month
@@ -508,7 +508,7 @@ const DashBoard = () => {
                           : "text-[var(--theme-color)] "
                       } text-3xl font-bold`}
                     >
-                      {/* {counts.delayed} */}1
+                      {counts.delayed}
                     </p>
                     {/* <p className="font-bold text-2xl">20</p> */}
                     {/* <p className="text-orange-400 text-sm">
@@ -551,7 +551,7 @@ const DashBoard = () => {
                           : "text-[var(--theme-color)] "
                       } text-3xl font-bold`}
                     >
-                      {/* {counts.rejected} */}0
+                      {counts.rejected}
                     </p>
                     {/* <p className="font-bold text-2xl">20</p> */}
                     {/* <p className="text-red-600 text-sm">
