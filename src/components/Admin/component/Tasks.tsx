@@ -1,38 +1,52 @@
-import React, { useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
-import { MdDeleteOutline } from 'react-icons/md';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'; // Import arrow icons
+import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { MdDeleteOutline } from "react-icons/md";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io"; // Import arrow icons
+import { getAllUsers } from "../../../utils/api";
 
 // Dummy user data for the "Assign To" dropdown
-const dummyUsers = [
-  { id: 'emp001', name: 'Alice Smith' },
-  { id: 'emp002', name: 'Bob Johnson' },
-  { id: 'emp003', name: 'Charlie Brown' },
-  { id: 'emp004', name: 'Diana Prince' },
-  { id: 'emp005', name: 'Clark Kent' },
-];
+
 
 const dummyPOs = [
-  { orderNumber: 'PO-001', status: 'pending' },
-  { orderNumber: 'PO-002', status: 'delayed' },
-  { orderNumber: 'PO-003', status: 'completed' },
-  { orderNumber: 'PO-004', status: 'pending' },
-  { orderNumber: 'PO-005', status: 'rejected' },
+  { orderNumber: "PO-001", status: "pending" },
+  { orderNumber: "PO-002", status: "delayed" },
+  { orderNumber: "PO-003", status: "completed" },
+  { orderNumber: "PO-004", status: "pending" },
+  { orderNumber: "PO-005", status: "rejected" },
 ];
 
 const Tasks = () => {
+  const [userData, setUserData] = useState([]);
+  useEffect(() => {
+    try {
+      const allUsers = getAllUsers();
+      allUsers
+        .then((data) => {
+          // console.log(data,"zafeer..................");
+          setUserData(data.data);
+          console.log(data, "Fetched Users Data");
+          // You can set the fetched users to state if needed
+          // setUsers(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching users:", error);
+        });
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }, []);
   const [isFourthComponentOpen, setIsFourthComponentOpen] = useState(false); // State for the new fourth component (sidebar)
 
   // State for the "Assign New Task" form
   const [taskData, setTaskData] = useState({
-    title: '',
-    type: '',
-    assignedUsers: [{ id: uuidv4(), userId: '', employeeId: '' }], // Initial user block
-    description: '',
+    title: "",
+    type: "",
+    assignedUsers: [{ id: uuidv4(), userId: "", employeeId: "" }], // Initial user block
+    description: "",
   });
 
   // Handler for general task input fields (title, type, description)
-  const handleTaskInputChange = (e) => {
+  const handleTaskInputChange = (e:any) => {
     const { id, value } = e.target;
     setTaskData((prevData) => ({
       ...prevData,
@@ -41,64 +55,70 @@ const Tasks = () => {
   };
 
   // Handler for inputs within the assignedUsers array
-  const handleAssignedUserChange = (userId, e) => {
-    const { name, value } = e.target;
-    setTaskData((prevData) => ({
-      ...prevData,
-      assignedUsers: prevData.assignedUsers.map((user) => {
-        if (user.id === userId) {
-          // If the 'userId' (select) changes, also update the employeeId
-          if (name === 'userId') {
-            const selectedUser = dummyUsers.find(u => u.id === value);
-            return {
-              ...user,
-              [name]: value,
-              employeeId: selectedUser ? selectedUser.id : '' // Auto-fill employee ID
-            };
-          }
-          return { ...user, [name]: value };
+  // Handler for inputs within the assignedUsers array
+const handleAssignedUserChange = (userId:any, e:any) => {
+  const { name, value } = e.target;
+  setTaskData((prevData) => ({
+    ...prevData,
+    assignedUsers: prevData.assignedUsers.map((user:any) => {
+      if (user.id === userId) {
+        // If the 'userId' (select) changes, also update the employeeId
+        if (name === "userId") {
+          const selectedUser = userData.find((u:any) => u._id === value); // Use _id to find the user
+          return {
+            ...user,
+            [name]: value,
+            employeeId: selectedUser ? selectedUser.employeeId : "", // *** CORRECTED LINE ***
+          };
         }
-        return user;
-      }),
-    }));
-  };
+        return { ...user, [name]: value };
+      }
+      return user;
+    }),
+  }));
+};
 
   // Function to add a new user assignment block
   const addAssignedUser = () => {
     setTaskData((prevData) => ({
       ...prevData,
-      assignedUsers: [...prevData.assignedUsers, { id: uuidv4(), userId: '', employeeId: '' }],
+      assignedUsers: [
+        ...prevData.assignedUsers,
+        { id: uuidv4(), userId: "", employeeId: "" },
+      ],
     }));
   };
 
   // Function to remove a user assignment block
-  const removeAssignedUser = (idToRemove) => {
+  const removeAssignedUser = (idToRemove:any) => {
     setTaskData((prevData) => ({
       ...prevData,
-      assignedUsers: prevData.assignedUsers.filter((user) => user.id !== idToRemove),
+      assignedUsers: prevData.assignedUsers.filter(
+        (user) => user.id !== idToRemove
+      ),
     }));
   };
 
   // Handler for form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = (e:any) => {
     e.preventDefault();
-    console.log('Task Data Submitted:', taskData);
+    console.log("Task Data Submitted:", taskData);
     // In a real application, you would send this data to your backend
-    alert('Task data logged to console! (This is a placeholder alert)');
+    alert("Task data logged to console! (This is a placeholder alert)");
   };
 
-  const getStatusColor = (status:any) => {
+  const getStatusColor = (status: any) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-500 text-white';
-      case 'completed':
-        return 'bg-green-500 text-white';
-      case 'delayed':
-        return 'bg-orange-500 text-white';
-      case 'rejected':
-        return 'bg-red-500 text-white';
+      case "pending":
+        return "bg-yellow-500 text-white";
+      case "completed":
+        return "bg-green-500 text-white";
+      case "delayed":
+        return "bg-orange-500 text-white";
+      case "rejected":
+        return "bg-red-500 text-white";
       default:
-        return 'bg-gray-200 text-gray-800';
+        return "bg-gray-200 text-gray-800";
     }
   };
 
@@ -107,8 +127,12 @@ const Tasks = () => {
       {/* PO Summary Card (Component 1) */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 py-4 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-md">
         <div className="flex flex-col items-start gap-1">
-          <span className="font-bold text-xl text-gray-800 dark:text-white">PO #1234</span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">12 Aug 2025</span>
+          <span className="font-bold text-xl text-gray-800 dark:text-white">
+            PO #1234
+          </span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            12 Aug 2025
+          </span>
         </div>
         <span className="uppercase font-semibold bg-yellow-500 text-white px-3 py-1 rounded-full text-xs mt-3 md:mt-0 shadow-sm">
           Pending
@@ -238,9 +262,9 @@ const Tasks = () => {
                         required
                       >
                         <option value="">Select user</option>
-                        {dummyUsers.map((dUser) => (
-                          <option key={dUser.id} value={dUser.id}>
-                            {dUser.name}
+                        {userData.map((dUser:any) => (
+                          <option key={dUser._id} value={dUser._id}>
+                            {dUser.username}
                           </option>
                         ))}
                       </select>
@@ -248,15 +272,18 @@ const Tasks = () => {
 
                     {/* Employee ID (Auto-filled) */}
                     <div>
-                      <label htmlFor={`employeeId-${user.id}`} className="sr-only">
+                      <label
+                        htmlFor={`employeeId-${user.employeeId}`}
+                        className="sr-only"
+                      >
                         Employee ID
                       </label>
                       <input
                         type="text"
-                        id={`employeeId-${user.id}`}
+                        id={`employeeId-${user.employeeId}`}
                         name="employeeId"
                         disabled
-                        value={user.employeeId || 'Auto-filled'}
+                        value={user.employeeId || "Auto-filled"}
                         className="block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-sm text-gray-500 cursor-not-allowed dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-400"
                       />
                     </div>
@@ -319,12 +346,14 @@ const Tasks = () => {
 
       {/* --- */}
 
-      
-
       <div
         className={`fixed top-5 right-0 h-[calc(100%-2.5rem)] w-full max-w-sm rounded-xl bg-white dark:bg-zinc-900 shadow-xl border border-gray-200 dark:border-zinc-700 z-50 transform transition-transform duration-300 ease-in-out
-          ${isFourthComponentOpen ? 'translate-x-0' : 'translate-x-[calc(100%-4rem)]'}
-          lg:max-w-md xl:max-w-lg`} 
+          ${
+            isFourthComponentOpen
+              ? "translate-x-0"
+              : "translate-x-[calc(100%-4rem)]"
+          }
+          lg:max-w-md xl:max-w-lg`}
       >
         {/* Toggle Button for the Fourth Component */}
         <button
@@ -334,11 +363,17 @@ const Tasks = () => {
                      hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 border border-r-0 border-gray-200 dark:border-zinc-700"
           aria-label={isFourthComponentOpen ? "Close sidebar" : "Open sidebar"}
         >
-          {isFourthComponentOpen ? <IoIosArrowForward className="h-6 w-6" /> : <IoIosArrowBack className="h-6 w-6" />}
+          {isFourthComponentOpen ? (
+            <IoIosArrowForward className="h-6 w-6" />
+          ) : (
+            <IoIosArrowBack className="h-6 w-6" />
+          )}
         </button>
 
         {/* Content of the Fourth Component */}
-        <div className="h-full p-6 flex flex-col"> {/* Removed bg-gray-100 here to match parent bg */}
+        <div className="h-full p-6 flex flex-col">
+          {" "}
+          {/* Removed bg-gray-100 here to match parent bg */}
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Purchase Orders
           </h2>
@@ -348,9 +383,18 @@ const Tasks = () => {
           <div className="flex-grow flex flex-col gap-3 overflow-y-auto custom-scrollbar">
             {dummyPOs.length > 0 ? (
               dummyPOs.map((po) => (
-                <div key={po.orderNumber} className="flex justify-between items-center bg-gray-50 dark:bg-zinc-800 p-3 rounded-lg w-full border border-gray-200 dark:border-zinc-700 shadow-sm">
-                  <span className="font-semibold text-gray-800 dark:text-gray-100">{po.orderNumber}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs uppercase font-medium ${getStatusColor(po.status)}`}>
+                <div
+                  key={po.orderNumber}
+                  className="flex justify-between items-center bg-gray-50 dark:bg-zinc-800 p-3 rounded-lg w-full border border-gray-200 dark:border-zinc-700 shadow-sm"
+                >
+                  <span className="font-semibold text-gray-800 dark:text-gray-100">
+                    {po.orderNumber}
+                  </span>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs uppercase font-medium ${getStatusColor(
+                      po.status
+                    )}`}
+                  >
                     {po.status}
                   </span>
                 </div>
