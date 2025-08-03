@@ -291,14 +291,7 @@ const DashBoard = () => {
               {/* {showAlert && (
                 <div className="absolute inset-0 z-40 bg-black/30 backdrop-blur-sm transition-all duration-300" />
               )} */}
-              {user.userType === "subadmin" && (
-                <Marquee className="mb-5 ">
-                  <span className="w-full text-red-600 font-semibold ">
-                    {" "}
-                    For PO Creation please go to settings
-                  </span>
-                </Marquee>
-              )}
+              
               {showAlert && (
                 <div className="fixed inset-0 flex items-center justify-center p-4 backdrop-filter backdrop-blur-md z-10">
                   <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full border-4 border-red-500">
