@@ -131,7 +131,7 @@ const SubadminNavbar: React.FC<NavbarProps> = ({ toggleSidebar, isSidebarOpen })
             src="/images/logo.png"
             alt="Logo"
             className="w-28 sm:w-40 h-auto dark:invert cursor-pointer"
-            onClick={() => navigate("/admin/dashboard")}
+            onClick={() => navigate("/subadmin/dashboard")}
           />
         </div>
         {/* Right section */}

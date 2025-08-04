@@ -138,7 +138,7 @@ const LoginForm = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="text-gray-700 text-lg   duration-200 p-2 border-none"
+                  className="text-gray-700 dark:text-white text-lg   duration-200 p-2 border-none"
                 >
                   {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>

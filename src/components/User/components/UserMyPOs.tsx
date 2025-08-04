@@ -70,9 +70,9 @@ const UserMyPOs: React.FC = () => {
     setSelectedOrder(null);
   };
 
-  useEffect(()=>{
-    console.log(selectedOrder,"selected oRder.............")
-  },[selectedOrder])
+  useEffect(() => {
+    console.log(selectedOrder, "selected oRder.............")
+  }, [selectedOrder])
 
   return (
     <div className={`p-5 ${showEditModal || showDeleteConfirmModal ? 'relative overflow-hidden' : ''}`}>
@@ -86,126 +86,126 @@ const UserMyPOs: React.FC = () => {
       )}
       <div className="overflow-x-auto">
         {/* Desktop Table */}
-<table className="min-w-full bg-white dark:bg-zinc-800 border-separate border-spacing-0 hidden md:table">
-  <thead>
-    <tr className="bg-gray-200 dark:bg-zinc-950 border-b border-gray-300 dark:border-zinc-700">
-      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-        PO Number
-      </th>
-      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-        Company Name
-      </th>
-      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-        Status
-      </th>
-      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-        Created At
-      </th>
-      <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-        Actions
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    {orders.map((order, index) => (
-      <tr
-        key={order._id}
-        className={`text-start
+        <table className="min-w-full bg-white dark:bg-zinc-800 border-separate border-spacing-0 hidden md:table">
+          <thead>
+            <tr className="bg-gray-200 dark:bg-zinc-950 border-b border-gray-300 dark:border-zinc-700">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                PO Number
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                Company Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                Created At
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((order, index) => (
+              <tr
+                key={order._id}
+                className={`text-start
           ${index === orders.length - 1 ? '' : 'border-b border-gray-200 dark:border-zinc-700 '}
           ${index % 2 === 0 ? 'bg-white dark:bg-zinc-800' : 'bg-gray-100 dark:bg-zinc-900'}
         `}
-      >
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
-          {order.orderNumber || 'N/A'}
-        </td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
-          {order.companyName || 'N/A'}
-        </td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
-          {order.status || 'N/A'}
-        </td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
-          {formatDate(order.createdAt)}
-        </td>
-        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-          <div className="flex items-center justify-end space-x-4">
-            <FaEdit
-              className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
-              title="Edit"
-              onClick={() => handleEditClick(order)}
-            />
-            <FaTrashAlt
-              className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
-              title="Delete"
-              onClick={() => handleDeleteClick(order)}
-            />
-          </div>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+              >
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                  {order.orderNumber || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
+                  {order.companyName || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
+                  {order.status || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
+                  {formatDate(order.createdAt)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div className="flex items-center justify-end space-x-4">
+                    <FaEdit
+                      className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
+                      title="Edit"
+                      onClick={() => handleEditClick(order)}
+                    />
+                    <FaTrashAlt
+                      className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
+                      title="Delete"
+                      onClick={() => handleDeleteClick(order)}
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-{/* Mobile Card View */}
-<div className="block md:hidden space-y-4 mb-20">
-  {orders.map((order) => (
-    <div
-      key={order._id}
-      className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-zinc-700"
-    >
-      <div className="flex justify-between mb-2">
-        <span className="font-semibold text-gray-700 dark:text-gray-300">PO Number:</span>
-        <span className="text-gray-800 dark:text-gray-200">{order.orderNumber || 'N/A'}</span>
-      </div>
-      <div className="flex justify-between mb-2">
-        <span className="font-semibold text-gray-700 dark:text-gray-300">Company Name:</span>
-        <span className="text-gray-800 dark:text-gray-200">{order.companyName || 'N/A'}</span>
-      </div>
-      <div className="flex justify-between mb-2">
-        <span className="font-semibold text-gray-700 dark:text-gray-300">Status:</span>
-        <span className="text-gray-800 dark:text-gray-200">{order.status || 'N/A'}</span>
-      </div>
-      <div className="flex justify-between mb-4">
-        <span className="font-semibold text-gray-700 dark:text-gray-300">Created At:</span>
-        <span className="text-gray-800 dark:text-gray-200">{formatDate(order.createdAt)}</span>
-      </div>
-      <div className="flex justify-end space-x-4">
-        <FaEdit
-          className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
-          title="Edit"
-          onClick={() => handleEditClick(order)}
-        />
-        <FaTrashAlt
-          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
-          title="Delete"
-          onClick={() => handleDeleteClick(order)}
-        />
-      </div>
-    </div>
-  ))}
-</div>
+        {/* Mobile Card View */}
+        <div className="block md:hidden space-y-4 mb-20">
+          {orders.map((order) => (
+            <div
+              key={order._id}
+              className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-zinc-700"
+            >
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">PO Number:</span>
+                <span className="text-gray-800 dark:text-gray-200">{order.orderNumber || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Company Name:</span>
+                <span className="text-gray-800 dark:text-gray-200">{order.companyName || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Status:</span>
+                <span className="text-gray-800 dark:text-gray-200">{order.status || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between mb-4">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Created At:</span>
+                <span className="text-gray-800 dark:text-gray-200">{formatDate(order.createdAt)}</span>
+              </div>
+              <div className="flex justify-end space-x-4">
+                <FaEdit
+                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
+                  title="Edit"
+                  onClick={() => handleEditClick(order)}
+                />
+                <FaTrashAlt
+                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
+                  title="Delete"
+                  onClick={() => handleDeleteClick(order)}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
 
       </div>
 
       {showEditModal && selectedOrder && (
-        <div className="fixed inset-0 flex items-center justify-center z-[100000] ">
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-xl p-6 w-11/12 max-w-4xl max-h-[80vh] overflow-y-auto mx-auto relative transform transition-all sm:my-8 sm:align-middle">
-            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-              Edit PO: {selectedOrder.orderNumber}
-            </h2>
-            <button
-              onClick={handleCloseEditModal}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
-              title="Close"
-            >
-              <FaTimes className="text-xl" />
-            </button>
-            <div className="mt-4 p-4 border border-gray-300 dark:border-zinc-600 rounded-md bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200">
-              <UserEditPO order={selectedOrder} onClose={handleCloseEditModal} />
-            </div>
-          </div>
-        </div>
-      )}
+        <div className="fixed inset-0 flex items-center justify-center z-[100000] ">
+          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-xl p-6 w-11/12 max-w-4xl max-h-[80vh] overflow-y-auto mx-auto relative transform transition-all sm:my-8 sm:align-middle">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+              Edit PO: {selectedOrder.orderNumber}
+            </h2>
+            <button
+              onClick={handleCloseEditModal}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+              title="Close"
+            >
+              <FaTimes className="text-xl" />
+            </button>
+            <div className="mt-4 p-4 border border-gray-300 dark:border-zinc-600 rounded-md bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200">
+              <UserEditPO order={selectedOrder} onClose={handleCloseEditModal} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {showDeleteConfirmModal && selectedOrder && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
