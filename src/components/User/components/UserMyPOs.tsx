@@ -85,55 +85,106 @@ const UserMyPOs: React.FC = () => {
         <div className="text-red-500 text-center mb-4">{error}</div>
       )}
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-zinc-800 border-separate border-spacing-0">
-          <thead>
-            <tr className="bg-gray-200 dark:bg-zinc-950 border-b border-gray-300 dark:border-zinc-700">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">PO Number</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden">Company Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden">Created At</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order, index) => (
-              <tr
-                key={order._id}
-                className={`text-start
-                  ${index === orders.length - 1 ? '' : 'border-b border-gray-200 dark:border-zinc-700 '}
-                  ${index % 2 === 0 ? 'bg-white dark:bg-zinc-800' : 'bg-gray-100 dark:bg-zinc-900'}
-                `}
-              >
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
-                  {order.orderNumber || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 hidden">
-                  {order.companyName || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 hidden">
-                  {order.status || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 hidden">
-                  {formatDate(order.createdAt)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex items-center justify-end space-x-4">
-                    <FaEdit
-                      className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
-                      title="Edit"
-                      onClick={() => handleEditClick(order)}
-                    />
-                    <FaTrashAlt
-                      className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
-                      title="Delete"
-                      onClick={() => handleDeleteClick(order)}
-                    />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* Desktop Table */}
+<table className="min-w-full bg-white dark:bg-zinc-800 border-separate border-spacing-0 hidden md:table">
+  <thead>
+    <tr className="bg-gray-200 dark:bg-zinc-950 border-b border-gray-300 dark:border-zinc-700">
+      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+        PO Number
+      </th>
+      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+        Company Name
+      </th>
+      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+        Status
+      </th>
+      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+        Created At
+      </th>
+      <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+        Actions
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {orders.map((order, index) => (
+      <tr
+        key={order._id}
+        className={`text-start
+          ${index === orders.length - 1 ? '' : 'border-b border-gray-200 dark:border-zinc-700 '}
+          ${index % 2 === 0 ? 'bg-white dark:bg-zinc-800' : 'bg-gray-100 dark:bg-zinc-900'}
+        `}
+      >
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+          {order.orderNumber || 'N/A'}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
+          {order.companyName || 'N/A'}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
+          {order.status || 'N/A'}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
+          {formatDate(order.createdAt)}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+          <div className="flex items-center justify-end space-x-4">
+            <FaEdit
+              className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
+              title="Edit"
+              onClick={() => handleEditClick(order)}
+            />
+            <FaTrashAlt
+              className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
+              title="Delete"
+              onClick={() => handleDeleteClick(order)}
+            />
+          </div>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+{/* Mobile Card View */}
+<div className="block md:hidden space-y-4 mb-20">
+  {orders.map((order) => (
+    <div
+      key={order._id}
+      className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-zinc-700"
+    >
+      <div className="flex justify-between mb-2">
+        <span className="font-semibold text-gray-700 dark:text-gray-300">PO Number:</span>
+        <span className="text-gray-800 dark:text-gray-200">{order.orderNumber || 'N/A'}</span>
+      </div>
+      <div className="flex justify-between mb-2">
+        <span className="font-semibold text-gray-700 dark:text-gray-300">Company Name:</span>
+        <span className="text-gray-800 dark:text-gray-200">{order.companyName || 'N/A'}</span>
+      </div>
+      <div className="flex justify-between mb-2">
+        <span className="font-semibold text-gray-700 dark:text-gray-300">Status:</span>
+        <span className="text-gray-800 dark:text-gray-200">{order.status || 'N/A'}</span>
+      </div>
+      <div className="flex justify-between mb-4">
+        <span className="font-semibold text-gray-700 dark:text-gray-300">Created At:</span>
+        <span className="text-gray-800 dark:text-gray-200">{formatDate(order.createdAt)}</span>
+      </div>
+      <div className="flex justify-end space-x-4">
+        <FaEdit
+          className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
+          title="Edit"
+          onClick={() => handleEditClick(order)}
+        />
+        <FaTrashAlt
+          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
+          title="Delete"
+          onClick={() => handleDeleteClick(order)}
+        />
+      </div>
+    </div>
+  ))}
+</div>
+
       </div>
 
       {showEditModal && selectedOrder && (
