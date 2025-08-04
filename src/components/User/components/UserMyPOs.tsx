@@ -1,91 +1,132 @@
-import React, { useState } from 'react';
-import { FaEdit, FaTrashAlt, FaTimes } from 'react-icons/fa'; // Added FaTimes for close icon
-import UserEditPO from './UserEditPO'; // Assuming this is the component for editing POs
+import React, { useEffect, useState } from 'react';
+import { FaEdit, FaTrashAlt, FaTimes } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLoginUserAsync, deleteOrderAsync, type Order } from '../../../store/Slice/orderSlice';
+import type { RootState } from '../../../store/store';
+import { formatDate } from './UserEditPO';
+import { toast } from 'react-toastify';
+import UserEditPO from './UserEditPO';
 
-
-const UserMyPOs = () => {
-  const poData = [
-    { id: 'PO001' },
-    { id: 'PO002' },
-    { id: 'PO003' },
-    { id: 'PO004' },
-    { id: 'PO005' },
-  ];
-
+const UserMyPOs: React.FC = () => {
+  const dispatch = useDispatch();
+  const { orders, status, error, success } = useSelector((state: RootState) => state.orders);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
-  const [selectedPoId, setSelectedPoId] = useState(null); // To store which PO is being edited/deleted
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  const handleEditClick = (poId) => {
-    setSelectedPoId(poId);
+  useEffect(() => {
+    dispatch(fetchLoginUserAsync());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (success) {
+      toast.success("Operation completed successfully", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+    if (error) {
+      toast.error(error, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  }, [success, error]);
+
+  const handleEditClick = (order: Order) => {
+    setSelectedOrder(order);
     setShowEditModal(true);
   };
 
-  const handleDeleteClick = (poId) => {
-    setSelectedPoId(poId);
-    setShowDeleteConfirmModal(true);
+  const handleDeleteClick = (order: Order) => {
+    toast.error("You don't have permission for the deletion, please contact admin.", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+    // setSelectedOrder(order);
+    // setShowDeleteConfirmModal(true);
   };
 
   const handleCloseEditModal = () => {
     setShowEditModal(false);
-    setSelectedPoId(null);
+    setSelectedOrder(null);
   };
 
-  const handleConfirmDelete = () => {
-    console.log(`Deleting PO: ${selectedPoId}`);
-    // In a real application, you would put your delete logic here
-    // e.g., make an API call to delete the PO.
-    setShowDeleteConfirmModal(false);
-    setSelectedPoId(null);
-    // You might want to re-fetch or update your poData here after deletion
+  const handleConfirmDelete = async () => {
+    if (selectedOrder) {
+      await dispatch(deleteOrderAsync(selectedOrder._id));
+      setShowDeleteConfirmModal(false);
+      setSelectedOrder(null);
+    }
   };
 
   const handleCancelDelete = () => {
     setShowDeleteConfirmModal(false);
-    setSelectedPoId(null);
+    setSelectedOrder(null);
   };
+
+  useEffect(()=>{
+    console.log(selectedOrder,"selected oRder.............")
+  },[selectedOrder])
 
   return (
     <div className={`p-5 ${showEditModal || showDeleteConfirmModal ? 'relative overflow-hidden' : ''}`}>
-      {/* Overlay for blurring effect */}
       {(showEditModal || showDeleteConfirmModal) && (
         <div className="fixed inset-0 backdrop-blur-sm z-40"></div>
       )}
-
-      <h1 className="text-3xl font-bold mb-6">MY POs</h1>
-
+      <h1 className="text-3xl font-bold mb-6">My Purchase Orders</h1>
+      {status === 'loading' && <div className="text-center">Loading...</div>}
+      {error && !success && (
+        <div className="text-red-500 text-center mb-4">{error}</div>
+      )}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white dark:bg-zinc-800 border-separate border-spacing-0">
           <thead>
             <tr className="bg-gray-200 dark:bg-zinc-950 border-b border-gray-300 dark:border-zinc-700">
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">PO Number</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Company Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Created At</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {poData.map((po, index) => (
+            {orders.map((order, index) => (
               <tr
-                key={po.id}
+                key={order._id}
                 className={`text-start
-                  ${index === poData.length - 1 ? '' : 'border-b border-gray-200 dark:border-zinc-700 '}
-                  ${index % 2 === 0
-                    ? 'bg-white dark:bg-zinc-800'
-                    : 'bg-gray-100 dark:bg-zinc-900'
-                  }
+                  ${index === orders.length - 1 ? '' : 'border-b border-gray-200 dark:border-zinc-700 '}
+                  ${index % 2 === 0 ? 'bg-white dark:bg-zinc-800' : 'bg-gray-100 dark:bg-zinc-900'}
                 `}
               >
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{po.id}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                  {order.orderNumber || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                  {order.companyName || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                  {order.status || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                  {formatDate(order.createdAt)}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end space-x-4">
                     <FaEdit
                       className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
                       title="Edit"
-                      onClick={() => handleEditClick(po.id)}
+                      onClick={() => handleEditClick(order)}
                     />
                     <FaTrashAlt
                       className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
                       title="Delete"
-                      onClick={() => handleDeleteClick(po.id)}
+                      onClick={() => handleDeleteClick(order)}
                     />
                   </div>
                 </td>
@@ -95,11 +136,12 @@ const UserMyPOs = () => {
         </table>
       </div>
 
-      {/* Edit Pop-up Modal */}
-      {showEditModal && (
+      {showEditModal && selectedOrder && (
         <div className="fixed inset-0 flex items-center justify-center z-[100000] ">
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-xl p-6 max-w-fit mx-auto relative transform transition-all sm:my-8 sm:align-middle sm:w-full">
-            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Edit PO: {selectedPoId}</h2>
+          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-xl p-6 max-w-fit  no-scrollbar mx-auto relative transform transition-all sm:my-8 sm:align-middle sm:w-full">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+              Edit PO: {selectedOrder.orderNumber}
+            </h2>
             <button
               onClick={handleCloseEditModal}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
@@ -107,31 +149,20 @@ const UserMyPOs = () => {
             >
               <FaTimes className="text-xl" />
             </button>
-            {/* Your edit form/content will go here */}
             <div className="mt-4 p-4 border border-gray-300 dark:border-zinc-600 rounded-md bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200">
-              
-              {/* Old PO Details */}
-              < UserEditPO  />
-
-            </div>
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={handleCloseEditModal}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Close
-              </button>
+              <UserEditPO order={selectedOrder} onClose={handleCloseEditModal} />
             </div>
           </div>
         </div>
       )}
 
-      {/* Delete Confirmation Pop-up Modal */}
-      {showDeleteConfirmModal && (
+      {showDeleteConfirmModal && selectedOrder && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-zinc-700 rounded-lg shadow-xl p-6 w-full max-w-sm mx-auto relative transform transition-all sm:my-8 sm:align-middle sm:w-full">
             <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Confirm Deletion</h2>
-            <p className="text-gray-700 dark:text-gray-200">Are you sure you want to delete PO **{selectedPoId}**?</p>
+            <p className="text-gray-700 dark:text-gray-200">
+              Are you sure you want to delete PO <strong>{selectedOrder.orderNumber}</strong>?
+            </p>
             <div className="mt-6 flex justify-end space-x-4">
               <button
                 onClick={handleCancelDelete}

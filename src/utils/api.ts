@@ -19,6 +19,7 @@ const parseJwt = (token: string): any => {
 };
 
 import axios from "axios";
+import type { Order } from "../store/Slice/orderSlice";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:8080/",
@@ -450,8 +451,47 @@ export const deleteOrdersMultiple1 = async (orderIds: string[]) => {
   }
 };
 
+// export const fetchLoginUser = async () => {
+//   const response = await api.get("/user/api/get-login-user", {
+//     withCredentials: true,
+//   });
+//   return response.data;
+// };
+
+
+
+
+export const getTotalPOCount = async () => {
+  try {
+    const response = await api.get("/order/api/total-po-count"); // Corrected endpoint
+    console.log("API Response:", response.data);
+    return response.data; // This will be { total_po_count: 37 }
+  } catch (error) {
+    console.error("Error fetching total PO count:", error);
+    throw error; // Re-throw the error for the component to handle
+  }
+};
+
+
+
+// Corrected API functions
 export const fetchLoginUser = async () => {
-  const response = await api.get("/user/api/get-login-user", {
+  const response = await api.get("order/api/get-order-login-user/", {
+    withCredentials: true,
+  });
+  return response.data;
+};
+
+export const updateOrder = async (orderId: string, orderPayload: Partial<Order>) => {
+  console.log(orderPayload,"dfkf check shariq khan......")
+  const response = await api.put(`order/api/upadate-order/${orderId}`, orderPayload, {
+    withCredentials: true,
+  });
+  return response.data;
+};
+
+export const deleteloginUser = async (orderId: string) => {
+  const response = await api.delete(`/api/order/delete/${orderId}`, {
     withCredentials: true,
   });
   return response.data;

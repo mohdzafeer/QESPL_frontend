@@ -1,10 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchAllOrders, deleteOrders ,createOrder} from '../../utils/api';
-
-
-
-
-
+import { fetchAllOrders, deleteOrders ,createOrder, fetchLoginUser, updateOrder, deleteloginUser} from '../../utils/api';
 
 
 
@@ -44,13 +40,7 @@ export interface Order {
     username: string; // Changed from employeeName to match interface
     employeeId: string;
   };
-  // createdBy?: {
-  //   userId?: string;
-  //   username?: string;
-  // };
 }
-
-
 
 
 interface Pagination {
@@ -59,8 +49,6 @@ interface Pagination {
   totalOrders: number;
   limit: number;
 }
-
-
 
 
 interface OrderState {
@@ -73,15 +61,9 @@ interface OrderState {
 }
 
 
-
-
 interface DeleteOrderResponse {
   orderId: string;
 }
-
-
-
-
 
 
 
@@ -97,8 +79,6 @@ export const fetchOrdersAsync = createAsyncThunk(
     }
   }
 );
-
-
 
 
 export const deleteOrder = createAsyncThunk<
@@ -119,11 +99,7 @@ export const deleteOrder = createAsyncThunk<
 });
 
 
-
-
-
-
-
+// deleteloginUser
 
 //// create redux thunk for the orders create
 export const createOrderAsync = createAsyncThunk<
@@ -143,12 +119,46 @@ export const createOrderAsync = createAsyncThunk<
   }
 );
 
+///// create this funcations for the users and subdmins
+
+// Async thunks
+export const fetchLoginUserAsync = createAsyncThunk(
+  'orders/fetchLoginUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetchLoginUser();
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 
+export const updateOrderAsync = createAsyncThunk(
+  'orders/updateOrder',
+  async (orderData: { orderId: string; payload: Partial<Order> }, { rejectWithValue }) => {
+    try {
+      const response = await updateOrder(orderData.orderId, orderData.payload);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 
-
-
+export const deleteOrderAsync = createAsyncThunk(
+  'orders/deleteloginUser',
+  async (orderId: string, { rejectWithValue }) => {
+    try {
+      const response = await deleteloginUser(orderId);
+      return { orderId };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 const initialState: OrderState = {
   orders: [],
@@ -163,8 +173,6 @@ const initialState: OrderState = {
   message: null,
   success: null,
 };
-
-
 
 
 const orderSlice = createSlice({
@@ -231,18 +239,54 @@ const orderSlice = createSlice({
         state.message = action.payload as string; // Store the error message
         state.error = action.payload as string;
         state.success = false; // Set success to false on error
+      }).
+      ///// this for the user and subadmin
+      addCase(fetchLoginUserAsync.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      }).addCase(fetchLoginUserAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.orders = action.payload.data.orders || [];
+        state.pagination = action.payload.pagination || state.pagination;
+      }).addCase(fetchLoginUserAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+        state.success = false; // Set success to false on error
+      }).
+       addCase(updateOrderAsync.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      }).
+      addCase(updateOrderAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        const updatedOrder = action.payload;
+        const index = state.orders.findIndex(order => order._id === updatedOrder._id);
+        if (index !== -1) {
+          state.orders[index] = updatedOrder;
+        }
+        state.success = true;
+      })
+      .addCase(updateOrderAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+        state.success = false;
+      })
+      .addCase(deleteOrderAsync.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      }).addCase(deleteOrderAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.orders = state.orders.filter(order => order._id !== action.payload.orderId);
+        state.pagination.totalOrders -= 1;
+        state.success = true;
+      }).addCase(deleteOrderAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+        state.success = false;
       });
   },
 });
 
 
-
-
-export const { resetOrders,clearMessages } = orderSlice.actions;
+export const { resetOrders,clearMessages} = orderSlice.actions;
 export default orderSlice.reducer;
-
-
-
-
-
-

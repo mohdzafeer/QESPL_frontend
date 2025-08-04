@@ -9,7 +9,8 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store"; // adjust the import path as needed
 import { setStatusFilter } from "../../../../store/Slice/filterSlice"; // adjust the import path as needed
-import { fetchAllOrders } from "../../../../utils/api";
+
+// import { fetchAllOrders, getTotalPOCount } from "../../../../utils/api";
 // adjust the import path as needed
 
 const DashboardCards = () => {
@@ -18,26 +19,7 @@ const DashboardCards = () => {
   //   >("all");
 
   const dispatch = useDispatch();
-  const { orders } = useSelector((state: RootState) => state.orders);
-  const counts = useMemo(
-    () => ({
-      total: orders.length,
-      pending: orders.filter(
-        (order) => order.status === "pending" && !order.isdeleted
-      ).length,
-      completed: orders.filter(
-        (order) => order.status === "completed" && !order.isdeleted
-      ).length,
-      delayed: orders.filter(
-        (order) => order.status === "delayed" && !order.isdeleted
-      ).length,
-      rejected: orders.filter(
-        (order) => order.status === "rejected" && !order.isdeleted
-      ).length,
-      deleted: orders.filter((order) => order.isdeleted).length,
-    }),
-    [orders]
-  );
+  
 
   const statusFilter = useSelector(
     (state: RootState) => state.filter.statusFilter
@@ -47,9 +29,16 @@ const DashboardCards = () => {
     dispatch(setStatusFilter(status));
   };
 
+ 
+
   useEffect(() => {
     console.log(statusFilter);
+    
   }, [statusFilter]);
+
+
+
+
 
 
   return (
