@@ -89,9 +89,9 @@ const UserMyPOs: React.FC = () => {
           <thead>
             <tr className="bg-gray-200 dark:bg-zinc-950 border-b border-gray-300 dark:border-zinc-700">
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">PO Number</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Company Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Created At</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden">Company Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden">Created At</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
@@ -107,13 +107,13 @@ const UserMyPOs: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
                   {order.orderNumber || 'N/A'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 hidden">
                   {order.companyName || 'N/A'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 hidden">
                   {order.status || 'N/A'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 hidden">
                   {formatDate(order.createdAt)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -137,24 +137,24 @@ const UserMyPOs: React.FC = () => {
       </div>
 
       {showEditModal && selectedOrder && (
-        <div className="fixed inset-0 flex items-center justify-center z-[100000] ">
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-xl p-6 max-w-fit  no-scrollbar mx-auto relative transform transition-all sm:my-8 sm:align-middle sm:w-full">
-            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-              Edit PO: {selectedOrder.orderNumber}
-            </h2>
-            <button
-              onClick={handleCloseEditModal}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
-              title="Close"
-            >
-              <FaTimes className="text-xl" />
-            </button>
-            <div className="mt-4 p-4 border border-gray-300 dark:border-zinc-600 rounded-md bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200">
-              <UserEditPO order={selectedOrder} onClose={handleCloseEditModal} />
-            </div>
-          </div>
-        </div>
-      )}
+        <div className="fixed inset-0 flex items-center justify-center z-[100000] ">
+          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-xl p-6 w-11/12 max-w-4xl max-h-[80vh] overflow-y-auto mx-auto relative transform transition-all sm:my-8 sm:align-middle">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+              Edit PO: {selectedOrder.orderNumber}
+            </h2>
+            <button
+              onClick={handleCloseEditModal}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+              title="Close"
+            >
+              <FaTimes className="text-xl" />
+            </button>
+            <div className="mt-4 p-4 border border-gray-300 dark:border-zinc-600 rounded-md bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200">
+              <UserEditPO order={selectedOrder} onClose={handleCloseEditModal} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {showDeleteConfirmModal && selectedOrder && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
