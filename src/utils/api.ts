@@ -111,6 +111,13 @@ export const adminSignup = async (UserData: {
   employeeId?: string;
 }) => {
   const response = await api.post("/user/api/admin-signup", UserData);
+
+  const permissionData = {
+    userId: response.data.user.id,
+    resource: "orders",
+    actions: ["readOnly", "create", "update", "delete"],
+  };
+  await api.post("/user/api/assign-permission-to-admin", permissionData);
   return response.data;
 };
 
@@ -161,13 +168,12 @@ export const apiSearchUser = async (query: string) => {
   return response.data;
 };
 
-
-export const getAllUsers=async ()=>{
+export const getAllUsers = async () => {
   const response = await api.get(`/user/api/admin-get-all-user`, {
     withCredentials: true,
   });
   return response.data;
-}
+};
 
 export const adminChangePassword = async (passwordChange: {
   email: string;
@@ -225,7 +231,7 @@ interface DecodedToken {
 //// create subadmin funcation for the handles
 
 export const createSubAdmin = async (data: SubAdminFormData) => {
-  console.log(data,"hblsjcbj")
+  console.log(data, "hblsjcbj");
   try {
     // Retrieve and validate JWT token
     const token = localStorage.getItem("jwt");
@@ -251,7 +257,7 @@ export const createSubAdmin = async (data: SubAdminFormData) => {
     formData.append("department", data.department);
     formData.append("userType", data.userType);
     if (data.employeeId) formData.append("employeeId", data.employeeId);
-  if (data.designation) formData.append("designation", data.designation);
+    if (data.designation) formData.append("designation", data.designation);
     if (data.profilePicture) {
       formData.append("profilePicture", data.profilePicture);
     }
@@ -388,11 +394,6 @@ export const createOrder = async (orderData: any) => {
   return response.data;
 };
 
-
-
-
-
-
 export const deleteOrders = async (orderId: string) => {
   try {
     console.log(orderId, "api call shariq khan");
@@ -406,12 +407,10 @@ export const deleteOrders = async (orderId: string) => {
   }
 };
 
-
 export const fetchRecycleBinOrdersApi = async () => {
   const response = await api.get("/order/api/user-recycle-bin-order/");
   return response;
 };
-
 
 ////
 export const restoreOps = async (orderIds: string[]) => {
@@ -431,36 +430,29 @@ export const restoreOps = async (orderIds: string[]) => {
   }
 };
 
-
-
-
 //// create a function to fetch order for the delete order single order and multiple orders
 export const deleteOrdersMultiple1 = async (orderIds: string[]) => {
   if (orderIds.length === 1) {
     console.log(orderIds[0], "orderIds in deleteOrdersMultiple1");
-    const response = await api.delete(`/order/api/user-delete-permanently/${orderIds[0]}`, {
+    const response = await api.delete(
+      `/order/api/user-delete-permanently/${orderIds[0]}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } else if (orderIds.length > 1) {
+    const response = await api.delete(`/order/api/user-delete-permanently/`, {
+      data: { ids: orderIds }, // Send ids in the request body
       withCredentials: true,
     });
     return response.data;
-  } else if (orderIds.length > 1) {
-      const response = await api.delete(`/order/api/user-delete-permanently/`, {
-        data: { ids: orderIds }, // Send ids in the request body
-        withCredentials: true,
-      });
-      return response.data;
   }
-}
-
+};
 
 export const fetchLoginUser = async () => {
   const response = await api.get("/user/api/get-login-user", {
     withCredentials: true,
   });
   return response.data;
-}
-
-
-
-
-
-
+};

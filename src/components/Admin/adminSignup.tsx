@@ -166,22 +166,12 @@ const RegisterForm = () => {
             <button
               type="submit"
               className="min-w-full p-3 mt-5 bg-[var(--theme-color)] text-white rounded text-base font-medium hover:bg-blue-800 transition-colors cursor-pointer "
-              // disabled={status === "loading" || !isValid}
+              
             >
               {status === "loading" ? "Signing Up..." : "Sign-Up"}
             </button>
           </form>
-          {/* <div>
-            <p className="text-sm mt-10">
-              Existing User? Login{" "}
-              <span
-                onClick={() => navigate("/login")}
-                className="font-semibold cursor-pointer hover:underline"
-              >
-                here
-              </span>
-            </p>
-          </div> */}
+          
         </div>
         <div className="sider lg:inline-flex md:inline-flex hidden flex-col items-center justify-center min-h-[50vh] md:min-h-screen bg-gray-100 w-full md:w-1/2 py-6 px-4">
           <div className="img w-full max-w-md text-center">

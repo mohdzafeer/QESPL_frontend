@@ -27,12 +27,8 @@ import {
   resetRecycleBinStatus,
 } from "../../store/Slice/recycleBinSlice";
 import { toast } from "react-toastify";
-import UserCreatePOForm from "../User/components/UserDashboardComponents/UserCreatePOForm";
-import { set } from "lodash";
-import Marquee from "react-fast-marquee";
 
 
-////// orders create funcatios
 interface Order {
   _id: string; // Adjust to string | number if your API uses numeric IDs
   orderNumber?: string;
@@ -95,10 +91,6 @@ const DashBoard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showPODetails, setShowPODetails] = useState(false);
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
-
-  ///// accesss errror and status from recycle bin slice
-
-  // Debounce the search query with 500ms delay
   const debouncedSearchQuery = useDebounce(localSearchQuery, 500);
   const { status, error, message } = useSelector(
     (state: RootState) => state.recycleBin
@@ -173,8 +165,8 @@ const DashBoard = () => {
     }
     return searchResults && Array.isArray(searchResults.data)
       ? searchResults.data.filter(
-          (order: { isdeleted: any }) => !order.isdeleted
-        )
+        (order: { isdeleted: any }) => !order.isdeleted
+      )
       : [];
   }, [
     orders,
@@ -204,25 +196,7 @@ const DashBoard = () => {
     validateDates(field, value);
   };
 
-  // const confirmDelete = () => {
-  //   if (userToDelete) {
-  //     dispatch(softDeleteOrder(userToDelete))
-  //       .unwrap()
-  //       .catch((err) => {
-  //         toast.error(`Unexpected error: ${err}`, {
-  //           toastId: "delete-unexpected-error",
-  //         });
-  //       });
-  //     setShowAlert(false);
-  //     setUserToDelete(null);
-  //     toast.error("PO moved to Recycle Bin");
-  //     // setTimeout(() => {
-  //     //   window.location.reload();
-  //     // }, 3000);
-  //     // window.location.reload()
-  //     // fetchOrders();
-  //   }
-  // };
+ 
   const confirmDelete = () => {
     if (userToDelete) {
       dispatch(softDeleteOrder(userToDelete))
@@ -256,8 +230,8 @@ const DashBoard = () => {
       [field]: isFutureDate
         ? "Date cannot be in the future."
         : isEndDateBeforeStartDate
-        ? "End date cannot be before start date."
-        : "",
+          ? "End date cannot be before start date."
+          : "",
     }));
   };
 
@@ -291,7 +265,7 @@ const DashBoard = () => {
               {/* {showAlert && (
                 <div className="absolute inset-0 z-40 bg-black/30 backdrop-blur-sm transition-all duration-300" />
               )} */}
-              
+
               {showAlert && (
                 <div className="fixed inset-0 flex items-center justify-center p-4 backdrop-filter backdrop-blur-md z-10">
                   <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full border-4 border-red-500">
@@ -345,39 +319,29 @@ const DashBoard = () => {
                     y: -5,
                     transition: { duration: 0.3 },
                   }}
-                  className={`${
-                    statusFilter == "all"
+                  className={`${statusFilter == "all"
                       ? "bg-[var(--theme-color)]"
                       : "bg-white dark:bg-zinc-950"
-                  } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
+                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("all")}
                 >
                   <div className="flex flex-col text-white items-start gap-3">
                     <p
-                      className={`${
-                        statusFilter == "all"
+                      className={`${statusFilter == "all"
                           ? "text-white dark:text-white"
                           : "text-[var(--theme-color)] dark:text-white"
-                      }`}
+                        }`}
                     >
                       Total POs
                     </p>
                     <p
-                      className={`${
-                        statusFilter == "all"
+                      className={`${statusFilter == "all"
                           ? "text-white dark:text-white"
                           : "text-[var(--theme-color)] dark:text-white"
-                      } text-3xl font-bold`}
+                        } text-3xl font-bold`}
                     >
                       {counts.total}
                     </p>
-                    {/* <p
-                                    className={`${
-                                      statusFilter == "all" ? "text-white" : "text-[var(--theme-color)]"
-                                    } text-sm`}
-                                  >
-                                    <span className="font-bold ">+12.5%</span> from last month
-                                  </p> */}
                   </div>
                   <div className="w-16 flex justify-center ">
                     <IoDocumentTextOutline className="text-black text-5xl w-fit bg-gray-200 dark:bg-zinc-700 rounded-lg p-2" />
@@ -391,35 +355,30 @@ const DashBoard = () => {
                     y: -5,
                     transition: { duration: 0.3 },
                   }}
-                  className={`${
-                    statusFilter == "completed"
+                  className={`${statusFilter == "completed"
                       ? "bg-[var(--theme-color)]"
                       : "bg-white dark:bg-zinc-950"
-                  } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
+                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("completed")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
-                      className={`${
-                        statusFilter == "completed"
+                      className={`${statusFilter == "completed"
                           ? "text-white "
                           : "text-[var(--theme-color)] dark:text-white"
-                      }`}
+                        }`}
                     >
                       Completed POs
                     </p>
                     <p
-                      className={`text-green-500 ${
-                        statusFilter == "completed"
+                      className={`text-green-500 ${statusFilter == "completed"
                           ? ""
                           : "text-[var(--theme-color)] "
-                      } text-3xl font-bold`}
+                        } text-3xl font-bold`}
                     >
                       {counts.completed}
                     </p>
-                    {/* <p className="text-green-500 text-sm">
-                                    <span className="font-bold  ">+3%</span> from last month
-                                  </p> */}
+                    
                   </div>
                   <div className="w-16 flex justify-center ">
                     <SiTicktick className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
@@ -433,37 +392,32 @@ const DashBoard = () => {
                     y: -5,
                     transition: { duration: 0.3 },
                   }}
-                  className={`${
-                    statusFilter == "pending"
+                  className={`${statusFilter == "pending"
                       ? "bg-[var(--theme-color)]"
                       : "bg-white dark:bg-zinc-950"
-                  } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
+                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => {
                     setStatusFilter("pending");
                   }}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
-                      className={`${
-                        statusFilter == "pending"
+                      className={`${statusFilter == "pending"
                           ? "text-white"
                           : "text-[var(--theme-color)] dark:text-white"
-                      }`}
+                        }`}
                     >
                       Pending POs
                     </p>
                     <p
-                      className={`text-yellow-400 ${
-                        statusFilter == "pending"
+                      className={`text-yellow-400 ${statusFilter == "pending"
                           ? ""
                           : "text-[var(--theme-color)] "
-                      } text-3xl font-bold`}
+                        } text-3xl font-bold`}
                     >
                       {counts.pending}
                     </p>
-                    {/* <p className="text-yellow-400 text-sm">
-                                    <span className="font-bold  ">+2%</span> from last month
-                                  </p> */}
+                    
                   </div>
                   <div className="w-16 flex justify-center ">
                     <IoMdTime className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
@@ -477,36 +431,31 @@ const DashBoard = () => {
                     y: -5,
                     transition: { duration: 0.3 },
                   }}
-                  className={`${
-                    statusFilter == "delayed"
+                  className={`${statusFilter == "delayed"
                       ? "bg-[var(--theme-color)] "
                       : "bg-white dark:bg-zinc-950"
-                  } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
+                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("delayed")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
-                      className={`${
-                        statusFilter == "delayed"
+                      className={`${statusFilter == "delayed"
                           ? "text-white"
                           : "text-[var(--theme-color)] dark:text-white"
-                      }`}
+                        }`}
                     >
                       Delayed POs
                     </p>
                     <p
-                      className={`text-orange-500 ${
-                        statusFilter == "delayed"
+                      className={`text-orange-500 ${statusFilter == "delayed"
                           ? ""
                           : "text-[var(--theme-color)] "
-                      } text-3xl font-bold`}
+                        } text-3xl font-bold`}
                     >
                       {counts.delayed}
                     </p>
-                    {/* <p className="font-bold text-2xl">20</p> */}
-                    {/* <p className="text-orange-400 text-sm">
-                                    <span className="font-bold  ">+2%</span> from last month
-                                  </p> */}
+                    
+                    
                   </div>
                   <div className="w-16 flex justify-center ">
                     <CgSandClock className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
@@ -520,36 +469,30 @@ const DashBoard = () => {
                     y: -5,
                     transition: { duration: 0.3 },
                   }}
-                  className={`${
-                    statusFilter == "rejected"
+                  className={`${statusFilter == "rejected"
                       ? "bg-[var(--theme-color)] "
                       : "bg-white dark:bg-zinc-950"
-                  } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
+                    } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
                   onClick={() => setStatusFilter("rejected")}
                 >
                   <div className="flex flex-col text-black items-start gap-3">
                     <p
-                      className={` ${
-                        statusFilter == "rejected"
+                      className={` ${statusFilter == "rejected"
                           ? "text-white"
                           : "text-[var(--theme-color)] dark:text-white"
-                      }`}
+                        }`}
                     >
                       Rejected POs
                     </p>
                     <p
-                      className={`text-red-500 ${
-                        statusFilter == "rejected"
+                      className={`text-red-500 ${statusFilter == "rejected"
                           ? ""
                           : "text-[var(--theme-color)] "
-                      } text-3xl font-bold`}
+                        } text-3xl font-bold`}
                     >
                       {counts.rejected}
                     </p>
-                    {/* <p className="font-bold text-2xl">20</p> */}
-                    {/* <p className="text-red-600 text-sm">
-                                    <span className="font-bold  ">+2%</span> from last month
-                                  </p> */}
+                    
                   </div>
                   <div className="w-16 flex justify-center ">
                     <RxCross2 className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
@@ -579,39 +522,35 @@ const DashBoard = () => {
                           {" "}
                           {/* Added flex-wrap and justify-end */}
                           <button
-                            className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                              timeFilter === "weekly"
+                            className={`py-2 px-3 rounded-lg text-sm font-semibold ${timeFilter === "weekly"
                                 ? "bg-[var(--theme-color)] text-white"
                                 : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
-                            }`}
+                              }`}
                             onClick={() => setTimeFilter("weekly")}
                           >
                             Weekly
                           </button>
                           <button
-                            className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                              timeFilter === "monthly"
+                            className={`py-2 px-3 rounded-lg text-sm font-semibold ${timeFilter === "monthly"
                                 ? "bg-[var(--theme-color)] text-white"
                                 : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
-                            }`}
+                              }`}
                             onClick={() => setTimeFilter("monthly")}
                           >
                             Monthly
                           </button>
                           <button
-                            className={`py-2 px-3 rounded-lg text-sm font-semibold ${
-                              timeFilter === "yearly"
+                            className={`py-2 px-3 rounded-lg text-sm font-semibold ${timeFilter === "yearly"
                                 ? "bg-[var(--theme-color)] text-white"
                                 : "bg-gray-200 text-[var(--theme-color)] hover:bg-gray-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600"
-                            }`}
+                              }`}
                             onClick={() => setTimeFilter("yearly")}
                           >
                             Yearly
                           </button>
                         </div>
                       </div>
-                      {/* Assuming POChart is defined elsewhere and responsive */}
-                      {/* @ts-ignore */}
+                      
                       <POChart
                         className="w-full h-64"
                         type="bar"
@@ -632,8 +571,7 @@ const DashBoard = () => {
                       <span className="font-semibold mb-4 block text-xs lg:text-sm md:text-sm xl:text-sm">
                         PO Status Distribution
                       </span>
-                      {/* Assuming DonutChart is defined elsewhere and responsive */}
-                      {/* @ts-ignore */}
+                      
                       <DonutChart
                         className="w-full h-64"
                         orders={filteredOrders}
@@ -725,11 +663,10 @@ const DashBoard = () => {
                           onChange={(e) =>
                             handleDateChange("fromDate", e.target.value)
                           }
-                          className={`p-2 border bg-white dark:bg-zinc-800 ${
-                            errors.fromDate
+                          className={`p-2 border bg-white dark:bg-zinc-800 ${errors.fromDate
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                           max={today}
                         />
                         {errors.fromDate && (
@@ -754,9 +691,8 @@ const DashBoard = () => {
                           onChange={(e) =>
                             handleDateChange("toDate", e.target.value)
                           }
-                          className={`p-2 border bg-white dark:bg-zinc-800 ${
-                            errors.toDate ? "border-red-500" : "border-gray-300"
-                          } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                          className={`p-2 border bg-white dark:bg-zinc-800 ${errors.toDate ? "border-red-500" : "border-gray-300"
+                            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                           max={today}
                         />
                         {errors.toDate && (
@@ -851,19 +787,18 @@ const DashBoard = () => {
                               ).toLocaleDateString() || "N/A"}
                             </td>
                             <td
-                              className={`lg:p-2 p-1 ${
-                                data.status === "completed"
+                              className={`lg:p-2 p-1 ${data.status === "completed"
                                   ? "text-green-500"
                                   : data.status === "delayed"
-                                  ? "text-orange-500"
-                                  : data.status === "pending"
-                                  ? "text-yellow-500"
-                                  : "text-red-500"
-                              }`}
+                                    ? "text-orange-500"
+                                    : data.status === "pending"
+                                      ? "text-yellow-500"
+                                      : "text-red-500"
+                                }`}
                             >
                               {data.status
                                 ? data.status.charAt(0).toUpperCase() +
-                                  data.status.slice(1)
+                                data.status.slice(1)
                                 : "N/A"}
                             </td>
                             <td className="lg:p-2 p-1 lg:gap-3 gap-1 lg:text-3xl text-lg flex justify-center items-center pr-5">
@@ -960,19 +895,18 @@ const DashBoard = () => {
                             <div className="flex justify-between">
                               <span className="text-gray-500">Status</span>
                               <span
-                                className={`${
-                                  data.status === "completed"
+                                className={`${data.status === "completed"
                                     ? "text-green-500"
                                     : data.status === "delayed"
-                                    ? "text-orange-500"
-                                    : data.status === "pending"
-                                    ? "text-yellow-500"
-                                    : "text-red-500"
-                                }`}
+                                      ? "text-orange-500"
+                                      : data.status === "pending"
+                                        ? "text-yellow-500"
+                                        : "text-red-500"
+                                  }`}
                               >
                                 {data.status
                                   ? data.status.charAt(0).toUpperCase() +
-                                    data.status.slice(1)
+                                  data.status.slice(1)
                                   : "N/A"}
                               </span>
                             </div>
@@ -999,11 +933,10 @@ const DashBoard = () => {
                       <button
                         key={i}
                         onClick={() => changePage(i + 1)}
-                        className={`px-3 py-1 rounded-full text-sm ${
-                          currentPage === i + 1
+                        className={`px-3 py-1 rounded-full text-sm ${currentPage === i + 1
                             ? "bg-blue-600 text-white font-semibold"
                             : "bg-gray-100 dark:bg-zinc-950 dark:hover:bg-zinc-900 hover:bg-blue-100"
-                        }`}
+                          }`}
                       >
                         {i + 1}
                       </button>

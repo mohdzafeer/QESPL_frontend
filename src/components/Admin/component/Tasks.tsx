@@ -1,86 +1,100 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { MdDeleteOutline } from "react-icons/md";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io"; // Import arrow icons
 import { getAllUsers } from "../../../utils/api";
-
-// Dummy user data for the "Assign To" dropdown
-
-
-const dummyPOs = [
-  { orderNumber: "PO-001", status: "pending" },
-  { orderNumber: "PO-002", status: "delayed" },
-  { orderNumber: "PO-003", status: "completed" },
-  { orderNumber: "PO-004", status: "pending" },
-  { orderNumber: "PO-005", status: "rejected" },
-];
+import api from "../../../utils/api"; // Assuming your api utility is at this path
 
 const Tasks = () => {
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState<any[]>([]);
+  const [purchaseOrders, setPurchaseOrders] = useState<any[]>([]);
+  const [selectedPO, setSelectedPO] = useState<any>(null);
+  const [tasksByPO, setTasksByPO] = useState<any>({});
+
+  const [isFourthComponentOpen, setIsFourthComponentOpen] = useState(false);
+
+  // State for the "Assign New Task" form
+  const [taskData, setTaskData] = useState<any>({
+    title: "",
+    type: "",
+    assignedUsers: [{ id: uuidv4(), userId: "", employeeId: "" }],
+    description: "",
+  });
+
+  // Fetch all users
   useEffect(() => {
     try {
       const allUsers = getAllUsers();
       allUsers
-        .then((data) => {
-          // console.log(data,"zafeer..................");
+        .then((data: any) => {
           setUserData(data.data);
           console.log(data, "Fetched Users Data");
-          // You can set the fetched users to state if needed
-          // setUsers(data);
         })
-        .catch((error) => {
+        .catch((error: any) => {
           console.error("Error fetching users:", error);
         });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching user data:", error);
     }
   }, []);
-  const [isFourthComponentOpen, setIsFourthComponentOpen] = useState(false); // State for the new fourth component (sidebar)
 
-  // State for the "Assign New Task" form
-  const [taskData, setTaskData] = useState({
-    title: "",
-    type: "",
-    assignedUsers: [{ id: uuidv4(), userId: "", employeeId: "" }], // Initial user block
-    description: "",
-  });
+  // Fetch all purchase orders
+  useEffect(() => {
+    const fetchAllPurchaseOrders = async () => {
+      try {
+        const response: any = await api.get("/order/api/get-all-orders", {
+          withCredentials: true,
+        });
+        const orders = response?.data?.data?.orders || [];
+        setPurchaseOrders(orders);
+        console.log("Fetched All Orders:", orders);
+        // Automatically select the first PO if available (consider only pending/delayed if filtering on initial load)
+        const initialFilteredOrders = orders.filter((po: any) => po.status === "pending" || po.status === "delayed");
+        if (initialFilteredOrders.length > 0) {
+          setSelectedPO(initialFilteredOrders[0]);
+        } else if (orders.length > 0) { // Fallback to any PO if no pending/delayed found
+          setSelectedPO(orders[0]);
+        }
+      } catch (error: any) {
+        console.error("Error fetching all orders:", error);
+      }
+    };
+    fetchAllPurchaseOrders();
+  }, []);
 
   // Handler for general task input fields (title, type, description)
-  const handleTaskInputChange = (e:any) => {
+  const handleTaskInputChange = (e: any) => {
     const { id, value } = e.target;
-    setTaskData((prevData) => ({
+    setTaskData((prevData: any) => ({
       ...prevData,
-      [id]: value, // Directly use id as the key
+      [id]: value,
     }));
   };
 
   // Handler for inputs within the assignedUsers array
-  // Handler for inputs within the assignedUsers array
-const handleAssignedUserChange = (userId:any, e:any) => {
-  const { name, value } = e.target;
-  setTaskData((prevData) => ({
-    ...prevData,
-    assignedUsers: prevData.assignedUsers.map((user:any) => {
-      if (user.id === userId) {
-        // If the 'userId' (select) changes, also update the employeeId
-        if (name === "userId") {
-          const selectedUser = userData.find((u:any) => u._id === value); // Use _id to find the user
-          return {
-            ...user,
-            [name]: value,
-            employeeId: selectedUser ? selectedUser.employeeId : "", // *** CORRECTED LINE ***
-          };
+  const handleAssignedUserChange = (userId: string, e: any) => {
+    const { name, value } = e.target;
+    setTaskData((prevData: any) => ({
+      ...prevData,
+      assignedUsers: prevData.assignedUsers.map((user: any) => {
+        if (user.id === userId) {
+          if (name === "userId") {
+            const selectedUser = userData.find((u: any) => u._id === value);
+            return {
+              ...user,
+              [name]: value,
+              employeeId: selectedUser ? selectedUser.employeeId : "",
+            };
+          }
+          return { ...user, [name]: value };
         }
-        return { ...user, [name]: value };
-      }
-      return user;
-    }),
-  }));
-};
+        return user;
+      }),
+    }));
+  };
 
   // Function to add a new user assignment block
   const addAssignedUser = () => {
-    setTaskData((prevData) => ({
+    setTaskData((prevData: any) => ({
       ...prevData,
       assignedUsers: [
         ...prevData.assignedUsers,
@@ -90,24 +104,62 @@ const handleAssignedUserChange = (userId:any, e:any) => {
   };
 
   // Function to remove a user assignment block
-  const removeAssignedUser = (idToRemove:any) => {
-    setTaskData((prevData) => ({
+  const removeAssignedUser = (idToRemove: string) => {
+    setTaskData((prevData: any) => ({
       ...prevData,
       assignedUsers: prevData.assignedUsers.filter(
-        (user) => user.id !== idToRemove
+        (user: any) => user.id !== idToRemove
       ),
     }));
   };
 
   // Handler for form submission
-  const handleSubmit = (e:any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
-    console.log("Task Data Submitted:", taskData);
-    // In a real application, you would send this data to your backend
-    alert("Task data logged to console! (This is a placeholder alert)");
+
+    if (!selectedPO) {
+      // Removed alert here for smoother UX
+      return;
+    }
+
+    const newTask = {
+      id: uuidv4(),
+      poId: selectedPO._id,
+      title: taskData.title,
+      type: taskData.type,
+      assignedUsers: taskData.assignedUsers.map((user: any) => {
+        const fullUser = userData.find((u: any) => u._id === user.userId);
+        return {
+          id: user.id,
+          userId: user.userId,
+          username: fullUser ? fullUser.username : "Unknown User",
+          employeeId: fullUser ? fullUser.employeeId : "",
+        };
+      }),
+      description: taskData.description,
+      createdAt: new Date().toISOString(),
+      status: "pending",
+      completed: false,
+    };
+
+    setTasksByPO((prevTasksByPO: any) => ({
+      ...prevTasksByPO,
+      [selectedPO._id]: [...(prevTasksByPO[selectedPO._id] || []), newTask],
+    }));
+
+    console.log("New Task Added:", newTask);
+    // Removed alert here for smoother UX
+
+    // Reset the form fields
+    setTaskData({
+      title: "",
+      type: "",
+      assignedUsers: [{ id: uuidv4(), userId: "", employeeId: "" }],
+      description: "",
+    });
   };
 
-  const getStatusColor = (status: any) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
         return "bg-yellow-500 text-white";
@@ -122,24 +174,77 @@ const handleAssignedUserChange = (userId:any, e:any) => {
     }
   };
 
+  // Handler to set the selected PO
+  const handlePOSelect = (po: any) => {
+    setSelectedPO(po);
+    setIsFourthComponentOpen(false); // Hide the sidebar when a PO is selected
+  };
+
+  // Handler to mark a task as completed
+  const handleMarkAsCompleted = (taskId: string) => {
+    if (!selectedPO) return;
+
+    setTasksByPO((prevTasksByPO: any) => {
+      const currentTasks = prevTasksByPO[selectedPO._id] || [];
+      const updatedTasks = currentTasks.map((task: any) =>
+        task.id === taskId
+          ? { ...task, completed: !task.completed, status: task.completed ? "pending" : "completed" }
+          : task
+      );
+      return {
+        ...prevTasksByPO,
+        [selectedPO._id]: updatedTasks,
+      };
+    });
+  };
+
+  // Filtered POs for the sidebar (Component 4)
+  const filteredPurchaseOrders = purchaseOrders.filter(
+    (po: any) => po.status === "pending" || po.status === "delayed"
+  );
+
+  // Get tasks for the currently selected PO
+  const currentPOTasks = selectedPO ? tasksByPO[selectedPO._id] || [] : [];
+
   return (
-    <div className="flex flex-col gap-6 h-screen p-4 md:p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-zinc-950 dark:to-zinc-850 relative overflow-hidden">
+    <div className="flex flex-col gap-6 min-h-screen p-4 md:p-8 relative overflow-hidden">
       {/* PO Summary Card (Component 1) */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => setIsFourthComponentOpen(!isFourthComponentOpen)}
+          className="bg-black text-white px-2 py-1 rounded-lg text-lg font-semibold hover:bg-gray-800 duration-300 cursor-pointer"
+        >
+          {isFourthComponentOpen ? <span>Close POs</span> : <span>View POs</span>}
+        </button>
+      </div>
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 py-4 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-md">
         <div className="flex flex-col items-start gap-1">
           <span className="font-bold text-xl text-gray-800 dark:text-white">
-            PO #1234
+            {selectedPO ? `PO #${selectedPO.orderNumber}` : "Select a PO"}
           </span>
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            12 Aug 2025
+            {selectedPO
+              ? new Date(selectedPO.createdAt.split('T')[0]).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              : "No PO selected"}
           </span>
         </div>
-        <span className="uppercase font-semibold bg-yellow-500 text-white px-3 py-1 rounded-full text-xs mt-3 md:mt-0 shadow-sm">
-          Pending
-        </span>
+        {selectedPO && (
+          <span
+            className={`uppercase font-semibold px-3 py-1 rounded-full text-xs mt-3 md:mt-0 shadow-sm ${getStatusColor(
+              selectedPO.status
+            )}`}
+          >
+            {selectedPO.status}
+          </span>
+        )}
       </div>
 
-      {/* Main Content Area: Assign Task Form (Component 2) + Fixed Task List Placeholder (Component 3) */}
+      {/* Main Content Area: Assign Task Form (Component 2) + Task List (Component 3) */}
       <div className="flex flex-col xl:flex-row lg:flex-row gap-6 h-full relative z-10">
         {/* Assign New Task Form (Component 2) */}
         <div className="w-full lg:w-1/2 h-auto border border-gray-200 dark:border-zinc-700 rounded-xl p-6 bg-white dark:bg-zinc-900 shadow-lg overflow-y-auto custom-scrollbar">
@@ -181,20 +286,23 @@ const handleAssignedUserChange = (userId:any, e:any) => {
               >
                 Task Type
               </label>
-              <select
+              <input
+                list="taskTypes"
                 id="type"
+                name="type"
                 className="block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-zinc-700 dark:border-zinc-600 dark:text-white dark:focus:border-blue-400"
                 value={taskData.type}
                 onChange={handleTaskInputChange}
                 required
-              >
-                <option value="">Select task type</option>
-                <option value="Installation">Installation</option>
-                <option value="Maintenance">Maintenance</option>
-                <option value="Calibration">Calibration</option>
-                <option value="Repair">Repair</option>
-                <option value="Inspection">Inspection</option>
-              </select>
+                placeholder="Select or type a task type"
+              />
+              <datalist id="taskTypes">
+                <option value="Installation"></option>
+                <option value="Maintenance"></option>
+                <option value="Calibration"></option>
+                <option value="Repair"></option>
+                <option value="Inspection"></option>
+              </datalist>
             </div>
 
             {/* Assign To Section */}
@@ -213,7 +321,7 @@ const handleAssignedUserChange = (userId:any, e:any) => {
               </div>
 
               {/* User Assignment Blocks - dynamically rendered */}
-              {taskData.assignedUsers.map((user, index) => (
+              {taskData.assignedUsers.map((user: any, index: number) => (
                 <div
                   key={user.id}
                   className="mt-2 p-4 bg-gray-100 border border-gray-200 rounded-lg shadow-sm dark:bg-zinc-800 dark:border-zinc-700 relative"
@@ -235,7 +343,7 @@ const handleAssignedUserChange = (userId:any, e:any) => {
                       />
                     </svg>
                     <span>Assigned User {index + 1}</span>
-                    {taskData.assignedUsers.length > 1 && ( // Only show remove if more than one user
+                    {taskData.assignedUsers.length > 1 && (
                       <button
                         type="button"
                         onClick={() => removeAssignedUser(user.id)}
@@ -256,13 +364,13 @@ const handleAssignedUserChange = (userId:any, e:any) => {
                       <select
                         id={`userId-${user.id}`}
                         name="userId"
-                        className="block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-850 dark:border-zinc-600 dark:text-white dark:focus:border-blue-400"
+                        className="block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white dark:focus:border-blue-400"
                         value={user.userId}
                         onChange={(e) => handleAssignedUserChange(user.id, e)}
                         required
                       >
                         <option value="">Select user</option>
-                        {userData.map((dUser:any) => (
+                        {userData.map((dUser: any) => (
                           <option key={dUser._id} value={dUser._id}>
                             {dUser.username}
                           </option>
@@ -337,55 +445,142 @@ const handleAssignedUserChange = (userId:any, e:any) => {
           </form>
         </div>
 
-        {/* Fixed Task List Placeholder (Component 3) */}
-        <div className="w-full lg:w-1/2 h-auto border border-gray-200 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-900 shadow-lg p-6 flex items-center justify-center text-gray-500 dark:text-gray-400 text-lg">
-          {/* This area will eventually display a list of tasks */}
-          Task List will go here (Component 3)
+        {/* Task List (Component 3) */}
+        <div className="w-full lg:w-1/2 h-auto border border-gray-200 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-900 shadow-lg p-6 overflow-y-auto no-scrollbar">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Tasks for{" "}
+            <span className="text-blue-600 dark:text-blue-400">
+              {selectedPO ? `PO #${selectedPO.orderNumber}` : "Selected PO"}
+            </span>
+          </h2>
+          {currentPOTasks.length > 0 ? (
+            <div className="space-y-4">
+              {currentPOTasks.map((task: any) => (
+                <div
+                  key={task.id}
+                  className={`bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 flex flex-col ${
+                    task.completed
+                      ? "opacity-70 border-green-400 dark:border-green-600"
+                      : ""
+                  }`}
+                >
+                  {/* Task Header: Title (left) & Status (right) */}
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mr-4">
+                      {task.title}
+                    </h3>
+                    <span
+                      className={`font-semibold capitalize px-2 py-0.5 rounded-full text-xs flex-shrink-0 ${getStatusColor(
+                        task.status
+                      )}`}
+                    >
+                      {task.status}
+                    </span>
+                  </div>
+
+                  {/* Type (left) & Created Date (right) */}
+                  <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300 mb-3">
+                    <div className="flex items-center">
+                      <span className="font-semibold text-gray-700 dark:text-gray-200 mr-1">
+                        Type:
+                      </span>{" "}
+                      {task.type}
+                    </div>
+                    <div className="flex items-center">
+                      <span className="font-semibold text-gray-700 dark:text-gray-200 mr-1">
+                        Created:
+                      </span>{" "}
+                      {new Date(task.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Assigned To Section - Aligned Left */}
+                  <div className="mb-3 text-left">
+                    <span className="font-semibold text-gray-700 dark:text-gray-200 block mb-1">
+                      Assigned To:
+                    </span>
+                    <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 ml-4">
+                      {task.assignedUsers.map((user: any) => (
+                        <li key={user.id}>
+                          {user.username}{" "}
+                          {user.employeeId && `(Emp ID: ${user.employeeId})`}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Description Section - Aligned Left */}
+                  <div className="mb-4 text-left">
+                    <span className="font-semibold text-gray-700 dark:text-gray-200 block mb-1">
+                      Description:
+                    </span>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {task.description}
+                    </p>
+                  </div>
+
+                  {/* Mark as Completed Checkbox */}
+                  <div className="flex items-center justify-end pt-2 border-t border-gray-200 dark:border-zinc-700">
+                    <input
+                      id={`completed-${task.id}`}
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() => handleMarkAsCompleted(task.id)}
+                      className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400 rounded focus:ring-blue-500 dark:focus:ring-blue-400 cursor-pointer"
+                    />
+                    <label
+                      htmlFor={`completed-${task.id}`}
+                      className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer"
+                    >
+                      Mark as Completed
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 py-10">
+              {selectedPO
+                ? "No tasks assigned to this PO yet."
+                : "Select a Purchase Order to view its tasks."}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* --- */}
-
+      {/* Sidebar (Component 4) */}
       <div
-        className={`fixed top-5 right-0 h-[calc(100%-2.5rem)] w-full max-w-sm rounded-xl bg-white dark:bg-zinc-900 shadow-xl border border-gray-200 dark:border-zinc-700 z-50 transform transition-transform duration-300 ease-in-out
+        className={`fixed top-48 right-0 h-9/12 w-full max-w-sm rounded-xl bg-gray-200 dark:bg-zinc-900 shadow-xl border border-gray-200 dark:border-zinc-700 z-50 transform transition-transform duration-300 ease-in-out
           ${
-            isFourthComponentOpen
-              ? "translate-x-0"
-              : "translate-x-[calc(100%-4rem)]"
+            isFourthComponentOpen ? "translate-x-0" : "translate-x-[calc(100%)]"
           }
           lg:max-w-md xl:max-w-lg`}
       >
-        {/* Toggle Button for the Fourth Component */}
-        <button
-          onClick={() => setIsFourthComponentOpen(!isFourthComponentOpen)}
-          className="absolute -left-12 top-0 mt-4 p-3 rounded-l-lg shadow-lg z-50 transform -translate-y-1/2
-                     bg-white text-gray-600 dark:bg-zinc-900 dark:text-gray-300
-                     hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 border border-r-0 border-gray-200 dark:border-zinc-700"
-          aria-label={isFourthComponentOpen ? "Close sidebar" : "Open sidebar"}
-        >
-          {isFourthComponentOpen ? (
-            <IoIosArrowForward className="h-6 w-6" />
-          ) : (
-            <IoIosArrowBack className="h-6 w-6" />
-          )}
-        </button>
-
         {/* Content of the Fourth Component */}
         <div className="h-full p-6 flex flex-col">
-          {" "}
-          {/* Removed bg-gray-100 here to match parent bg */}
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Purchase Orders
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             These are POs of your department
           </p>
-          <div className="flex-grow flex flex-col gap-3 overflow-y-auto custom-scrollbar">
-            {dummyPOs.length > 0 ? (
-              dummyPOs.map((po) => (
+          <div className="flex-grow flex flex-col gap-3 overflow-y-auto no-scrollbar">
+            {filteredPurchaseOrders.length > 0 ? (
+              filteredPurchaseOrders.map((po: any) => (
                 <div
-                  key={po.orderNumber}
-                  className="flex justify-between items-center bg-gray-50 dark:bg-zinc-800 p-3 rounded-lg w-full border border-gray-200 dark:border-zinc-700 shadow-sm"
+                  key={po._id}
+                  className={`flex justify-between items-center bg-gray-50 dark:bg-zinc-800 p-3 rounded-lg w-full border border-gray-200 dark:border-zinc-700 shadow-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors duration-200 ${
+                    selectedPO && selectedPO._id === po._id
+                      ? "ring-2 ring-blue-500 dark:ring-blue-400"
+                      : ""
+                  }`}
+                  onClick={() => handlePOSelect(po)}
                 >
                   <span className="font-semibold text-gray-800 dark:text-gray-100">
                     {po.orderNumber}
@@ -401,7 +596,7 @@ const handleAssignedUserChange = (userId:any, e:any) => {
               ))
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
-                You do not have any POs assigned to you.
+                You do not have any pending or delayed POs.
               </div>
             )}
           </div>
