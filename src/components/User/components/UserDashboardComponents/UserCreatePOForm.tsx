@@ -3,12 +3,16 @@ import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../../store/store";
-import { createOrderAsync } from "../../../../store/Slice/orderSlice";
+import { clearMessages, createOrderAsync, fetchOrdersAsync } from "../../../../store/Slice/orderSlice";
+
 
 import { toast } from "react-toastify";
+import { fetchAllOrders } from "../../../../utils/api";
+
 
 type UserCreatePOFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+  onOrderCreated: () => void;
 };
 type Product = {
   id: number;
@@ -17,6 +21,7 @@ type Product = {
   price: number;
   remark: string;
 };
+
 
 type OrderFormData = {
   orderNumber: string; // This will now store only the sequential number
@@ -41,13 +46,27 @@ type OrderFormData = {
   estimatedDispatchDate?: string; // Optional, can be added later
 };
 
-const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
-  const [loading, setLoading] = useState(false);
 
+const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm ,onOrderCreated}) => {
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { status, error } = useSelector((state: RootState) => state.orders);
-  console.log(user, "User data in UserCreatePOForm ejhwfgwefigwiefgiewfg");
+    const { status, error, message, success } = useSelector((state: RootState) => state.orders);
+
+
+// Show toast notifications only when submissionStatus changes
+  useEffect(() => {
+    if (status === 'succeeded' && message) {
+      toast.success(message, { toastId: "create-success" });
+      dispatch(clearMessages()); // Clear messages after displaying
+      setShowForm(false); // Close form on success
+    } else if (status === 'failed' && error) {
+      toast.error(error, { toastId: "create-error" });
+      dispatch(clearMessages()); // Clear messages after displaying
+    }
+   
+  }, [message, error, dispatch]);
+
 
   // Function to get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
@@ -58,8 +77,10 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     return `${year}-${month}-${day}`;
   };
 
+
   // Function to get month abbreviation (e.g., JAN, FEB)
   const getMonthAbbreviation = (date: Date) => {
+   
     const months = [
       "JAN",
       "FEB",
@@ -76,6 +97,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     ];
     return months[date.getMonth()];
   };
+
 
   const [formData, setFormData] = useState<OrderFormData>({
     orderNumber: "", // User inputs this sequential number
@@ -99,6 +121,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     estimatedDispatchDate: "", // Optional, can be added later
   });
 
+
   // Update formData when user changes (for async Redux updates)
   useEffect(() => {
     if (user) {
@@ -111,16 +134,19 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     // console.log(formData,"zafeeeeeeeeeeerrrrrrr")
   }, [user]);
 
+
   // Effect for generating and managing the orderNumber prefix (QESPL/MMM/YY) and incrementing counter
   useEffect(() => {
     const today = new Date();
     const currentMonthAbbr = getMonthAbbreviation(today);
     const currentYearShort = today.getFullYear() % 100; // Last two digits of the year
 
+
     const storedOrderCountData = localStorage.getItem("orderCountData");
     let lastRecordedMonth = "";
     let lastRecordedYear = "";
     let nextSequentialNumber = 1;
+
 
     if (storedOrderCountData) {
       const parsedData = JSON.parse(storedOrderCountData);
@@ -128,6 +154,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       lastRecordedYear = parsedData.year;
       nextSequentialNumber = parsedData.count; // This is the count *after* the last successful order
     }
+
 
     // Check if month or year has changed to reset the counter
     if (
@@ -137,6 +164,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       nextSequentialNumber = 1; // Reset to 1 for the new month/year
     }
 
+
     setFormData((prev) => ({
       ...prev,
       // Initialize the orderNumber input field with the next sequential number if it's the first load
@@ -145,6 +173,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
         prev.orderNumber || nextSequentialNumber
       }/QESPL/${currentMonthAbbr}/${currentYearShort}`,
     }));
+
 
     // Store the count and current month/year for the next order
     localStorage.setItem(
@@ -157,6 +186,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     );
   }, []); // Run once on component mount
 
+
   // Effect to update fullOrderNumber when orderNumber (sequential part) changes
   useEffect(() => {
     const today = new Date();
@@ -168,17 +198,21 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }));
   }, [formData.orderNumber]); // Recalculate fullOrderNumber when the sequential part changes
 
+
   useEffect(() => {
     if (status === "succeeded") {
       // setShowForm(false); // Close form on success
       // After successful submission, increment the stored counter for the *next* order
 
+
       const today = new Date();
       const currentMonthAbbr = getMonthAbbreviation(today);
       const currentYearShort = today.getFullYear() % 100;
 
+
       const storedOrderCountData = localStorage.getItem("orderCountData");
       let nextSequentialNumber = 1;
+
 
       if (storedOrderCountData) {
         const parsedData = JSON.parse(storedOrderCountData);
@@ -189,6 +223,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
           nextSequentialNumber = parsedData.count; // Get the last count
         }
       }
+
 
       localStorage.setItem(
         "orderCountData",
@@ -206,6 +241,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }
   }, []);
 
+
   // Handles input changes for top-level form fields
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -213,6 +249,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     >
   ) => {
     const { name, value } = e.target;
+
 
     if (name.includes("orderThrough.")) {
       const field = name.split(".")[1];
@@ -237,6 +274,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }
   };
 
+
   // Handles input changes specifically for product fields
   const handleProductChange = (
     id: number,
@@ -257,6 +295,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }));
   };
 
+
   // Adds a new product row to the form
   const addProduct = () => {
     setFormData((prev) => ({
@@ -275,6 +314,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }));
   };
 
+
   // Removes a product row from the form
   const removeProduct = (id: number) => {
     setFormData((prev) => ({
@@ -283,12 +323,16 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }));
   };
 
+
   // Closes the form by updating the parent component's state
   const handleClose = () => {
     setShowForm(false);
   };
-
+  const [currentPage, setCurrentPage] = useState(1);
   // Handles the form submission
+  const fetchOrder=()=>{
+    fetchOrdersAsync({page:1,limit:10})
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
     e.preventDefault();
@@ -298,7 +342,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       setLoading(false)
       return;
     }
-
+   
     const apiOrderData = {
       clientName: formData.clientName,
       companyName: formData.companyName,
@@ -330,10 +374,20 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
       deletedAt: null,
     };
 
+
     try {
-      await dispatch(createOrderAsync(apiOrderData));
+      await dispatch(createOrderAsync(apiOrderData)).unwrap()
+      onOrderCreated();
+
+
       setShowForm(false);
       setLoading(false);
+     
+       // Fetch updated orders after creation
+
+
+       // Fetch updated orders after creation
+        // Fetch updated orders after creation
       // window.location.reload();
       // toast.success("Order created successfully!");
     } catch (err) {
@@ -342,12 +396,18 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
     }
   };
 
+
+ 
+
+
   // If user is not logged in, show a loading state or redirect
   if (!user) {
     return <div>Please log in to access this form.</div>;
   }
 
+
   console.log(user.employeeId, "User data in UserCreatePOForm");
+
 
   return (
     <div className="w-screen h-screen flex justify-center items-center pt-20">
@@ -399,6 +459,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 </div>
               )}
 
+
               {/* Order Date Input */}
               <div className="relative z-0 w-full mb-5 group">
                 <input
@@ -418,6 +479,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   Order Date
                 </label>
               </div>
+
 
               {/* Invoice No. Input */}
               <div className="relative z-0 w-full mb-5 group">
@@ -440,6 +502,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
               </div>
             </div>
           </section>
+
 
           {/* Section 2 : Order Through Details */}
           <section className="flex flex-col gap-2 text-sm">
@@ -528,6 +591,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
             </div>
           </section>
 
+
           {/* Section 3 : Company Details */}
           <section className="flex flex-col gap-2 text-sm">
             <h1 className="text-start font-semibold text-sm mb-4 uppercase">
@@ -553,6 +617,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   Client Name
                 </label>
               </div>
+
 
               {/* Company Name Input */}
               <div className="relative z-0 w-full mb-5 group">
@@ -652,11 +717,13 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
             </div>
           </section>
 
+
           {/* Product Details Section */}
           <section className="flex flex-col gap-4 text-sm">
             <h1 className="text-start font-semibold text-sm mb-4 uppercase">
               Product Details
             </h1>
+
 
             {formData.products.map((product, index) => (
               <div key={product.id} className="border-b pb-4 relative">
@@ -679,6 +746,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                     Product Name
                   </label>
 
+
                   {/* Dropdown options for Product Name */}
                   <datalist id={`product-options-${index}`}>
                     <option value="Weather Station" />
@@ -694,6 +762,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                     <option value="Tribo Electric SPM" />
                   </datalist>
                 </div>
+
 
                 {/* Quantity & Price Inputs */}
                 <div className="relative z-0 w-full mb-5 flex justify-between gap-4">
@@ -716,6 +785,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                     </label>
                   </div>
 
+
                   <div className="relative w-3/5">
                     <input
                       type="number"
@@ -735,6 +805,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                     </label>
                   </div>
                 </div>
+
 
                 {/* Remark Input */}
                 <div className="relative z-0 w-full mb-5 group">
@@ -756,7 +827,9 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                   </label>
                 </div>
 
+
                 {/* Dispatch Date Input */}
+
 
                 {/* Delete Button */}
                 {formData.products.length > 1 && (
@@ -797,6 +870,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
                 + Add Product
               </button>
 
+
               {loading === false ? (
                 <button
                   type="submit"
@@ -820,4 +894,9 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({ setShowForm }) => {
   );
 };
 
+
 export default UserCreatePOForm;
+
+
+
+

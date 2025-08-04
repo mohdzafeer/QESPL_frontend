@@ -20,6 +20,7 @@ const persistConfig = {
   storage,
   whitelist: ["auth","notifications"],
 };
+console.log("Persist Config:", persistConfig.storage);
 
 
 const rootReducer = combineReducers({

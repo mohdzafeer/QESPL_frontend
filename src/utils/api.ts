@@ -19,6 +19,7 @@ const parseJwt = (token: string): any => {
 };
 
 import axios from "axios";
+import type { Order } from "../store/Slice/orderSlice";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:8080/",
@@ -61,20 +62,7 @@ export const fetchAllOrders = async (page: number = 1, limit: number = 10) => {
   }
 };
 
-// export const deleteOrders = async (orderId: string) => {
-//   try {
-//     const response = await api.delete(`/order/api/delete-order/${orderId}`, {
-//       withCredentials: true,
-//     });
-//     console.log(response, "api call");
-//     return { orderId };
-//   } catch (error) {
-//     console.error("Delete order error:", error);
-//     throw error;
-//   }
-// };
 
-/// search orders by query parameter
 export const searchOrderApi = async (
   query: string,
   startDate?: string,
@@ -217,7 +205,6 @@ interface DecodedToken {
 //// create subadmin funcation for the handles
 
 export const createSubAdmin = async (data: SubAdminFormData) => {
-  console.log(data,"hblsjcbj")
   try {
     // Retrieve and validate JWT token
     const token = localStorage.getItem("jwt");
@@ -369,20 +356,11 @@ export const createPermission = async (data: PermissionData) => {
   }
 };
 
-// export const createOrder = async (orderData: any) => {
-//   const response = await api.post("order/api/order-create-api", orderData);
-//   return response.data;
-// };
 
 export const createOrder = async (orderData: any) => {
   const response = await api.post("order/api/order-create-api", orderData);
-  console.log(response, "api call");
   return response.data;
 };
-
-
-
-
 
 
 export const deleteOrders = async (orderId: string) => {
@@ -412,7 +390,6 @@ export const restoreOps = async (orderIds: string[]) => {
     const response = await api.post(
       `/order/api/user-restore-order/${orderIds[0]}`
     );
-    console.log(response, "restoreOps response");
     return response.data;
   } else if (orderIds.length > 1) {
     const response = await api.post(`/order/api/restore-orders/`, {
@@ -442,6 +419,31 @@ export const deleteOrdersMultiple1 = async (orderIds: string[]) => {
       return response.data;
   }
 }
+
+
+// Corrected API functions
+export const fetchLoginUser = async () => {
+  const response = await api.get("order/api/get-order-login-user/", {
+    withCredentials: true,
+  });
+  return response.data;
+};
+
+export const updateOrder = async (orderId: string, orderPayload: Partial<Order>) => {
+  console.log(orderPayload,"dfkf check shariq khan......")
+  const response = await api.put(`order/api/upadate-order/${orderId}`, orderPayload, {
+    withCredentials: true,
+  });
+  return response.data;
+};
+
+export const deleteloginUser = async (orderId: string) => {
+  const response = await api.delete(`/api/order/delete/${orderId}`, {
+    withCredentials: true,
+  });
+  return response.data;
+};
+
 
 
 

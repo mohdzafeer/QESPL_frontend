@@ -9,6 +9,7 @@ import { setStatusFilter } from "../../../../store/Slice/filterSlice";
 import { fetchAllOrders } from "../../../../utils/api"; // Ensure this path is correct
 import { handleDownload } from "../../../Admin/component/downlaod";
 
+
 // --- INTERFACES: COPIED DIRECTLY FROM PODetails.tsx (po-details-updated Canvas) ---
 interface Product {
   _id?: string; // Optional, some products might not have it or it's not needed for display
@@ -20,21 +21,23 @@ interface Product {
   updatedAt?: string; // Optional
 }
 
+
 interface GeneratedBy {
   username: string;
   employeeId: string;
   name?: string; // Some orders have 'name' directly under generatedBy
 }
 
+
 // interface CreatedBy {
 //   userId: string;
 //   username: string;
 // }
 
-interface orderThrough{
-  username:string,
-  employeeId:string
 
+interface orderThrough {
+  username: string;
+  employeeId: string;
 }
 
 
@@ -60,8 +63,9 @@ interface Order {
   // createdBy?: CreatedBy; // Optional
   deletedAt?: string; // Optional
   formGeneratedBy?: string; // Some orders have this field
-  orderThrough?:orderThrough
+  orderThrough?: orderThrough;
 }
+
 
 interface Pagination {
   currentPage: number;
@@ -70,88 +74,126 @@ interface Pagination {
   limit: number;
 }
 
+
 interface FetchedOrdersData {
   orders: Order[];
   pagination: Pagination;
 }
 // --- END INTERFACES ---
 
-const DashboardPOs = () => {
+
+const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
   const dispatch = useDispatch();
   const statusFilter = useSelector(
     (state: RootState) => state.filter.statusFilter
   );
 
+
   const [ordersData, setOrdersData] = useState<FetchedOrdersData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
 
   const [searchQuery, setSearchQuery] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [dateErrors, setDateErrors] = useState({ fromDate: "", toDate: "" });
 
+
   const [showPODetails, setShowPODetails] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null); // State to hold the order for PODetails modal
 
-  const rowsPerPage = 10; 
-  const [currentPage, setCurrentPage] = useState(1); 
+
+  const rowsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
 
   // Fetch orders when component mounts or currentPage changes
   useEffect(() => {
-    const getOrders = async () => {
-      try {
-        setLoading(true);
-        const result = await fetchAllOrders(currentPage, rowsPerPage); 
-        setOrdersData(result);
-      } catch (err: any) {
-        console.error("Error fetching orders in DashboardPOs:", err);
-        setError(err.message || "Failed to fetch orders.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    getOrders();
-  }, [currentPage]); 
+  const getOrders = async () => {
+    try {
+      setLoading(true);
+      const result = await fetchAllOrders(currentPage, rowsPerPage);
+      setOrdersData(result);
+    } catch (err: any) {
+      console.error("Error fetching orders in DashboardPOs:", err);
+      setError(err.message || "Failed to fetch orders.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  
+
+  getOrders();
+}, [currentPage, refreshTrigger]);
+
+
   // Update Redux filter state and reset pagination
-  const handleStatusFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleStatusFilterChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     dispatch(setStatusFilter(e.target.value));
     setCurrentPage(1); // Reset to first page when filter changes
   };
 
+
   // Filter orders based on statusFilter and search query (frontend filtering)
-  const filteredOrders = ordersData?.orders?.filter((order) => {
-    const matchesStatus = statusFilter === "all" || 
-                          order.status?.toLowerCase().trim() === statusFilter.toLowerCase().trim();
-    
-    const matchesSearch = searchQuery.toLowerCase().trim() === "" ||
-                          order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.clientName.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.companyName.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.generatedBy.username?.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.generatedBy.name?.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.generatedBy.employeeId.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
-                          order.products.some(p => p.name.toLowerCase().includes(searchQuery.toLowerCase().trim()));
+  const filteredOrders =
+    ordersData?.orders?.filter((order) => {
+      const matchesStatus =
+        statusFilter === "all" ||
+        order.status?.toLowerCase().trim() ===
+          statusFilter.toLowerCase().trim();
 
-    // Date filtering (optional, implement if needed, currently filtering on frontend)
-    const orderDate = new Date(order.createdAt);
-    const from = fromDate ? new Date(fromDate) : null;
-    const to = toDate ? new Date(toDate) : null;
 
-    const matchesDate = (!from || orderDate >= from) && (!to || orderDate <= to);
+      const matchesSearch =
+        searchQuery.toLowerCase().trim() === "" ||
+        order.orderNumber
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.clientName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.companyName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.generatedBy.username
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.generatedBy.name
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.generatedBy.employeeId
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase().trim()) ||
+        order.products.some((p) =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
+        );
 
-    return matchesStatus && matchesSearch && matchesDate;
-  }) || []; 
+
+      // Date filtering (optional, implement if needed, currently filtering on frontend)
+      const orderDate = new Date(order.createdAt);
+      const from = fromDate ? new Date(fromDate) : null;
+      const to = toDate ? new Date(toDate) : null;
+
+
+      const matchesDate =
+        (!from || orderDate >= from) && (!to || orderDate <= to);
+
+
+      return matchesStatus && matchesSearch && matchesDate;
+    }) || [];
+
 
   // Pagination logic for filtered data (frontend pagination)
   const totalFilteredPages = Math.ceil(filteredOrders.length / rowsPerPage);
+
 
   const paginatedOrders = filteredOrders.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
+
 
   const changePage = (page: number) => {
     if (page >= 1 && page <= totalFilteredPages) {
@@ -159,12 +201,15 @@ const DashboardPOs = () => {
     }
   };
 
+
   const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+
 
   const validateDates = (field: "fromDate" | "toDate", value: string) => {
     const dateValue = new Date(value);
     const todayDate = new Date(today);
-    
+
+
     if (dateValue > todayDate) {
       setDateErrors((prev) => ({
         ...prev,
@@ -173,6 +218,7 @@ const DashboardPOs = () => {
     } else {
       setDateErrors((prev) => ({ ...prev, [field]: "" }));
     }
+
 
     if (fromDate && toDate) {
       if (new Date(fromDate) > new Date(toDate)) {
@@ -187,6 +233,7 @@ const DashboardPOs = () => {
     }
   };
 
+
   // Function to handle opening PO details modal
   const handleViewPODetails = (order: Order) => {
     // --- START DEBUG LOGS ---
@@ -197,18 +244,27 @@ const DashboardPOs = () => {
     setShowPODetails(true);
   };
 
+
   if (loading) {
-    return <div className="p-5 text-center text-gray-600 dark:text-gray-300">Loading purchase orders...</div>;
+    return (
+      <div className="p-5 text-center text-gray-600 dark:text-gray-300">
+        Loading purchase orders...
+      </div>
+    );
   }
+
 
   if (error) {
     return (
       <div className="p-5 text-center text-red-600">
         Error loading orders: {error}
-        <p className="text-sm text-gray-500 mt-2">Please try logging in again or check your network connection.</p>
+        <p className="text-sm text-gray-500 mt-2">
+          Please try logging in again or check your network connection.
+        </p>
       </div>
     );
   }
+
 
   return (
     <div className="border-2 border-gray-300 rounded-lg p-5 mt-10 overflow-x-auto lg:text-lg md:text-sm text-xs mb-20">
@@ -245,6 +301,7 @@ const DashboardPOs = () => {
             />
           </span>
 
+
           <div className="flex flex-row md:flex-row gap-4 w-full">
             {/* From Date */}
             <div className="flex flex-col w-full md:w-1/2 ">
@@ -263,7 +320,9 @@ const DashboardPOs = () => {
                   validateDates("fromDate", e.target.value);
                 }}
                 className={`p-2 border bg-white dark:bg-zinc-800 ${
-                  dateErrors.fromDate ? "border-red-500" : "border-gray-300 dark:border-zinc-600"
+                  dateErrors.fromDate
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-zinc-600"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 max={today}
               />
@@ -273,6 +332,7 @@ const DashboardPOs = () => {
                 </span>
               )}
             </div>
+
 
             {/* To Date */}
             <div className="flex flex-col w-full md:w-1/2">
@@ -291,7 +351,9 @@ const DashboardPOs = () => {
                   validateDates("toDate", e.target.value);
                 }}
                 className={`p-2 border bg-white dark:bg-zinc-800 ${
-                  dateErrors.toDate ? "border-red-500" : "border-gray-300 dark:border-zinc-600"
+                  dateErrors.toDate
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-zinc-600"
                 } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 max={today}
               />
@@ -337,7 +399,7 @@ const DashboardPOs = () => {
                 {paginatedOrders.length > 0 ? (
                   paginatedOrders.map((data) => (
                     <tr
-                      key={data._id} 
+                      key={data._id}
                       className="border-b border-gray-200 dark:border-zinc-600 odd:bg-white dark:odd:bg-zinc-800 even:bg-gray-50 even:dark:bg-zinc-900"
                     >
                       <td className="text-start">
@@ -347,14 +409,22 @@ const DashboardPOs = () => {
                       </td>
                       <td className="p-2 flex items-center gap-3">
                         <div className="flex flex-col">
-                          <span className="text-start">{data.generatedBy?.username || data.generatedBy?.name || 'N/A'}</span>
-                          <span className="text-start">{data.generatedBy?.employeeId || 'N/A'}</span>
+                          <span className="text-start">
+                            {data.generatedBy?.username ||
+                              data.generatedBy?.name ||
+                              "N/A"}
+                          </span>
+                          <span className="text-start">
+                            {data.generatedBy?.employeeId || "N/A"}
+                          </span>
                         </div>
                       </td>
                       <td className="lg:p-2 p-1">{data.companyName}</td>
                       <td className="lg:p-2 p-1">{data.clientName}</td>
                       <td className="lg:p-2 p-1">
-                        {data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}
+                        {data.createdAt
+                          ? new Date(data.createdAt).toLocaleDateString()
+                          : "N/A"}
                       </td>
                       <td
                         className={`lg:p-2 p-1 ${
@@ -364,17 +434,23 @@ const DashboardPOs = () => {
                             ? "text-orange-500"
                             : data.status === "pending"
                             ? "text-yellow-500"
-                            : "text-red-500" 
+                            : "text-red-500"
                         }`}
                       >
-                        {data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1) : 'N/A'}
+                        {data.status
+                          ? data.status.charAt(0).toUpperCase() +
+                            data.status.slice(1)
+                          : "N/A"}
                       </td>
                       <td className="lg:p-2 p-1 lg:gap-3 gap-1 lg:text-3xl text-lg flex justify-center items-center pr-5">
                         <IoEyeOutline
-                          onClick={() => handleViewPODetails(data)} 
+                          onClick={() => handleViewPODetails(data)}
                           className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                         />
-                        <BsDownload onClick={()=>handleDownload(data)} className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer" />
+                        <BsDownload
+                          onClick={() => handleDownload(data)}
+                          className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
+                        />
                         {/* <RiDeleteBinLine className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer" /> */}
                       </td>
                     </tr>
@@ -390,12 +466,13 @@ const DashboardPOs = () => {
             </table>
           </div>
 
+
           {/* Mobile View: Stacked Table */}
           <div className="lg:hidden space-y-4">
             {paginatedOrders.length > 0 ? (
               paginatedOrders.map((data) => (
                 <div
-                  key={data._id} 
+                  key={data._id}
                   className="border border-gray-300 rounded-md text-xs"
                 >
                   <div className="flex border-b p-2">
@@ -407,17 +484,21 @@ const DashboardPOs = () => {
                     </span>
                   </div>
 
+
                   <div className="flex border-b p-2 items-center gap-2">
                     <span className="w-1/3 font-semibold text-gray-600 dark:text-gray-300 text-start">
                       Generated By:
                     </span>
                     <div className="w-2/3 flex gap-2 items-center text-left">
                       <div className="text-left">
-                        <p>{data.generatedBy?.username  || 'N/A'}</p>
-                        <p className="text-gray-500 dark:text-gray-300">{data.generatedBy?.employeeId}</p>
+                        <p>{data.generatedBy?.username || "N/A"}</p>
+                        <p className="text-gray-500 dark:text-gray-300">
+                          {data.generatedBy?.employeeId}
+                        </p>
                       </div>
                     </div>
                   </div>
+
 
                   <div className="flex border-b p-2">
                     <span className="w-1/3 font-semibold text-gray-600 dark:text-gray-300 text-start">
@@ -426,6 +507,7 @@ const DashboardPOs = () => {
                     <span className="w-2/3 text-left">{data.companyName}</span>
                   </div>
 
+
                   <div className="flex border-b p-2">
                     <span className="w-1/3 font-semibold text-gray-600 dark:text-gray-300 text-start">
                       Client:
@@ -433,14 +515,18 @@ const DashboardPOs = () => {
                     <span className="w-2/3 text-left">{data.clientName}</span>
                   </div>
 
+
                   <div className="flex border-b p-2">
                     <span className="w-1/3 font-semibold text-gray-600 dark:text-gray-300 text-start">
                       Date:
                     </span>
                     <span className="w-2/3 text-left">
-                      {data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}
+                      {data.createdAt
+                        ? new Date(data.createdAt).toLocaleDateString()
+                        : "N/A"}
                     </span>
                   </div>
+
 
                   <div className="flex border-b p-2">
                     <span className="w-1/3 font-semibold text-gray-600 dark:text-gray-300 text-start">
@@ -457,16 +543,23 @@ const DashboardPOs = () => {
                           : "text-red-500"
                       }`}
                     >
-                      {data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1) : 'N/A'}
+                      {data.status
+                        ? data.status.charAt(0).toUpperCase() +
+                          data.status.slice(1)
+                        : "N/A"}
                     </span>
                   </div>
 
+
                   <div className="flex justify-end gap-4 p-2 text-lg">
                     <IoEyeOutline
-                      onClick={() => handleViewPODetails(data)} 
+                      onClick={() => handleViewPODetails(data)}
                       className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                     />
-                    <BsDownload onClick={()=>handleDownload(data)}  className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer" />
+                    <BsDownload
+                      onClick={() => handleDownload(data)}
+                      className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
+                    />
                     {/* <RiDeleteBinLine className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer" /> */}
                   </div>
                 </div>
@@ -479,8 +572,9 @@ const DashboardPOs = () => {
           </div>
         </>
 
+
         {/* ⏮️ Pagination */}
-        {totalFilteredPages > 1 && ( 
+        {totalFilteredPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-4">
             <button
               onClick={() => changePage(currentPage - 1)}
@@ -489,6 +583,7 @@ const DashboardPOs = () => {
             >
               ←
             </button>
+
 
             {[...Array(totalFilteredPages)].map((_, i) => (
               <button
@@ -504,6 +599,7 @@ const DashboardPOs = () => {
               </button>
             ))}
 
+
             <button
               onClick={() => changePage(currentPage + 1)}
               disabled={currentPage === totalFilteredPages}
@@ -514,6 +610,7 @@ const DashboardPOs = () => {
           </div>
         )}
       </div>
+
 
       {/* PODetails Modal */}
       {showPODetails && selectedOrder && (
@@ -527,7 +624,10 @@ const DashboardPOs = () => {
               &times;
             </button>
             {/* Pass selectedOrder to PODetails component */}
-            <PODetails orderData={selectedOrder} onClose={() => setShowPODetails(false)} /> 
+            <PODetails
+              orderData={selectedOrder}
+              onClose={() => setShowPODetails(false)}
+            />
           </div>
         </div>
       )}
@@ -535,4 +635,9 @@ const DashboardPOs = () => {
   );
 };
 
+
 export default DashboardPOs;
+
+
+
+

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchAllOrders, deleteOrders ,createOrder} from '../../utils/api';
-import { toast } from 'react-toastify';
+import { fetchAllOrders, deleteOrders ,createOrder, fetchLoginUser, updateOrder, deleteloginUser} from '../../utils/api';
+
 
 
 
@@ -39,17 +40,7 @@ export interface Order {
     username: string; // Changed from employeeName to match interface
     employeeId: string;
   };
-  // createdBy?: {
-  //   userId?: string;
-  //   username?: string;
-  // };
 }
-
-
-
-
-
-
 
 
 interface Pagination {
@@ -65,6 +56,8 @@ interface OrderState {
   pagination: Pagination;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+  message: string | null;
+  success: boolean | null; // Added to track success state
 }
 
 
@@ -118,21 +111,54 @@ export const createOrderAsync = createAsyncThunk<
   async (orderData: Order, { rejectWithValue }) => {
     try {
       const response = await createOrder(orderData);
-      toast.success("Order created successfully!");
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 2000);
       return response as Order;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      toast.error("Failed to create order. Either you have entered an existing order number or You do not have permission to create an order.");
       return rejectWithValue(error.response.data.message || 'Failed to create order');
     }
   }
 );
 
+///// create this funcations for the users and subdmins
+
+// Async thunks
+export const fetchLoginUserAsync = createAsyncThunk(
+  'orders/fetchLoginUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetchLoginUser();
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 
+export const updateOrderAsync = createAsyncThunk(
+  'orders/updateOrder',
+  async (orderData: { orderId: string; payload: Partial<Order> }, { rejectWithValue }) => {
+    try {
+      const response = await updateOrder(orderData.orderId, orderData.payload);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+
+export const deleteOrderAsync = createAsyncThunk(
+  'orders/deleteloginUser',
+  async (orderId: string, { rejectWithValue }) => {
+    try {
+      const response = await deleteloginUser(orderId);
+      return { orderId };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 const initialState: OrderState = {
   orders: [],
@@ -144,6 +170,8 @@ const initialState: OrderState = {
   },
   status: 'idle',
   error: null,
+  message: null,
+  success: null,
 };
 
 
@@ -156,6 +184,13 @@ const orderSlice = createSlice({
       state.pagination = { currentPage: 1, totalPages: 1, totalOrders: 0, limit: 10 };
       state.status = 'idle';
       state.error = null;
+      state.message = null;
+      state.success = null;
+    },
+    clearMessages: (state) => {
+      state.error = null;
+      state.message = null;
+      state.success = null;
     },
   },
   extraReducers: (builder) => {
@@ -201,11 +236,58 @@ const orderSlice = createSlice({
         console.log(action.payload,"slices error")
         state.status = 'failed';
         state.error = action.payload as string;
+        state.message = action.payload as string; // Store the error message
+        state.error = action.payload as string;
+        state.success = false; // Set success to false on error
+      }).
+      ///// this for the user and subadmin
+      addCase(fetchLoginUserAsync.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      }).addCase(fetchLoginUserAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.orders = action.payload.data.orders || [];
+        state.pagination = action.payload.pagination || state.pagination;
+      }).addCase(fetchLoginUserAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+        state.success = false; // Set success to false on error
+      }).
+       addCase(updateOrderAsync.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      }).
+      addCase(updateOrderAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        const updatedOrder = action.payload;
+        const index = state.orders.findIndex(order => order._id === updatedOrder._id);
+        if (index !== -1) {
+          state.orders[index] = updatedOrder;
+        }
+        state.success = true;
+      })
+      .addCase(updateOrderAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+        state.success = false;
+      })
+      .addCase(deleteOrderAsync.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      }).addCase(deleteOrderAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.orders = state.orders.filter(order => order._id !== action.payload.orderId);
+        state.pagination.totalOrders -= 1;
+        state.success = true;
+      }).addCase(deleteOrderAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+        state.success = false;
       });
   },
 });
 
 
-export const { resetOrders } = orderSlice.actions;
+export const { resetOrders,clearMessages } = orderSlice.actions;
 export default orderSlice.reducer;
 
