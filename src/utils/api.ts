@@ -482,6 +482,13 @@ export const fetchLoginUser = async () => {
   return response.data;
 };
 
+// Assuming 'api' is your configured axios instance
+// e.g., import api from './api'; or wherever your axios instance is defined
+
+
+
+
+
 export const updateOrder = async (orderId: string, orderPayload: Partial<Order>) => {
   console.log(orderPayload,"dfkf check shariq khan......")
   const response = await api.put(`order/api/upadate-order/${orderId}`, orderPayload, {

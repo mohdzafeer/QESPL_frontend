@@ -124,12 +124,12 @@ const UserMyPOs: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
                     {order?.companyName || '--'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-xs text-white uppercase font-semibold ">
+                  <td className="px-6 py-4 whitespace-nowrap text-xs  uppercase font-bold ">
                     <span className={`
-                      ${order.status === 'pending' && 'bg-yellow-500 p-1 rounded-full'}
-                      ${order.status === 'completed' && 'bg-green-500 p-1 rounded-full'}
-                      ${order.status === 'delayed' && 'bg-orange-500 p-1 rounded-full'}
-                      ${order.status === 'rejected' && 'bg-red-500 p-1 rounded-full'}
+                      ${order.status === 'pending' && 'bg-yellow-100 text-yellow-500 py-1 px-2 rounded-full'}
+                      ${order.status === 'completed' && 'bg-green-100 text-green-500 py-1 px-2 rounded-full'}
+                      ${order.status === 'delayed' && 'bg-orange-100 text-orange-500 py-1 px-2 rounded-full'}
+                      ${order.status === 'rejected' && 'bg-red-100 text-red-500 py-1 px-2 rounded-full'}
                       
                       `}>{order?.status || 'N/A'}</span>
                   </td>
@@ -172,12 +172,12 @@ const UserMyPOs: React.FC = () => {
                   <span className="text-gray-800 dark:text-gray-200">{order.companyName || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between mb-2">
-                  <span className="font-semibold text-gray-700 dark:text-gray-300">Status:</span>
-                  <span className={`text-gray-800 dark:text-gray-200 uppercase text-xs
-                      ${order.status === 'pending' && 'text-yellow-500 rounded-full'}
-                      ${order.status === 'completed' && 'text-green-500 rounded-full'}
-                      ${order.status === 'delayed' && 'text-orange-500 rounded-full'}
-                      ${order.status === 'rejected' && 'text-red-500 rounded-full'}
+                  <span className="font-semibold  ">Status:</span>
+                  <span className={`text-gray-800 dark:text-gray-200 uppercase text-xs font-bold
+                      ${order.status === 'pending' && 'bg-yellow-100 text-yellow-500 dark:text-yellow-500 py-1 px-2 rounded-full'}
+                      ${order.status === 'completed' && 'bg-green-100 text-green-500 dark:text-green-500 py-1 px-2 rounded-full'}
+                      ${order.status === 'delayed' && 'bg-orange-100 text-orange-500 dark:text-orange-500 py-1 px-2 rounded-full'}
+                      ${order.status === 'rejected' && 'bg-red-100 text-red-500 py-1 dark:text-red-500 px-2 rounded-full'}
                     `}>{order.status || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between mb-4">

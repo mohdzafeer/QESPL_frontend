@@ -199,11 +199,11 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                         />
                     </span>
                     <span className="text-xs my-2">
-                        <select
-                            name="status"
-                            value={formData.status}
-                            onChange={handleInputChange}
-                            className={`font-semibold rounded-full px-2 py-1 text-xs text-white ${formData.status === "completed"
+                        <span
+                            // name="status"
+                            // value={formData.status}
+                            // onChange={handleInputChange}
+                            className={`font-semibold rounded-full px-2 py-1 text-xs text-white uppercase ${formData.status === "completed"
                                     ? "bg-green-500"
                                     : formData.status === "pending"
                                         ? "bg-yellow-500"
@@ -214,11 +214,8 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                                                 : "bg-gray-500"
                                 }`}
                         >
-                            <option value="pending">PENDING</option>
-                            <option value="completed">COMPLETED</option>
-                            <option value="delayed">DELAYED</option>
-                            <option value="rejected">REJECTED</option>
-                        </select>
+                            {formData.status}
+                        </span>
                     </span>
                 </div>
             </div>
@@ -342,7 +339,7 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                             formData.products.map((product, index) => (
                                 <tr key={product._id} className="hover:bg-gray-50 dark:hover:bg-zinc-950">
                                     <td className="px-4 py-2 border">
-                                        <input
+                                        <textarea
                                             name={`products[${index}].name`}
                                             value={product.name || ""}
                                             onChange={handleInputChange}
@@ -368,7 +365,7 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                                         />
                                     </td>
                                     <td className="px-4 py-2 border">
-                                        <input
+                                        <textarea
                                             name={`products[${index}].remark`}
                                             value={product.remark || ""}
                                             onChange={handleInputChange}
