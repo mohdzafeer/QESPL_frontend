@@ -76,7 +76,7 @@ const UserMyPOs: React.FC = () => {
   }, [showEditModal]);
 
   return (
-    <div className={`p-5 ${showEditModal || showDeleteConfirmModal ? 'relative overflow-hidden' : ''}`}>
+    <div className={`p-5 mb-20 ${showEditModal || showDeleteConfirmModal ? 'relative overflow-hidden' : ''}`}>
       {(showEditModal || showDeleteConfirmModal) && (
         <div className="fixed inset-0 backdrop-blur-sm z-40"></div>
       )}
