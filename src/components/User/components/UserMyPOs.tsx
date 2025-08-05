@@ -15,7 +15,7 @@ const UserMyPOs: React.FC = () => {
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-
+  
 
   const handleEditClick = (order: Order) => {
     setSelectedOrder(order);
@@ -73,7 +73,7 @@ const UserMyPOs: React.FC = () => {
   }, [selectedOrder])
   useEffect(() => {
     dispatch(fetchLoginUserAsync());
-  }, [showEditModal]);
+  }, [showEditModal,dispatch]);
 
   return (
     <div className={`p-5 mb-20 ${showEditModal || showDeleteConfirmModal ? 'relative overflow-hidden' : ''}`}>
