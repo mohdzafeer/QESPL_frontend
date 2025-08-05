@@ -8,7 +8,8 @@ import type { RootState } from "../../../../store/store";
 import { setStatusFilter } from "../../../../store/Slice/filterSlice";
 import { fetchAllOrders } from "../../../../utils/api"; // Ensure this path is correct
 import { handleDownload } from "../../../Admin/component/downlaod";
-
+import { fetchOrdersAsync } from "../../../../store/Slice/orderSlice";
+import {FadeLoader} from 'react-spinners'
 // --- INTERFACES: COPIED DIRECTLY FROM PODetails.tsx (po-details-updated Canvas) ---
 interface Product {
   _id?: string; // Optional, some products might not have it or it's not needed for display
@@ -79,10 +80,9 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
   const statusFilter = useSelector(
     (state: RootState) => state.filter.statusFilter
   );
-
-  const [ordersData, setOrdersData] = useState<FetchedOrdersData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { orders, loading, error } = useSelector(
+    (state: RootState) => state.orders
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -90,81 +90,66 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
   const [dateErrors, setDateErrors] = useState({ fromDate: "", toDate: "" });
 
   const [showPODetails, setShowPODetails] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null); // State to hold the order for PODetails modal
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const rowsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch orders when component mounts or currentPage changes
   useEffect(() => {
-  const getOrders = async () => {
-    try {
-      setLoading(true);
-      const result = await fetchAllOrders(currentPage, rowsPerPage);
-      setOrdersData(result);
-    } catch (err: any) {
-      console.error("Error fetching orders in DashboardPOs:", err);
-      setError(err.message || "Failed to fetch orders.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    dispatch(fetchOrdersAsync({ page: currentPage, limit: rowsPerPage }));
+  }, [dispatch, currentPage, refreshTrigger]);
 
-  getOrders();
-}, [currentPage, refreshTrigger]); 
-
-  // Update Redux filter state and reset pagination
   const handleStatusFilterChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     dispatch(setStatusFilter(e.target.value));
-    setCurrentPage(1); // Reset to first page when filter changes
+    setCurrentPage(1);
   };
 
-  // Filter orders based on statusFilter and search query (frontend filtering)
-  const filteredOrders =
-    ordersData?.orders?.filter((order) => {
-      const matchesStatus =
-        statusFilter === "all" ||
-        order.status?.toLowerCase().trim() ===
-          statusFilter.toLowerCase().trim();
+  // ✅ Filter non-deleted orders first
+  const nonDeletedOrders = orders.filter((order) => !order.isdeleted);
 
-      const matchesSearch =
-        searchQuery.toLowerCase().trim() === "" ||
-        order.orderNumber
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase().trim()) ||
-        order.clientName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase().trim()) ||
-        order.companyName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase().trim()) ||
-        order.generatedBy.username
-          ?.toLowerCase()
-          .includes(searchQuery.toLowerCase().trim()) ||
-        order.generatedBy.name
-          ?.toLowerCase()
-          .includes(searchQuery.toLowerCase().trim()) ||
-        order.generatedBy.employeeId
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase().trim()) ||
-        order.products.some((p) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
-        );
+  // Then apply search and filters
+  const filteredOrders = nonDeletedOrders.filter((order) => {
+    const matchesStatus =
+      statusFilter === "all" ||
+      order.status?.toLowerCase().trim() ===
+        statusFilter.toLowerCase().trim();
 
-      // Date filtering (optional, implement if needed, currently filtering on frontend)
-      const orderDate = new Date(order.createdAt);
-      const from = fromDate ? new Date(fromDate) : null;
-      const to = toDate ? new Date(toDate) : null;
+    const matchesSearch =
+      searchQuery.toLowerCase().trim() === "" ||
+      order.orderNumber
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase().trim()) ||
+      order.clientName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase().trim()) ||
+      order.companyName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase().trim()) ||
+      order.generatedBy.username
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase().trim()) ||
+      order.generatedBy.name
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase().trim()) ||
+      order.generatedBy.employeeId
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase().trim()) ||
+      order.products.some((p) =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
+      );
 
-      const matchesDate =
-        (!from || orderDate >= from) && (!to || orderDate <= to);
+    const orderDate = new Date(order.createdAt);
+    const from = fromDate ? new Date(fromDate) : null;
+    const to = toDate ? new Date(toDate) : null;
 
-      return matchesStatus && matchesSearch && matchesDate;
-    }) || [];
+    const matchesDate =
+      (!from || orderDate >= from) && (!to || orderDate <= to);
 
-  // Pagination logic for filtered data (frontend pagination)
+    return matchesStatus && matchesSearch && matchesDate;
+  });
+
   const totalFilteredPages = Math.ceil(filteredOrders.length / rowsPerPage);
 
   const paginatedOrders = filteredOrders.slice(
@@ -178,7 +163,7 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
     }
   };
 
-  const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+  const today = new Date().toISOString().split("T")[0];
 
   const validateDates = (field: "fromDate" | "toDate", value: string) => {
     const dateValue = new Date(value);
@@ -206,20 +191,16 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
     }
   };
 
-  // Function to handle opening PO details modal
   const handleViewPODetails = (order: Order) => {
-    // --- START DEBUG LOGS ---
     console.log("handleViewPODetails called with order:", order);
-    setSelectedOrder(order as Order | null); // Explicitly cast to Order | null
-    console.log("selectedOrder after setting:", order); // Log the value that was just set
-    // --- END DEBUG LOGS ---
+    setSelectedOrder(order);
     setShowPODetails(true);
   };
 
   if (loading) {
     return (
       <div className="p-5 text-center text-gray-600 dark:text-gray-300">
-        Loading purchase orders...
+        <FadeLoader />
       </div>
     );
   }
@@ -378,7 +359,7 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                         <div className="flex flex-col">
                           <span className="text-start font-semibold text-sm">
                             {data.generatedBy?.username ||
-                              data.generatedBy?.name ||
+                              
                               "N/A"}
                           </span>
                           <span className="text-start">

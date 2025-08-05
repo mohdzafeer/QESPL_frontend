@@ -6,6 +6,7 @@ import type { RootState } from '../../../store/store';
 import { formatDate } from './UserEditPO';
 import { toast } from 'react-toastify';
 import UserEditPO from './UserEditPO';
+import { softDeleteOrder } from '../../../store/Slice/recycleBinSlice';
 
 const UserMyPOs: React.FC = () => {
   const dispatch = useDispatch();
@@ -14,24 +15,7 @@ const UserMyPOs: React.FC = () => {
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  useEffect(() => {
-    dispatch(fetchLoginUserAsync());
-  }, [dispatch]);
 
-  useEffect(() => {
-    if (success) {
-      toast.success("Operation completed successfully", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    }
-    if (error) {
-      toast.error(error, {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    }
-  }, [success, error]);
 
   const handleEditClick = (order: Order) => {
     setSelectedOrder(order);
@@ -57,11 +41,24 @@ const UserMyPOs: React.FC = () => {
     setSelectedOrder(null);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (selectedOrder) {
-      await dispatch(deleteOrderAsync(selectedOrder._id));
-      setShowDeleteConfirmModal(false);
-      setSelectedOrder(null);
+      dispatch(softDeleteOrder(selectedOrder))
+        .unwrap()
+        .then(() => {
+          toast.error("PO moved to Recycle Bin", {
+            toastId: "po-deleted",
+          });
+          // fetchOrders(); // ✅ Fetch fresh data after deletion
+          dispatch(fetchLoginUserAsync())
+        })
+        .catch((err:any) => {
+          toast.error(`Unexpected error: ${err}`, {
+            toastId: "delete-unexpected-error",
+          });
+        });
+        setShowDeleteConfirmModal(false)
+        setSelectedOrder(null)
     }
   };
 
@@ -72,7 +69,11 @@ const UserMyPOs: React.FC = () => {
 
   useEffect(() => {
     console.log(selectedOrder, "selected oRder.............")
+
   }, [selectedOrder])
+  useEffect(() => {
+    dispatch(fetchLoginUserAsync());
+  }, [showEditModal]);
 
   return (
     <div className={`p-5 ${showEditModal || showDeleteConfirmModal ? 'relative overflow-hidden' : ''}`}>
@@ -80,7 +81,7 @@ const UserMyPOs: React.FC = () => {
         <div className="fixed inset-0 backdrop-blur-sm z-40"></div>
       )}
       <h1 className="text-3xl font-bold mb-6">My Purchase Orders</h1>
-      {status === 'loading' && <div className="text-center">Loading...</div>}
+      {/* {status === 'loading' && <div className="text-center">Loading...</div>} */}
       {error && !success && (
         <div className="text-red-500 text-center mb-4">{error}</div>
       )}
@@ -89,107 +90,121 @@ const UserMyPOs: React.FC = () => {
         <table className="min-w-full bg-white dark:bg-zinc-800 border-separate border-spacing-0 hidden md:table">
           <thead>
             <tr className="bg-gray-200 dark:bg-zinc-950 border-b border-gray-300 dark:border-zinc-700">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+              <th className=" px-6 py-3 text-left text-xl font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                 PO Number
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+              <th className=" px-6 py-3 text-left text-xl font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                 Company Name
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+              <th className=" px-6 py-3 text-left text-xl font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                Created At
+              <th className=" px-6 py-3 text-left text-xl font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                Created On
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+              <th className=" px-6 py-3 text-right text-xl font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody>
-            {orders.map((order, index) => (
-              <tr
-                key={order._id}
-                className={`text-start
+            {orders
+              .filter((order) => order?.isdeleted === false)
+              .map((order, index) => (
+                <tr
+                  key={order._id}
+                  className={`text-start
           ${index === orders.length - 1 ? '' : 'border-b border-gray-200 dark:border-zinc-700 '}
           ${index % 2 === 0 ? 'bg-white dark:bg-zinc-800' : 'bg-gray-100 dark:bg-zinc-900'}
-        `}
-              >
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
-                  {order.orderNumber || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
-                  {order.companyName || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
-                  {order.status || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
-                  {formatDate(order.createdAt)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex items-center justify-end space-x-4">
-                    <FaEdit
-                      className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
-                      title="Edit"
-                      onClick={() => handleEditClick(order)}
-                    />
-                    <FaTrashAlt
-                      className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
-                      title="Delete"
-                      onClick={() => handleDeleteClick(order)}
-                    />
-                  </div>
-                </td>
-              </tr>
-            ))}
+      `}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-lg font-semibold text-blue-700 dark:text-gray-200">
+                    {order?.orderNumber || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
+                    {order?.companyName || '--'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-xs text-white uppercase font-semibold ">
+                    <span className={`
+                      ${order.status === 'pending' && 'bg-yellow-500 p-1 rounded-full'}
+                      ${order.status === 'completed' && 'bg-green-500 p-1 rounded-full'}
+                      ${order.status === 'delayed' && 'bg-orange-500 p-1 rounded-full'}
+                      ${order.status === 'rejected' && 'bg-red-500 p-1 rounded-full'}
+                      
+                      `}>{order?.status || 'N/A'}</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 font-semibold ">
+                    {formatDate(order?.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex items-center justify-end space-x-4">
+                      <FaEdit
+                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
+                        title="Edit"
+                        onClick={() => handleEditClick(order)}
+                      />
+                      <FaTrashAlt
+                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
+                        title="Delete"
+                        onClick={() => { setShowDeleteConfirmModal(true), setSelectedOrder(order._id) }}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
 
         {/* Mobile Card View */}
         <div className="block md:hidden space-y-4 mb-20">
-          {orders.map((order) => (
-            <div
-              key={order._id}
-              className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-zinc-700"
-            >
-              <div className="flex justify-between mb-2">
-                <span className="font-semibold text-gray-700 dark:text-gray-300">PO Number:</span>
-                <span className="text-gray-800 dark:text-gray-200">{order.orderNumber || 'N/A'}</span>
+          {orders.filter((order) => order?.isdeleted === false)
+            .map((order) => (
+              <div
+                key={order._id}
+                className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-zinc-700"
+              >
+                <div className="flex justify-between mb-2">
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">PO Number:</span>
+                  <span className="text-blue-800 font-semibold dark:text-gray-200">{order.orderNumber || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">Company Name:</span>
+                  <span className="text-gray-800 dark:text-gray-200">{order.companyName || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">Status:</span>
+                  <span className={`text-gray-800 dark:text-gray-200 uppercase text-xs
+                      ${order.status === 'pending' && 'text-yellow-500 rounded-full'}
+                      ${order.status === 'completed' && 'text-green-500 rounded-full'}
+                      ${order.status === 'delayed' && 'text-orange-500 rounded-full'}
+                      ${order.status === 'rejected' && 'text-red-500 rounded-full'}
+                    `}>{order.status || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between mb-4">
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">Created On:</span>
+                  <span className="text-gray-800 dark:text-gray-200">{formatDate(order.createdAt)}</span>
+                </div>
+                <div className="flex justify-end space-x-4">
+                  <FaEdit
+                    className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
+                    title="Edit"
+                    onClick={() => handleEditClick(order)}
+                  />
+                  <FaTrashAlt
+                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
+                    title="Delete"
+                    onClick={() => { setShowDeleteConfirmModal(true), setSelectedOrder(order._id) }}
+                  />
+                </div>
               </div>
-              <div className="flex justify-between mb-2">
-                <span className="font-semibold text-gray-700 dark:text-gray-300">Company Name:</span>
-                <span className="text-gray-800 dark:text-gray-200">{order.companyName || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between mb-2">
-                <span className="font-semibold text-gray-700 dark:text-gray-300">Status:</span>
-                <span className="text-gray-800 dark:text-gray-200">{order.status || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between mb-4">
-                <span className="font-semibold text-gray-700 dark:text-gray-300">Created At:</span>
-                <span className="text-gray-800 dark:text-gray-200">{formatDate(order.createdAt)}</span>
-              </div>
-              <div className="flex justify-end space-x-4">
-                <FaEdit
-                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
-                  title="Edit"
-                  onClick={() => handleEditClick(order)}
-                />
-                <FaTrashAlt
-                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
-                  title="Delete"
-                  onClick={() => handleDeleteClick(order)}
-                />
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
 
       </div>
 
       {showEditModal && selectedOrder && (
         <div className="fixed inset-0 flex items-center justify-center z-[100000] ">
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-xl p-6 w-11/12 max-w-4xl max-h-[80vh] overflow-y-auto mx-auto relative transform transition-all sm:my-8 sm:align-middle">
+          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-xl p-6 w-11/12 max-w-4xl max-h-[80vh] overflow-y-auto mx-auto relative transform transition-all sm:my-8 sm:align-middle no-scrollbar">
             <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
               Edit PO: {selectedOrder.orderNumber}
             </h2>
