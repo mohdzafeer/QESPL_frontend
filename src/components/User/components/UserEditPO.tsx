@@ -78,6 +78,7 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
             username: order?.orderThrough?.username || "",
             employeeId: order?.orderThrough?.employeeId || "",
         },
+        createdAt:order?.createdAt || ""
     });
 
     useEffect(() => {
@@ -102,6 +103,7 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                     username: order.orderThrough?.username || "",
                     employeeId: order.orderThrough?.employeeId || "",
                 },
+                createdAt:order.createdAt || ""
             });
         }
     }, [order]);
@@ -193,7 +195,7 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                         <input
                             type="date"
                             name="orderDate"
-                            value={formData.orderDate}
+                            value={formData.createdAt}
                             onChange={handleInputChange}
                             className="font-bold max-w-fit text-end border rounded px-2 py-1 dark:bg-zinc-800 dark:text-white mt-1"
                         />
