@@ -188,8 +188,15 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                     <span className="text-blue-600 underline text-lg font-semibold font-mono mb-2">
                         {order.orderNumber || "N/A"}
                     </span>
-                    <span className="text-xs font-semibold">
-                        Order Date: <span className="font-bold">{order.orderDate ? formatDate(order.orderDate) : formatDate(order.createdAt)}</span>
+                    <span className="text-xs font-semibold mt-2">
+                        Order Creation Date: <span>{formData.orderDate ? formData.orderDate.split('T')[0] : formData.createdAt.split('T')[0] }</span>
+                        <input
+                            type="date"
+                            name="orderDate"
+                            value={formData.orderDate}
+                            onChange={handleInputChange}
+                            className="font-bold max-w-fit text-end border rounded px-2 py-1 dark:bg-zinc-800 dark:text-white mt-1"
+                        />
                     </span>
                     <span className="text-xs font-semibold mt-2">
                         Estimated Dispatch Date: <span>{formData.estimatedDispatchDate.split('T')[0]}</span>
