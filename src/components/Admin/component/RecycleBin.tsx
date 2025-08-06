@@ -153,7 +153,7 @@ const RecycleBin: React.FC = () => {
 
       {confirmDelete && (
         <div className="fixed inset-0 flex items-center justify-center p-4 backdrop-filter backdrop-blur-md z-10">
-          <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full border-4 border-red-500">
+          <div className="bg-red-100 p-6 rounded-lg shadow-xl max-w-sm w-full ">
             <h3 className="text-xl font-bold text-red-600 mb-4">
               Confirm Deletion
             </h3>
@@ -166,13 +166,13 @@ const RecycleBin: React.FC = () => {
                   setConfirmDelete(false);
                   // setUserToDelete(null);
                 }}
-                className="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400 transition-colors"
+                className="bg-white text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={deleteSelected}
-                className="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-colors"
+                className="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-colors cursor-pointer"
               >
                 Confirm Delete
               </button>
@@ -182,7 +182,7 @@ const RecycleBin: React.FC = () => {
       )}
       {confirmRestore && (
         <div className="fixed inset-0 flex items-center justify-center p-4 backdrop-filter backdrop-blur-md z-10">
-          <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full border-4 border-green-500">
+          <div className="bg-green-100 p-6 rounded-lg shadow-xl max-w-sm w-full  ">
             <h3 className="text-xl font-bold text-green-600 mb-4">
               Confirm Restore
             </h3>
@@ -195,13 +195,13 @@ const RecycleBin: React.FC = () => {
                   setConfirmRestore(false);
                   // setUserToDelete(null);
                 }}
-                className="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400 transition-colors"
+                className="bg-white text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={()=>{restoreSelected(),setConfirmRestore(false)}}
-                className="bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition-colors"
+                className="bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition-colors cursor-pointer"
               >
                 Confirm Restore
               </button>

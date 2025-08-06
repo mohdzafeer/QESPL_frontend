@@ -45,7 +45,7 @@ interface Order {
   date?: string;
   status?: string;
   isdeleted?: boolean;
-  orderDate:string
+  orderDate: string
 }
 
 // Custom debounce hook
@@ -323,7 +323,7 @@ const DashBoard = () => {
 
               {showAlert && (
                 <div className="fixed inset-0 flex items-center justify-center p-4 backdrop-filter backdrop-blur-md z-10">
-                  <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full border-4 border-red-500">
+                  <div className="bg-red-100 p-6 rounded-lg shadow-xl max-w-sm w-full">
                     <h3 className="text-xl font-bold text-red-600 mb-4">
                       Confirm Deletion
                     </h3>
@@ -336,13 +336,13 @@ const DashBoard = () => {
                           setShowAlert(false);
                           setUserToDelete(null);
                         }}
-                        className="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400 transition-colors"
+                        className="bg-white text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-100 transition-colors cursor-pointer"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={confirmDelete}
-                        className="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-colors"
+                        className="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-colors cursor-pointer"
                       >
                         Confirm Delete
                       </button>
@@ -843,8 +843,8 @@ const DashBoard = () => {
                             </td>
                             <td className="lg:p-2 p-1">
                               {data.orderDate
-                          ? data.orderDate.split('T')[0]
-                          : data.createdAt?.split('T')[0]}
+                                ? data.orderDate.split('T')[0]
+                                : data.createdAt?.split('T')[0]}
                             </td>
                             <td
                               className={`lg:p-2 p-1 ${data.status === "completed"
@@ -956,8 +956,8 @@ const DashBoard = () => {
                               <span className="text-gray-500">Date</span>
                               <span>
                                 {data.orderDate
-                          ? data.orderDate.split('T')[0]
-                          : data.createdAt?.split('T')[0]}
+                                  ? data.orderDate.split('T')[0]
+                                  : data.createdAt?.split('T')[0]}
                               </span>
                             </div>
                             <div className="flex justify-between">
@@ -973,17 +973,17 @@ const DashBoard = () => {
                                   }`}
                               >
                                 <span
-                                className={`text-xs
+                                  className={`text-xs
                           ${data.status === "pending" && 'bg-yellow-200 px-2 py-1 uppercase rounded-full font-semibold'}
                           ${data.status === "completed" && 'bg-green-200 px-2 py-1 uppercase rounded-full font-semibold'}
                           ${data.status === "delayed" && 'bg-orange-200 px-2 py-1 uppercase rounded-full font-semibold'}
                           ${data.status === "rejected" && 'bg-red-200 px-2 py-1 uppercase rounded-full font-semibold'}
                           `}
 
-                              >{data.status
-                                ? data.status.charAt(0).toUpperCase() +
-                                data.status.slice(1)
-                                : "N/A"}</span>
+                                >{data.status
+                                  ? data.status.charAt(0).toUpperCase() +
+                                  data.status.slice(1)
+                                  : "N/A"}</span>
                               </span>
                             </div>
                           </div>

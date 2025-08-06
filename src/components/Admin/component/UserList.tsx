@@ -170,9 +170,9 @@ const UserDetailsForm: React.FC = () => {
                     <div className="mt-4 pt-4 border-t">
                       <button
                         onClick={() => handleDeleteClick(user)}
-                        className="w-full bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-colors"
+                        className="w-full bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-colors cursor-pointer"
                       >
-                        Delete User
+                        Delete
                       </button>
                     </div>
                   </div>
@@ -218,19 +218,19 @@ const UserDetailsForm: React.FC = () => {
                               {user.username.charAt(0).toUpperCase()}
                             </div>
                           )}
-                          <span className="font-semibold">{user.username}</span>
+                          <span className="font-semibold capitalize text-lg">{user.username}</span>
                         </div>
                       </td>
-                      <td className="py-3 px-6 text-left">{user.email}</td>
-                      <td className="py-3 px-6 text-left">{user.userType}</td>
-                      <td className="py-3 px-6 text-left">{user.employeeId}</td>
-                      <td className="py-3 px-6 text-left">
+                      <td className="py-3 px-6 text-left font-semibold">{user.email}</td>
+                      <td className="py-3 px-6 text-left uppercase text-xs font-bold">{user.userType}</td>
+                      <td className="py-3 px-6 text-left text-sm font-semibold text-black">{user.employeeId}</td>
+                      <td className="py-3 px-6 text-left italic font-semibold">
                         {user.desgination}
                       </td>
                       <td className="py-3 px-6 text-center">
                         <button
                           onClick={() => handleDeleteClick(user)}
-                          className="bg-red-600 text-white font-bold py-1 px-3 rounded text-xs hover:bg-red-700 transition-colors"
+                          className="bg-red-600 text-white font-bold py-1 px-3 rounded text-xs hover:bg-red-700 transition-colors cursor-pointer"
                         >
                           Delete
                         </button>
@@ -244,7 +244,7 @@ const UserDetailsForm: React.FC = () => {
             {/* Confirmation Modal with Blur Background */}
             {showDeleteModal && userToDelete && (
               <div className="fixed inset-0 flex items-center justify-center p-4 backdrop-filter backdrop-blur-md">
-                <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full border-4 border-red-500">
+                <div className="bg-red-100 p-6 rounded-lg shadow-xl max-w-sm w-full ">
                   <h3 className="text-xl font-bold text-red-600 mb-4">
                     Confirm Deletion
                   </h3>
@@ -255,13 +255,13 @@ const UserDetailsForm: React.FC = () => {
                   <div className="flex justify-end gap-2">
                     <button
                       onClick={handleCancelDelete}
-                      className="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400 transition-colors"
+                      className="bg-white text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-100 transition-colors cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleConfirmDelete}
-                      className="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-colors"
+                      className="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-colors cursor-pointer"
                     >
                       Confirm Delete
                     </button>
