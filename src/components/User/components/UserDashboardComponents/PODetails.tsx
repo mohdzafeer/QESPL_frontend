@@ -131,7 +131,7 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
           </span>
           <span className="text-xs font-semibold mt-2">
             Order Date :{" "}
-            <span className="font-bold">{formatDate(orderData.createdAt)}</span>{" "}
+            <span className="font-bold">{orderData.orderDate ? formatDate(orderData.orderDate) : formatDate(orderData.createdAt)}</span>{" "}
             {/* Display dynamic Order Date */}
           </span>
           <span className="text-xs font-semibold">

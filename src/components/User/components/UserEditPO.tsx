@@ -20,6 +20,7 @@ interface User {
 
 interface Order {
     _id: string;
+    orderDate:string,
     orderNumber: string;
     createdAt: string;
     clientName: string;
@@ -58,6 +59,7 @@ export const formatDate = (dateString: string | null | undefined): string => {
 const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({
+        orderDate:order?.orderDate || '',
         clientName: order?.clientName || "",
         companyName: order?.companyName || "",
         address: order?.address || "",
@@ -81,6 +83,7 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
     useEffect(() => {
         if (order) {
             setFormData({
+                orderDate:order.orderDate || "",
                 clientName: order.clientName || "",
                 companyName: order.companyName || "",
                 address: order.address || "",
@@ -186,7 +189,7 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                         {order.orderNumber || "N/A"}
                     </span>
                     <span className="text-xs font-semibold">
-                        Order Date: <span className="font-bold">{formatDate(order.createdAt)}</span>
+                        Order Date: <span className="font-bold">{order.orderDate ? formatDate(order.orderDate) : formatDate(order.createdAt)}</span>
                     </span>
                     <span className="text-xs font-semibold mt-2">
                         Estimated Dispatch Date: <span>{formData.estimatedDispatchDate.split('T')[0]}</span>
@@ -262,7 +265,7 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
 
             <div className="bg-gray-100 dark:bg-zinc-800 text-left px-2 py-4 text-sm mt-6 rounded-md">
                 <span className="font-mono font-semibold text-lg mb-4 block">Company Details</span>
-                <div className="flex flex-col lg:flex-row justify-between gap-4">
+                <div className="flex flex-col  lg:flex-row justify-between gap-4">
                     <div className="flex flex-col w-full lg:w-1/2">
                         <label className="flex flex-col mb-2">
                             Client Name:

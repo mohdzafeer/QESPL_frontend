@@ -60,6 +60,7 @@ interface Order {
   deletedAt?: string; // Optional
   formGeneratedBy?: string; // Some orders have this field
   orderThrough?: orderThrough;
+  orderDate:String
 }
 
 interface Pagination {
@@ -342,7 +343,7 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
               </thead>
               <tbody>
                 {paginatedOrders.length > 0 ? (
-                  paginatedOrders.map((data) => (
+                  paginatedOrders.map((data:any) => (
                     <tr
                       key={data._id}
                       className="border-b border-gray-200 dark:border-zinc-600 odd:bg-white dark:odd:bg-zinc-800 even:bg-gray-50 even:dark:bg-zinc-900"
@@ -367,9 +368,9 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                       <td className="lg:p-2 p-1">{data.companyName}</td>
                       <td className="lg:p-2 p-1">{data.clientName}</td>
                       <td className="lg:p-2 p-1">
-                        {data.createdAt
-                          ? new Date(data.createdAt).toLocaleDateString()
-                          : "N/A"}
+                        {data.orderDate
+                          ? data.orderDate.split('T')[0]
+                          : data.createdAt?.split('T')[0]}
                       </td>
                       <td
                         className={`lg:p-2 p-1 ${data.status === "completed"
@@ -421,7 +422,7 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
           {/* Mobile View: Stacked Table */}
           <div className="lg:hidden space-y-4">
             {paginatedOrders.length > 0 ? (
-              paginatedOrders.map((data) => (
+              paginatedOrders.map((data:any) => (
                 <div
                   key={data._id}
                   className="border border-gray-300 rounded-md text-xs"
@@ -468,9 +469,9 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                       Date:
                     </span>
                     <span className="w-2/3 text-left">
-                      {data.createdAt
-                        ? new Date(data.createdAt).toLocaleDateString()
-                        : "N/A"}
+                      {data.orderDate
+                          ? data.orderDate.split('T')[0]
+                          : data.createdAt?.split('T')[0]}
                     </span>
                   </div>
 

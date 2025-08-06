@@ -45,6 +45,7 @@ interface Order {
   date?: string;
   status?: string;
   isdeleted?: boolean;
+  orderDate:string
 }
 
 // Custom debounce hook
@@ -841,9 +842,9 @@ const DashBoard = () => {
                               {data.clientName || "N/A"}
                             </td>
                             <td className="lg:p-2 p-1">
-                              {new Date(
-                                data.createdAt || data.date || ""
-                              ).toLocaleDateString() || "N/A"}
+                              {data.orderDate
+                          ? data.orderDate.split('T')[0]
+                          : data.createdAt?.split('T')[0]}
                             </td>
                             <td
                               className={`lg:p-2 p-1 ${data.status === "completed"
@@ -954,9 +955,9 @@ const DashBoard = () => {
                             <div className="flex justify-between">
                               <span className="text-gray-500">Date</span>
                               <span>
-                                {new Date(
-                                  data.createdAt || data.date || ""
-                                ).toLocaleDateString() || "N/A"}
+                                {data.orderDate
+                          ? data.orderDate.split('T')[0]
+                          : data.createdAt?.split('T')[0]}
                               </span>
                             </div>
                             <div className="flex justify-between">

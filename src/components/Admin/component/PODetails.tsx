@@ -97,7 +97,7 @@ const PODetails: React.FC<PODetailsProps> = ({ order }) => {
           </span>
           <span className="text-xs font-semibold mt-2">
             Order Date :{" "}
-            <span className="font-bold">{formatDate(order.createdAt)}</span>
+            <span className="font-bold">{order.orderDate ? formatDate(order.orderDate): formatDate(order.createdAt)}</span>
           </span>
           <span className="text-xs font-semibold">
             Estimated Dispatch Date :{" "}

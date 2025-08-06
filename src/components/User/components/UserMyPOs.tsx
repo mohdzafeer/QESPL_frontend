@@ -134,7 +134,7 @@ const UserMyPOs: React.FC = () => {
                       `}>{order?.status || 'N/A'}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 font-semibold ">
-                    {formatDate(order?.createdAt)}
+                    {order.orderDate ? formatDate(order.orderDate) : formatDate(order.createdAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-4">
@@ -182,7 +182,7 @@ const UserMyPOs: React.FC = () => {
                 </div>
                 <div className="flex justify-between mb-4">
                   <span className="font-semibold text-gray-700 dark:text-gray-300">Created On:</span>
-                  <span className="text-gray-800 dark:text-gray-200">{formatDate(order.createdAt)}</span>
+                  <span className="text-gray-800 dark:text-gray-200">{order.orderDate ? formatDate(order.orderDate) : formatDate(order.createdAt)}</span>
                 </div>
                 <div className="flex justify-end space-x-4">
                   <FaEdit
