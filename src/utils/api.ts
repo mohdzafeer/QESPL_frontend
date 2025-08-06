@@ -461,16 +461,6 @@ export const deleteOrdersMultiple1 = async (orderIds: string[]) => {
 
 
 
-export const getTotalPOCount = async () => {
-  try {
-    const response = await api.get("/order/api/total-po-count"); // Corrected endpoint
-    console.log("API Response:", response.data);
-    return response.data; // This will be { total_po_count: 37 }
-  } catch (error) {
-    console.error("Error fetching total PO count:", error);
-    throw error; // Re-throw the error for the component to handle
-  }
-};
 
 
 
@@ -502,4 +492,58 @@ export const deleteloginUser = async (orderId: string) => {
     withCredentials: true,
   });
   return response.data;
+};
+
+
+
+// Get count api endpoints
+export const getTotalPOCount = async () => {
+  try {
+    const response = await api.get("/order/api/get-total-po-count"); // Corrected endpoint
+    console.log("API Response:", response.data);
+    return response.data; // This will be { total_po_count: 37 }
+  } catch (error) {
+    console.error("Error fetching total PO count:", error);
+    throw error; // Re-throw the error for the component to handle
+  }
+};
+export const getCompletedPOCount = async () => {
+  try {
+    const response = await api.get("/order/api/get-completed-po-count"); // Corrected endpoint
+    console.log("API Response:", response.data);
+    return response.data; // This will be { total_po_count: 37 }
+  } catch (error) {
+    console.error("Error fetching total PO count:", error);
+    throw error; // Re-throw the error for the component to handle
+  }
+};
+export const getPendingPOCount = async () => {
+  try {
+    const response = await api.get("/order/api/get-pending-po-count"); // Corrected endpoint
+    console.log("API Response:", response.data);
+    return response.data; // This will be { total_po_count: 37 }
+  } catch (error) {
+    console.error("Error fetching total PO count:", error);
+    throw error; // Re-throw the error for the component to handle
+  }
+};
+export const getDelayedPOCount = async () => {
+  try {
+    const response = await api.get("/order/api/get-delayed-po-count"); // Corrected endpoint
+    console.log("API Response:", response.data);
+    return response.data; // This will be { total_po_count: 37 }
+  } catch (error) {
+    console.error("Error fetching total PO count:", error);
+    throw error; // Re-throw the error for the component to handle
+  }
+};
+export const getRejectedPOCount = async () => {
+  try {
+    const response = await api.get("/order/api/get-rejected-po-count"); // Corrected endpoint
+    console.log("API Response:", response.data);
+    return response.data; // This will be { total_po_count: 37 }
+  } catch (error) {
+    console.error("Error fetching total PO count:", error);
+    throw error; // Re-throw the error for the component to handle
+  }
 };

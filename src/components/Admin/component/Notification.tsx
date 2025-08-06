@@ -36,11 +36,7 @@ const Notification: React.FC<NotificationProps> = ({ onClose }) => {
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-800 dark:text-white text-lg sm:text-xl">Notifications</span>
-          {notificationCount > 0 && (
-            <span className="bg-blue-600 text-white text-xs font-semibold rounded-full px-2 py-1">
-              {notificationCount}
-            </span>
-          )}
+          
         </div>
         <button
           onClick={onClose}

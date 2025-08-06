@@ -200,7 +200,7 @@ const RecycleBin: React.FC = () => {
                 Cancel
               </button>
               <button
-                onClick={restoreSelected}
+                onClick={()=>{restoreSelected(),setConfirmRestore(false)}}
                 className="bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition-colors"
               >
                 Confirm Restore
@@ -312,22 +312,28 @@ const RecycleBin: React.FC = () => {
                   </td>{" "}
                   {/* Use createdAt */}
                   <td
-                    className={`p-2 font-semibold ${
-                      data?.status === "completed"
-                        ? "text-green-500"
-                        : data.status === "delayed"
-                        ? "text-orange-500"
-                        : data.status === "pending"
-                        ? "text-yellow-500"
-                        : data.status === "rejected"
-                        ? "text-red-500"
-                        : ""
-                    }`}
-                  >
-                    {data?.status?.charAt(0)?.toUpperCase() +
-                      data?.status?.slice(1)}{" "}
-                    {/* Capitalize status */}
-                  </td>
+                              className={`lg:p-2 p-1 ${data.status === "completed"
+                                ? "text-green-600"
+                                : data.status === "delayed"
+                                  ? "text-orange-600"
+                                  : data.status === "pending"
+                                    ? "text-yellow-600"
+                                    : "text-red-600"
+                                }`}
+                            >
+                              <span
+                                className={`
+                          ${data.status === "pending" && 'bg-yellow-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "completed" && 'bg-green-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "delayed" && 'bg-orange-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "rejected" && 'bg-red-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          `}
+
+                              >{data.status
+                                ? data.status.charAt(0).toUpperCase() +
+                                data.status.slice(1)
+                                : "N/A"}</span>
+                            </td>
                   <td className="p-2">
                     {calculateTimeRemaining(data?.estimatedDispatchDate)}
                   </td>
@@ -417,8 +423,18 @@ const RecycleBin: React.FC = () => {
                       : ""
                   }`}
                 >
-                  {data.status?.charAt(0)?.toUpperCase() +
-                    data.status?.slice(1)}{" "}
+                  <span
+                                className={`text-xs
+                          ${data.status === "pending" && 'bg-yellow-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "completed" && 'bg-green-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "delayed" && 'bg-orange-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "rejected" && 'bg-red-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          `}
+
+                              >{data.status
+                                ? data.status.charAt(0).toUpperCase() +
+                                data.status.slice(1)
+                                : "N/A"}</span>
                   {/* Capitalize status */}
                 </span>
               </div>

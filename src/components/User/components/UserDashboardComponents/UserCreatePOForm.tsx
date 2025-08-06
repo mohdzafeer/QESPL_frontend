@@ -7,6 +7,8 @@ import {
   clearMessages,
   createOrderAsync,
   fetchOrdersAsync,
+  fetchPendingPOCountAsync,
+  fetchTotalPOCountAsync,
 } from "../../../../store/Slice/orderSlice";
 import { toast } from "react-toastify";
 import { motion } from "motion/react";
@@ -356,7 +358,8 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({
     try {
       await dispatch(createOrderAsync(apiOrderData)).unwrap();
       onOrderCreated();
-
+      dispatch(fetchTotalPOCountAsync())
+      dispatch(fetchPendingPOCountAsync())
       setShowForm(false);
       setLoading(false);
 

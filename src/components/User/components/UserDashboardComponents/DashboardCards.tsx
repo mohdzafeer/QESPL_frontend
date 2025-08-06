@@ -7,19 +7,18 @@ import { RxCross2 } from "react-icons/rx";
 import { SiTicktick } from "react-icons/si";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import type { RootState } from "../../../../store/store"; // adjust the import path as needed
+import type { RootState, AppDispatch } from "../../../../store/store"; // adjust the import path as needed
 import { setStatusFilter } from "../../../../store/Slice/filterSlice"; // adjust the import path as needed
-
-// import { fetchAllOrders, getTotalPOCount } from "../../../../utils/api";
-// adjust the import path as needed
+import {
+  fetchCompletedPOCountAsync,
+  fetchDelayedPOCountAsync,
+  fetchPendingPOCountAsync,
+  fetchRejectedPOCountAsync,
+  fetchTotalPOCountAsync
+} from "../../../../store/Slice/orderSlice";
 
 const DashboardCards = () => {
-  // const [statusFilter, setStatusFilter] = useState<
-  //     "all" | "pending" | "completed" | "delayed" | "rejected"
-  //   >("all");
-
-  const dispatch = useDispatch();
-  
+  const dispatch = useDispatch<AppDispatch>(); // Add AppDispatch type for better type inference
 
   const statusFilter = useSelector(
     (state: RootState) => state.filter.statusFilter
@@ -29,17 +28,52 @@ const DashboardCards = () => {
     dispatch(setStatusFilter(status));
   };
 
- 
-
   useEffect(() => {
-    console.log(statusFilter);
-    
+    console.log("Current Status Filter:", statusFilter);
   }, [statusFilter]);
 
+  // --- CORRECTED useSelector calls ---
+  const totalPOCount = useSelector((state: RootState) => state.orders.totalPOCount);
+  const completedPOCount = useSelector((state: RootState) => state.orders.completedPOCount);
+  const pendingPOCount = useSelector((state: RootState) => state.orders.pendingPOCount); // Corrected
+  const delayedPOCount = useSelector((state: RootState) => state.orders.delayedPOCount); // Corrected
+  const rejectedPOCount = useSelector((state: RootState) => state.orders.rejectedPOCount); // Corrected
+  // --- END CORRECTED useSelector calls ---
+
+  // It's good practice to also select status and error for UI feedback
+  const status = useSelector((state: RootState) => state.orders.status);
+  const error = useSelector((state: RootState) => state.orders.error);
 
 
+  useEffect(() => {
+    // Dispatch all the thunks when the component mounts
+    // Consider adding checks to prevent re-fetching if data is already present and not stale
+    // For example: if (totalPOCount === null && status !== 'loading') { dispatch(fetchTotalPOCountAsync()); }
+    dispatch(fetchTotalPOCountAsync());
+    dispatch(fetchCompletedPOCountAsync());
+    dispatch(fetchPendingPOCountAsync());
+    dispatch(fetchDelayedPOCountAsync());
+    dispatch(fetchRejectedPOCountAsync());
+  }, [dispatch]); // Dependency array ensures it runs once on mount
+
+  // Log all values for debugging
+  console.log("Total PO:", totalPOCount);
+  console.log("Completed PO:", completedPOCount);
+  console.log("Pending PO:", pendingPOCount);
+  console.log("Delayed PO:", delayedPOCount);
+  console.log("Rejected PO:", rejectedPOCount);
+  console.log("Redux Status:", status);
+  console.log("Redux Error:", error);
 
 
+  // You might want to add loading and error states to your UI
+  if (status === 'loading') {
+    return <div className="text-center py-4 text-blue-600">Loading PO counts...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-4 text-red-600">Error: {error}</div>;
+  }
 
   return (
     <div>
@@ -77,16 +111,8 @@ const DashboardCards = () => {
                   : "text-[var(--theme-color)] dark:text-white"
               } text-3xl font-bold`}
             >
-              {/* {counts.total} */}
-              4
+              {totalPOCount !== null ? totalPOCount : 'N/A'}
             </p>
-            {/* <p
-                      className={`${
-                        statusFilter == "all" ? "text-white" : "text-[var(--theme-color)]"
-                      } text-sm`}
-                    >
-                      <span className="font-bold ">+12.5%</span> from last month
-                    </p> */}
           </div>
           <div className="w-16 flex justify-center ">
             <IoDocumentTextOutline className="text-black text-5xl w-fit bg-gray-200 dark:bg-zinc-700 rounded-lg p-2" />
@@ -122,12 +148,8 @@ const DashboardCards = () => {
                 statusFilter == "completed" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
-              {/* {counts.completed} */}
-              3
+              {completedPOCount !== null ? completedPOCount : 'N/A'}
             </p>
-            {/* <p className="text-green-500 text-sm">
-                      <span className="font-bold  ">+3%</span> from last month
-                    </p> */}
           </div>
           <div className="w-16 flex justify-center ">
             <SiTicktick className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
@@ -165,12 +187,8 @@ const DashboardCards = () => {
                 statusFilter == "pending" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
-              {/* {counts.pending} */}
-              1
+              {pendingPOCount !== null ? pendingPOCount : 'N/A'}
             </p>
-            {/* <p className="text-yellow-400 text-sm">
-                      <span className="font-bold  ">+2%</span> from last month
-                    </p> */}
           </div>
           <div className="w-16 flex justify-center ">
             <IoMdTime className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
@@ -206,13 +224,8 @@ const DashboardCards = () => {
                 statusFilter == "delayed" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
-              {/* {counts.delayed} */}
-              1
+              {delayedPOCount !== null ? delayedPOCount : 'N/A'}
             </p>
-            {/* <p className="font-bold text-2xl">20</p> */}
-            {/* <p className="text-orange-400 text-sm">
-                      <span className="font-bold  ">+2%</span> from last month
-                    </p> */}
           </div>
           <div className="w-16 flex justify-center ">
             <CgSandClock className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
@@ -248,13 +261,8 @@ const DashboardCards = () => {
                 statusFilter == "rejected" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
-              {/* {counts.rejected} */}
-              0
+              {rejectedPOCount !== null ? rejectedPOCount : 'N/A'}
             </p>
-            {/* <p className="font-bold text-2xl">20</p> */}
-            {/* <p className="text-red-600 text-sm">
-                      <span className="font-bold  ">+2%</span> from last month
-                    </p> */}
           </div>
           <div className="w-16 flex justify-center ">
             <RxCross2 className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />

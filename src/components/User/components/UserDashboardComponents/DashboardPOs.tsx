@@ -8,8 +8,8 @@ import type { RootState } from "../../../../store/store";
 import { setStatusFilter } from "../../../../store/Slice/filterSlice";
 import { fetchAllOrders } from "../../../../utils/api"; // Ensure this path is correct
 import { handleDownload } from "../../../Admin/component/downlaod";
-import { fetchOrdersAsync } from "../../../../store/Slice/orderSlice";
-import {FadeLoader} from 'react-spinners'
+import { fetchOrdersAsync, fetchTotalPOCountAsync } from "../../../../store/Slice/orderSlice";
+import { FadeLoader } from 'react-spinners'
 // --- INTERFACES: COPIED DIRECTLY FROM PODetails.tsx (po-details-updated Canvas) ---
 interface Product {
   _id?: string; // Optional, some products might not have it or it's not needed for display
@@ -83,15 +83,12 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
   const { orders, loading, error } = useSelector(
     (state: RootState) => state.orders
   );
-
   const [searchQuery, setSearchQuery] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [dateErrors, setDateErrors] = useState({ fromDate: "", toDate: "" });
-
   const [showPODetails, setShowPODetails] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-
   const rowsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -114,7 +111,7 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
     const matchesStatus =
       statusFilter === "all" ||
       order.status?.toLowerCase().trim() ===
-        statusFilter.toLowerCase().trim();
+      statusFilter.toLowerCase().trim();
 
     const matchesSearch =
       searchQuery.toLowerCase().trim() === "" ||
@@ -128,9 +125,6 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
         .toLowerCase()
         .includes(searchQuery.toLowerCase().trim()) ||
       order.generatedBy.username
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase().trim()) ||
-      order.generatedBy.name
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase().trim()) ||
       order.generatedBy.employeeId
@@ -196,6 +190,11 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
     setSelectedOrder(order);
     setShowPODetails(true);
   };
+
+
+
+
+
 
   if (loading) {
     return (
@@ -268,11 +267,10 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                   setFromDate(e.target.value);
                   validateDates("fromDate", e.target.value);
                 }}
-                className={`p-2 border bg-white dark:bg-zinc-800 ${
-                  dateErrors.fromDate
-                    ? "border-red-500"
-                    : "border-gray-300 dark:border-zinc-600"
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className={`p-2 border bg-white dark:bg-zinc-800 ${dateErrors.fromDate
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-zinc-600"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 max={today}
               />
               {dateErrors.fromDate && (
@@ -298,11 +296,10 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                   setToDate(e.target.value);
                   validateDates("toDate", e.target.value);
                 }}
-                className={`p-2 border bg-white dark:bg-zinc-800 ${
-                  dateErrors.toDate
-                    ? "border-red-500"
-                    : "border-gray-300 dark:border-zinc-600"
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className={`p-2 border bg-white dark:bg-zinc-800 ${dateErrors.toDate
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-zinc-600"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 max={today}
               />
               {dateErrors.toDate && (
@@ -359,7 +356,7 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                         <div className="flex flex-col">
                           <span className="text-start font-semibold text-sm">
                             {data.generatedBy?.username ||
-                              
+
                               "N/A"}
                           </span>
                           <span className="text-start">
@@ -375,20 +372,27 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                           : "N/A"}
                       </td>
                       <td
-                        className={`lg:p-2 p-1 ${
-                          data.status === "completed"
-                            ? "text-green-500"
-                            : data.status === "delayed"
-                            ? "text-orange-500"
+                        className={`lg:p-2 p-1 ${data.status === "completed"
+                          ? "text-green-600"
+                          : data.status === "delayed"
+                            ? "text-orange-600"
                             : data.status === "pending"
-                            ? "text-yellow-500"
-                            : "text-red-500"
-                        }`}
+                              ? "text-yellow-600"
+                              : "text-red-600"
+                          }`}
                       >
-                        {data.status
+                        <span
+                          className={`
+                          ${data.status === "pending" && 'bg-yellow-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "completed" && 'bg-green-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "delayed" && 'bg-orange-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "rejected" && 'bg-red-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          `}
+
+                        >{data.status
                           ? data.status.charAt(0).toUpperCase() +
-                            data.status.slice(1)
-                          : "N/A"}
+                          data.status.slice(1)
+                          : "N/A"}</span>
                       </td>
                       <td className="lg:p-2 p-1 lg:gap-3 gap-1 lg:text-3xl text-lg flex justify-center items-center pr-5">
                         <IoEyeOutline
@@ -475,20 +479,27 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                       Status:
                     </span>
                     <span
-                      className={`w-2/3 font-semibold text-left ${
-                        data.status === "completed"
-                          ? "text-green-500"
-                          : data.status === "delayed"
+                      className={`w-2/3 font-semibold text-left ${data.status === "completed"
+                        ? "text-green-500"
+                        : data.status === "delayed"
                           ? "text-orange-500"
                           : data.status === "pending"
-                          ? "text-yellow-500"
-                          : "text-red-500"
-                      }`}
+                            ? "text-yellow-500"
+                            : "text-red-500"
+                        }`}
                     >
-                      {data.status
+                      <span
+                        className={`
+                          ${data.status === "pending" && 'bg-yellow-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "completed" && 'bg-green-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "delayed" && 'bg-orange-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          ${data.status === "rejected" && 'bg-red-200 px-2 py-1 uppercase rounded-full font-bold'}
+                          `}
+
+                      >{data.status
                         ? data.status.charAt(0).toUpperCase() +
-                          data.status.slice(1)
-                        : "N/A"}
+                        data.status.slice(1)
+                        : "N/A"}</span>
                     </span>
                   </div>
 
@@ -528,11 +539,10 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
               <button
                 key={i}
                 onClick={() => changePage(i + 1)}
-                className={`px-3 py-1 rounded-full text-sm ${
-                  currentPage === i + 1
-                    ? "bg-blue-600 text-white font-semibold"
-                    : "bg-gray-100 dark:bg-[var(--theme-color)] hover:bg-blue-100"
-                }`}
+                className={`px-3 py-1 rounded-full text-sm ${currentPage === i + 1
+                  ? "bg-blue-600 text-white font-semibold"
+                  : "bg-gray-100 dark:bg-[var(--theme-color)] hover:bg-blue-100"
+                  }`}
               >
                 {i + 1}
               </button>
