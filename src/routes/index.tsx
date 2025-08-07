@@ -19,6 +19,7 @@ import UserMessage from "../components/User/components/UserMessage";
 // import UserSettings from "../components/User/components/UserSettings";
 import UserNotification from "../components/User/components/UserNotification";
 import UserMyPOs from "../components/User/components/UserMyPOs";
+import SubadminApprovePO from "../components/Subadmin/SubadminApprovePO";
 
 export const AppRoutes: React.FC = () => {
 
@@ -52,6 +53,7 @@ export const AppRoutes: React.FC = () => {
               <Route path="mypos" element={<UserMyPOs />} />
               <Route path="settings" element={<Settings />} />
               <Route path="recycle-bin" element={<RecycleBin />} />
+              <Route path="approve-pos" element={<SubadminApprovePO />} />
             </Route>
           </Route>
 

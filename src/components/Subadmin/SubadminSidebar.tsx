@@ -11,6 +11,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { selectLoggedInUser } from "../../store/Slice/authSlice";
 import { IoIosList } from "react-icons/io";
+import { AiOutlineFileDone } from "react-icons/ai";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -82,14 +83,20 @@ const subadminSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       redirectTo: "/subadmin/dashboard/mypos",
     },
     {
-      name: "Settings",
+      name: "Approvals",
       id: 7,
+      icon: <AiOutlineFileDone />,
+      redirectTo: "/subadmin/dashboard/approve-pos",
+    },
+    {
+      name: "Settings",
+      id: 8,
       icon: <MdOutlineSettings />,
       redirectTo: "/subadmin/dashboard/settings",
     },
     {
       name: "Recycle Bin",
-      id: 8,
+      id: 9,
       icon: <MdDeleteOutline />,
       redirectTo: "/subadmin/dashboard/recycle-bin",
     },
