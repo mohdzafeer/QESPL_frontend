@@ -11,6 +11,7 @@ import {
 } from "../../../utils/api";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
+import UserReport from "./UserReport";
 
 interface User {
   _id: { $oid: string };
@@ -68,6 +69,7 @@ const UserDetailsForm: React.FC = () => {
   const colors = ["bg-red-500", "bg-blue-500", "bg-green-500", "bg-yellow-500"];
 
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showUserReport, setUserReport] = useState<boolean>(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
   const handleDeleteClick = (user: User) => {
@@ -190,7 +192,7 @@ const UserDetailsForm: React.FC = () => {
                     <th className="py-3 px-6 text-left">User Type</th>
                     <th className="py-3 px-6 text-left">Employee ID</th>
                     <th className="py-3 px-6 text-left">Designation</th>
-                    <th className="py-3 px-6 text-center">Actions</th>
+                    <th className="py-3 px-6 text-end">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-600 dark:text-white text-sm font-light">
@@ -227,7 +229,13 @@ const UserDetailsForm: React.FC = () => {
                       <td className="py-3 px-6 text-left italic font-semibold">
                         {user.desgination}
                       </td>
-                      <td className="py-3 px-6 text-center">
+                      <td className="py-3 px-6 text-center flex gap-4 justify-end">
+                        <button
+                          onClick={() => {setUserReport(true)}}
+                          className="bg-blue-600 text-white font-bold py-1 px-3 rounded text-xs hover:bg-blue-700 transition-colors cursor-pointer"
+                        >
+                          View Report
+                        </button>
                         <button
                           onClick={() => handleDeleteClick(user)}
                           className="bg-red-600 text-white font-bold py-1 px-3 rounded text-xs hover:bg-red-700 transition-colors cursor-pointer"
@@ -266,6 +274,14 @@ const UserDetailsForm: React.FC = () => {
                       Confirm Delete
                     </button>
                   </div>
+                </div>
+              </div>
+            )}
+            {showUserReport && (
+              <div className="fixed inset-0 flex items-center justify-center p-4 backdrop-filter backdrop-blur-md">
+                <div className="bg-white">
+                  <UserReport/>
+                  <span className="text-3xl cursor-pointer" onClick={()=>setUserReport(false)}>&times;</span>
                 </div>
               </div>
             )}
