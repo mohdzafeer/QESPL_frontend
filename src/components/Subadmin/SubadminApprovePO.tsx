@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchAllOrders, getNonApprovalPOs } from '../../utils/api';
+import { getNonApprovalPOs } from '../../utils/api';
 import { formatDate } from '../User/components/UserEditPO';
 import { BeatLoader } from 'react-spinners';
 import { useDispatch } from 'react-redux';

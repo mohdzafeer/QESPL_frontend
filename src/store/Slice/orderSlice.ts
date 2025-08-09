@@ -7,7 +7,7 @@ import {
   fetchLoginUser,
   updateOrder,
   deleteloginUser,
-  getTotalPOCount, // Make sure this is imported
+  getTotalPOCount,
   getCompletedPOCount,
   getPendingPOCount,
   getDelayedPOCount,
@@ -15,7 +15,7 @@ import {
 } from '../../utils/api';
 
 export interface Order {
-  _id?: string; // Optional for creation, added by backend
+  _id?: string;
   orderdate:string;
   orderNumber: string;
   clientName: string;
@@ -29,20 +29,20 @@ export interface Order {
     price: number;
     quantity: number;
     remark?: string;
-    _id?: string; // Optional for creation
+    _id?: string;
     createdAt?: string;
     updatedAt?: string;
   }>;
   estimatedDispatchDate: string;
-  status?: string; // Optional for creation, set by backend
+  status?: string;
   orderThrough: {
     username: string;
     employeeId: string;
   };
-  isdeleted?: boolean; // Optional for creation
-  deletedAt?: string | null; // Optional for creation
-  createdAt?: string; // Optional for creation
-  updatedAt?: string; // Optional for creation
+  isdeleted?: boolean;
+  deletedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
   generatedBy: {
     username: string;
     employeeId: string;
@@ -59,11 +59,11 @@ interface Pagination {
 interface OrderState {
   orders: Order[];
   pagination: Pagination;
-  totalPOCount: number | null; // <-- ADDED: New state property for total PO count
-  completedPOCount: number | null; // <-- ADDED: New state property for Completed PO count
-  pendingPOCount: number | null; // <-- ADDED: New state property for Completed PO count
-  delayedPOCount: number | null; // <-- ADDED: New state property for Completed PO count
-  rejectedPOCount: number | null; // <-- ADDED: New state property for Completed PO count
+  totalPOCount: number | null;
+  completedPOCount: number | null;
+  pendingPOCount: number | null;
+  delayedPOCount: number | null;
+  rejectedPOCount: number | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
   message: string | null;
@@ -85,101 +85,81 @@ export const fetchOrdersAsync = createAsyncThunk(
   }
 );
 
-
-
 // ----------------------PO Count Thunks---------------------------------------
-// New Async Thunk for getTotalPOCount
 export const fetchTotalPOCountAsync = createAsyncThunk<
-  { total_po_count: number }, // Expected return type from the API
-  void, // No arguments needed for this thunk
+  { total_po_count: number },
+  void,
   { rejectValue: string }
 >(
-  'orders/fetchTotalPOCount', // This is the action type prefix
+  'orders/fetchTotalPOCount',
   async (_, { rejectWithValue }) => {
     try {
       const response = await getTotalPOCount();
-      return response; // response.data will be { total_po_count: 42 }
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch total PO count');
     }
   }
 );
 
-
-
-// New Async Thunk for completedPOCount
 export const fetchCompletedPOCountAsync = createAsyncThunk<
-  { completed_po_count: number }, // Expected return type from the API
-  void, // No arguments needed for this thunk
+  { completed_po_count: number },
+  void,
   { rejectValue: string }
 >(
-  'orders/fetchCompletedPOCount', // This is the action type prefix
+  'orders/fetchCompletedPOCount',
   async (_, { rejectWithValue }) => {
     try {
       const response = await getCompletedPOCount();
-      return response; // response.data will be { total_po_count: 42 }
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch completed PO count');
     }
   }
 );
 
-
-
-
-
-
-
-
-// New Async Thunk for pendingPOCount
 export const fetchPendingPOCountAsync = createAsyncThunk<
-  { pending_po_count: number }, // Expected return type from the API
-  void, // No arguments needed for this thunk
+  { pending_po_count: number },
+  void,
   { rejectValue: string }
 >(
-  'orders/fetchPendingPOCount', // This is the action type prefix
+  'orders/fetchPendingPOCount',
   async (_, { rejectWithValue }) => {
     try {
       const response = await getPendingPOCount();
-      return response; // response.data will be { total_po_count: 42 }
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch Pending PO count');
     }
   }
 );
 
-
-
-// New Async Thunk for pendingPOCount
 export const fetchDelayedPOCountAsync = createAsyncThunk<
-  { delayed_po_count: number }, // Expected return type from the API
-  void, // No arguments needed for this thunk
+  { delayed_po_count: number },
+  void,
   { rejectValue: string }
 >(
-  'orders/fetchDelayedPOCount', // This is the action type prefix
+  'orders/fetchDelayedPOCount',
   async (_, { rejectWithValue }) => {
     try {
       const response = await getDelayedPOCount();
-      return response; // response.data will be { total_po_count: 42 }
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch Delayed PO count');
     }
   }
 );
 
-
-
-// New Async Thunk for pendingPOCount
 export const fetchRejectedPOCountAsync = createAsyncThunk<
-  { rejected_po_count: number }, // Expected return type from the API
-  void, // No arguments needed for this thunk
+  { rejected_po_count: number },
+  void,
   { rejectValue: string }
 >(
-  'orders/fetchRejectedPOCount', // This is the action type prefix
+  'orders/fetchRejectedPOCount',
   async (_, { rejectWithValue }) => {
     try {
       const response = await getRejectedPOCount();
-      return response; // response.data will be { total_po_count: 42 }
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to Rejected Delayed PO count');
     }
@@ -221,9 +201,9 @@ export const createOrderAsync = createAsyncThunk<
 
 export const fetchLoginUserAsync = createAsyncThunk(
   'orders/fetchLoginUser',
-  async (_, { rejectWithValue }) => {
+  async ({ page = 1, limit = 10 }: { page?: number; limit?: number }, { rejectWithValue }) => {
     try {
-      const response = await fetchLoginUser();
+      const response = await fetchLoginUser(page, limit);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -263,7 +243,7 @@ const initialState: OrderState = {
     totalOrders: 0,
     limit: 10,
   },
-  totalPOCount: null, // <-- ADDED: Initialize new state property
+  totalPOCount: null,
   completedPOCount:null,
   pendingPOCount:null,
   delayedPOCount:null,
@@ -281,7 +261,6 @@ const orderSlice = createSlice({
     resetOrders: (state) => {
       state.orders = [];
       state.pagination = { currentPage: 1, totalPages: 1, totalOrders: 0, limit: 10 };
-      // state.totalPOCount = null; // <-- ADDED: Reset total PO count as well
       state.status = 'idle';
       state.error = null;
       state.message = null;
@@ -345,13 +324,21 @@ const orderSlice = createSlice({
       })
       .addCase(fetchLoginUserAsync.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.orders = action.payload.data.orders || [];
-        state.pagination = action.payload.pagination || state.pagination;
+        state.orders = action.payload.data.orders;
+        // Correctly update the pagination state from the backend response
+        state.pagination.totalOrders = action.payload.data.totalOrders;
+        state.pagination.totalPages = action.payload.data.totalPages;
+        state.pagination.currentPage = action.payload.data.currentPage;
+        state.pagination.limit = action.payload.data.limit;
+        state.success = true;
       })
       .addCase(fetchLoginUserAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
         state.success = false;
+        // Reset pagination on failure
+        state.orders = [];
+        state.pagination = { currentPage: 1, totalPages: 1, totalOrders: 0, limit: 10 };
       })
       .addCase(updateOrderAsync.pending, (state) => {
         state.status = 'loading';
@@ -386,90 +373,71 @@ const orderSlice = createSlice({
         state.error = action.payload as string;
         state.success = false;
       })
-
-
-      
-      // <-- ADDED: New extra reducers for fetchTotalPOCountAsync
       .addCase(fetchTotalPOCountAsync.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
       .addCase(fetchTotalPOCountAsync.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.totalPOCount = action.payload.total_po_count; // Update the new state property
+        state.totalPOCount = action.payload.total_po_count;
       })
       .addCase(fetchTotalPOCountAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-        state.totalPOCount = null; // Clear the count on failure
+        state.totalPOCount = null;
       })
-
-
-      // <-- ADDED: New extra reducers for fetchCompletedPOCountAsync
       .addCase(fetchCompletedPOCountAsync.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
       .addCase(fetchCompletedPOCountAsync.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.completedPOCount = action.payload.completed_po_count; // Update the new state property
+        state.completedPOCount = action.payload.completed_po_count;
       })
       .addCase(fetchCompletedPOCountAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-        state.completedPOCount = null; // Clear the count on failure
+        state.completedPOCount = null;
       })
-      
-      
-      // <-- ADDED: New extra reducers for fetchPendingPOCountAsync
       .addCase(fetchPendingPOCountAsync.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
       .addCase(fetchPendingPOCountAsync.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.pendingPOCount = action.payload.pending_po_count; // Update the new state property
+        state.pendingPOCount = action.payload.pending_po_count;
       })
       .addCase(fetchPendingPOCountAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-        state.pendingPOCount = null; // Clear the count on failure
+        state.pendingPOCount = null;
       })
-      
-      
-      
-      // <-- ADDED: New extra reducers for fetchDelayedPOCountAsync
       .addCase(fetchDelayedPOCountAsync.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
       .addCase(fetchDelayedPOCountAsync.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.delayedPOCount = action.payload.delayed_po_count; // Update the new state property
+        state.delayedPOCount = action.payload.delayed_po_count;
       })
       .addCase(fetchDelayedPOCountAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-        state.delayedPOCount = null; // Clear the count on failure
+        state.delayedPOCount = null;
       })
-
-
-
-      // <-- ADDED: New extra reducers for fetchRejectedPOCountAsync
       .addCase(fetchRejectedPOCountAsync.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
       .addCase(fetchRejectedPOCountAsync.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.rejectedPOCount = action.payload.rejected_po_count; // Update the new state property
+        state.rejectedPOCount = action.payload.rejected_po_count;
       })
       .addCase(fetchRejectedPOCountAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-        state.rejectedPOCount = null; // Clear the count on failure
-      })
-      ;
+        state.rejectedPOCount = null;
+      });
   },
 });
 

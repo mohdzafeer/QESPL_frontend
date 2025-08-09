@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaEdit, FaTrashAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchLoginUserAsync, deleteOrderAsync, type Order } from '../../../store/Slice/orderSlice';
+import { fetchLoginUserAsync, type Order } from '../../../store/Slice/orderSlice';
 import type { RootState } from '../../../store/store';
 import { formatDate } from './UserEditPO';
 import { toast } from 'react-toastify';
@@ -10,12 +10,14 @@ import { softDeleteOrder } from '../../../store/Slice/recycleBinSlice';
 
 const UserMyPOs: React.FC = () => {
   const dispatch = useDispatch();
-  const { orders, status, error, success } = useSelector((state: RootState) => state.orders);
+  // The state structure from orderSlice.ts has a nested `pagination` object.
+  // We need to destructure the `pagination` object first, then access its properties.
+  const { orders, status, error, success, pagination } = useSelector((state: RootState) => state.orders);
+  const { totalPages, currentPage, limit } = pagination;
+
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-
-  
 
   const handleEditClick = (order: Order) => {
     setSelectedOrder(order);
@@ -32,6 +34,7 @@ const UserMyPOs: React.FC = () => {
       draggable: true,
       progress: undefined,
     });
+    // The original code was commented out, so I've kept it that way for clarity.
     // setSelectedOrder(order);
     // setShowDeleteConfirmModal(true);
   };
@@ -49,16 +52,16 @@ const UserMyPOs: React.FC = () => {
           toast.error("PO moved to Recycle Bin", {
             toastId: "po-deleted",
           });
-          // fetchOrders(); // ✅ Fetch fresh data after deletion
-          dispatch(fetchLoginUserAsync())
+          // After deletion, fetch the data again to reflect the change
+          dispatch(fetchLoginUserAsync({ page: currentPage, limit: limit }));
         })
-        .catch((err:any) => {
+        .catch((err: any) => {
           toast.error(`Unexpected error: ${err}`, {
             toastId: "delete-unexpected-error",
           });
         });
-        setShowDeleteConfirmModal(false)
-        setSelectedOrder(null)
+      setShowDeleteConfirmModal(false);
+      setSelectedOrder(null);
     }
   };
 
@@ -67,13 +70,19 @@ const UserMyPOs: React.FC = () => {
     setSelectedOrder(null);
   };
 
-  useEffect(() => {
-    console.log(selectedOrder, "selected oRder.............")
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      dispatch(fetchLoginUserAsync({ page, limit }));
+    }
+  };
 
-  }, [selectedOrder])
   useEffect(() => {
-    dispatch(fetchLoginUserAsync());
-  }, [showEditModal,dispatch]);
+    dispatch(fetchLoginUserAsync({ page: currentPage, limit: limit }));
+  }, [dispatch, currentPage, limit]);
+
+  useEffect(() => {
+    console.log(selectedOrder, "selected oRder.............");
+  }, [selectedOrder]);
 
   return (
     <div className={`p-5 mb-20 ${showEditModal || showDeleteConfirmModal ? 'relative overflow-hidden' : ''}`}>
@@ -81,7 +90,10 @@ const UserMyPOs: React.FC = () => {
         <div className="fixed inset-0 backdrop-blur-sm z-40"></div>
       )}
       <h1 className="text-3xl font-bold mb-6">My Purchase Orders</h1>
-      {/* {status === 'loading' && <div className="text-center">Loading...</div>} */}
+      {status === 'loading' && <div className="text-center">Loading...</div>}
+      {status === 'succeeded' && orders.length === 0 && (
+        <div className="text-center text-gray-500 dark:text-gray-400">No orders found.</div>
+      )}
       {error && !success && (
         <div className="text-red-500 text-center mb-4">{error}</div>
       )}
@@ -108,99 +120,127 @@ const UserMyPOs: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {orders
-              .filter((order) => order?.isdeleted === false)
-              .map((order, index) => (
-                <tr
-                  key={order._id}
-                  className={`text-start
-          ${index === orders.length - 1 ? '' : 'border-b border-gray-200 dark:border-zinc-700 '}
-          ${index % 2 === 0 ? 'bg-white dark:bg-zinc-800' : 'bg-gray-100 dark:bg-zinc-900'}
-      `}
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-lg font-semibold text-blue-700 dark:text-gray-200">
-                    {order?.orderNumber || 'N/A'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
-                    {order?.companyName || '--'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-xs  uppercase font-bold ">
-                    <span className={`
-                      ${order.status === 'pending' && 'bg-yellow-100 text-yellow-500 py-1 px-2 rounded-full'}
-                      ${order.status === 'completed' && 'bg-green-100 text-green-500 py-1 px-2 rounded-full'}
-                      ${order.status === 'delayed' && 'bg-orange-100 text-orange-500 py-1 px-2 rounded-full'}
-                      ${order.status === 'rejected' && 'bg-red-100 text-red-500 py-1 px-2 rounded-full'}
-                      
-                      `}>{order?.status || 'N/A'}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 font-semibold ">
-                    {order.orderDate ? formatDate(order.orderDate) : formatDate(order.createdAt)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-4">
-                      <FaEdit
-                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
-                        title="Edit"
-                        onClick={() => handleEditClick(order)}
-                      />
-                      <FaTrashAlt
-                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
-                        title="Delete"
-                        onClick={() => { setShowDeleteConfirmModal(true), setSelectedOrder(order._id) }}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+            {orders.map((order, index) => (
+              <tr
+                key={order._id}
+                className={`text-start
+                  ${index === orders.length - 1 ? '' : 'border-b border-gray-200 dark:border-zinc-700 '}
+                  ${index % 2 === 0 ? 'bg-white dark:bg-zinc-800' : 'bg-gray-100 dark:bg-zinc-900'}
+                `}
+              >
+                <td className="px-6 py-4 whitespace-nowrap text-lg font-semibold text-blue-700 dark:text-gray-200">
+                  {order?.orderNumber || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 ">
+                  {order?.companyName || '--'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-xs  uppercase font-bold ">
+                  <span className={`
+                    ${order.status === 'pending' && 'bg-yellow-100 text-yellow-500 py-1 px-2 rounded-full'}
+                    ${order.status === 'completed' && 'bg-green-100 text-green-500 py-1 px-2 rounded-full'}
+                    ${order.status === 'delayed' && 'bg-orange-100 text-orange-500 py-1 px-2 rounded-full'}
+                    ${order.status === 'rejected' && 'bg-red-100 text-red-500 py-1 px-2 rounded-full'}
+                  `}>{order?.status || 'N/A'}</span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200 font-semibold ">
+                  {order.orderDate ? formatDate(order.orderDate) : formatDate(order.createdAt)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div className="flex items-center justify-end space-x-4">
+                    <FaEdit
+                      className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
+                      title="Edit"
+                      onClick={() => handleEditClick(order)}
+                    />
+                    <FaTrashAlt
+                      className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
+                      title="Delete"
+                      onClick={() => { setShowDeleteConfirmModal(true), setSelectedOrder(order._id) }}
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
 
         {/* Mobile Card View */}
         <div className="block md:hidden space-y-4 mb-20">
-          {orders.filter((order) => order?.isdeleted === false)
-            .map((order) => (
-              <div
-                key={order._id}
-                className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-zinc-700"
-              >
-                <div className="flex justify-between mb-2">
-                  <span className="font-semibold text-gray-700 dark:text-gray-300">PO Number:</span>
-                  <span className="text-blue-800 font-semibold dark:text-gray-200">{order.orderNumber || 'N/A'}</span>
-                </div>
-                <div className="flex justify-between mb-2">
-                  <span className="font-semibold text-gray-700 dark:text-gray-300">Company Name:</span>
-                  <span className="text-gray-800 dark:text-gray-200">{order.companyName || 'N/A'}</span>
-                </div>
-                <div className="flex justify-between mb-2">
-                  <span className="font-semibold  ">Status:</span>
-                  <span className={`text-gray-800 dark:text-gray-200 uppercase text-xs font-bold
-                      ${order.status === 'pending' && 'bg-yellow-100 text-yellow-600 dark:text-yellow-600 py-1 px-2 rounded-full'}
-                      ${order.status === 'completed' && 'bg-green-100 text-green-600 dark:text-green-600 py-1 px-2 rounded-full'}
-                      ${order.status === 'delayed' && 'bg-orange-100 text-orange-600 dark:text-orange-600 py-1 px-2 rounded-full'}
-                      ${order.status === 'rejected' && 'bg-red-100 text-red-600 py-1 dark:text-red-600 px-2 rounded-full'}
-                    `}>{order.status || 'N/A'}</span>
-                </div>
-                <div className="flex justify-between mb-4">
-                  <span className="font-semibold text-gray-700 dark:text-gray-300">Created On:</span>
-                  <span className="text-gray-800 dark:text-gray-200">{order.orderDate ? formatDate(order.orderDate) : formatDate(order.createdAt)}</span>
-                </div>
-                <div className="flex justify-end space-x-4">
-                  <FaEdit
-                    className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
-                    title="Edit"
-                    onClick={() => handleEditClick(order)}
-                  />
-                  <FaTrashAlt
-                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
-                    title="Delete"
-                    onClick={() => { setShowDeleteConfirmModal(true), setSelectedOrder(order._id) }}
-                  />
-                </div>
+          {orders.map((order) => (
+            <div
+              key={order._id}
+              className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-zinc-700"
+            >
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">PO Number:</span>
+                <span className="text-blue-800 font-semibold dark:text-gray-200">{order.orderNumber || 'N/A'}</span>
               </div>
-            ))}
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Company Name:</span>
+                <span className="text-gray-800 dark:text-gray-200">{order.companyName || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold  ">Status:</span>
+                <span className={`text-gray-800 dark:text-gray-200 uppercase text-xs font-bold
+                  ${order.status === 'pending' && 'bg-yellow-100 text-yellow-600 dark:text-yellow-600 py-1 px-2 rounded-full'}
+                  ${order.status === 'completed' && 'bg-green-100 text-green-600 dark:text-green-600 py-1 px-2 rounded-full'}
+                  ${order.status === 'delayed' && 'bg-orange-100 text-orange-600 dark:text-orange-600 py-1 px-2 rounded-full'}
+                  ${order.status === 'rejected' && 'bg-red-100 text-red-600 py-1 dark:text-red-600 px-2 rounded-full'}
+                `}>{order.status || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between mb-4">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Created On:</span>
+                <span className="text-gray-800 dark:text-gray-200">{order.orderDate ? formatDate(order.orderDate) : formatDate(order.createdAt)}</span>
+              </div>
+              <div className="flex justify-end space-x-4">
+                <FaEdit
+                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer text-lg"
+                  title="Edit"
+                  onClick={() => handleEditClick(order)}
+                />
+                <FaTrashAlt
+                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 cursor-pointer text-lg"
+                  title="Delete"
+                  onClick={() => { setShowDeleteConfirmModal(true), setSelectedOrder(order._id) }}
+                />
+              </div>
+            </div>
+          ))}
         </div>
-
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-8 space-x-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border rounded-md text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index}
+              onClick={() => handlePageChange(index + 1)}
+              className={`px-4 py-2 border rounded-md ${
+                currentPage === index + 1
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 text-gray-700 dark:bg-zinc-700 dark:text-gray-200'
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 border rounded-md text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {showEditModal && selectedOrder && (
         <div className="fixed inset-0 flex items-center justify-center z-[100000] ">

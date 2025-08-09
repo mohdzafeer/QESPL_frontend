@@ -511,13 +511,12 @@ export const deleteOrdersMultiple1 = async (orderIds: string[]) => {
 
 
 // Corrected API functions
-export const fetchLoginUser = async () => {
-  const response = await api.get("order/api/get-order-login-user/", {
+export const fetchLoginUser = async (page: number, limit: number) => {
+  const response = await api.get(`order/api/get-order-login-user/?page=${page}&limit=${limit}`, {
     withCredentials: true,
   });
   return response.data;
 };
-
 // Assuming 'api' is your configured axios instance
 // e.g., import api from './api'; or wherever your axios instance is defined
 
