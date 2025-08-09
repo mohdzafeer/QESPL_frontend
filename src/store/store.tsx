@@ -11,6 +11,7 @@ import filterReducer from "./Slice/filterSlice"
 import themeReducer  from "./Slice/themeSlice"
 import recycleBinReducer from './Slice/recycleBinSlice';
 import notificationReducer from '../store/Slice/NotificationSlice';
+import taskReducer from "./Slice/taskSlice";
 
 
 
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
   theme:themeReducer,
   recycleBin: recycleBinReducer, // Add recycleBin reducer
   notifications: notificationReducer,
+  task: taskReducer, // Add task reducer
 });
 
 

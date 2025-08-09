@@ -200,26 +200,6 @@ const DashBoard = () => {
     }
     validateDates(field, value);
   };
-
-  // const confirmDelete = () => {
-  //   if (userToDelete) {
-  //     dispatch(softDeleteOrder(userToDelete))
-  //       .unwrap()
-  //       .catch((err) => {
-  //         toast.error(`Unexpected error: ${err}`, {
-  //           toastId: "delete-unexpected-error",
-  //         });
-  //       });
-  //     setShowAlert(false);
-  //     setUserToDelete(null);
-  //     toast.error("PO moved to Recycle Bin");
-  //     // setTimeout(() => {
-  //     //   window.location.reload();
-  //     // }, 3000);
-  //     // window.location.reload()
-  //     // fetchOrders();
-  //   }
-  // };
   const confirmDelete = () => {
     if (userToDelete) {
       dispatch(softDeleteOrder(userToDelete))

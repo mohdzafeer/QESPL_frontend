@@ -17,20 +17,28 @@ const FRONTEND_BASE_URL =
   import.meta.env.VITE_FRONTEND_BASE_URL ||
   "http://localhost:5173/images/profile.png";
 
-const createUserDashboard = () => {
+export  const createUserDashboard = () => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [showAlert, setShowAlert] = useState(false);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [showReport, setShowReport] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, react-hooks/rules-of-hooks
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [currentPage, setCurrentPage] = useState(1);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, react-hooks/rules-of-hooks
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const dispatch = useDispatch<AppDispatch>();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { users } = useSelector((state: RootState) => state.adminUser);
+  
 
   // Fetch users on mount and when currentPage changes
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     dispatch(getUserWithWithOp({ page: currentPage, limit: USERS_PER_PAGE }));
   }, [dispatch, currentPage]);
@@ -64,7 +72,7 @@ const createUserDashboard = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
   ///// for the search functionality
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/rules-of-hooks
   const handleSearchChange = useCallback(
     debounce((query: string) => {
       setCurrentPage(1); // Reset to first page on search
@@ -352,7 +360,7 @@ const App = () => {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar isOpen={isSidebarOpen} />
         <div className="flex-1 overflow-auto">
-          <createUserDashboard  />
+          <createUserDashboard />
         </div>
       </div>
     </div>

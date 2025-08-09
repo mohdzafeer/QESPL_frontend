@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/utils/api.ts
 // Custom parseJwt function to decode JWT
+import axios from "axios";
+import type { Order } from "../store/Slice/orderSlice";
+
+
 const parseJwt = (token: string): any => {
   try {
     const base64Url = token.split(".")[1];
@@ -18,11 +22,10 @@ const parseJwt = (token: string): any => {
   }
 };
 
-import axios from "axios";
-import type { Order } from "../store/Slice/orderSlice";
+
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:8080/",
+  baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:4000/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -41,45 +44,6 @@ api.interceptors.request.use(
 
 export default api;
 
-export const fetchAllOrders = async (page: number = 1, limit: number = 10) => {
-  try {
-    const response = await api.get("/order/api/get-all-orders", {
-      params: { page, limit },
-      withCredentials: true,
-    });
-    // console.log(response, "api call");
-    const orders = response?.data?.data?.orders || [];
-    const pagination = response?.data?.data?.pagination || {
-      currentPage: 1,
-      totalPages: 1,
-      totalOrders: 0,
-      limit: 10,
-    };
-    return { orders, pagination };
-  } catch (error) {
-    console.error("API error:", error);
-    throw error;
-  }
-};
-
-
-export const searchOrderApi = async (
-  query: string,
-  startDate?: string,
-  endDate?: string,
-  status?: string
-) => {
-  const response = await api.get(`/order/api/search-order`, {
-    withCredentials: true,
-    params: {
-      query,
-      startDate,
-      endDate,
-      status,
-    },
-  });
-  return response.data;
-};
 
 ///// for the auth apis end point
 /**
@@ -202,6 +166,22 @@ interface DecodedToken {
   [key: string]: any;
 }
 
+//// create Interface for the task creat
+export interface TaskCratePayload {
+  _id: string;
+  title: string;
+  description: string;
+  taskType: string;
+  status?: string;
+  taskDeadline?: string;
+  assignedUsers: { _id: string; username: string; email: string }[];
+}
+
+//// create interface for the status
+interface TaskStatus {
+  status:boolean
+}
+
 //// create subadmin funcation for the handles
 
 export const createSubAdmin = async (data: SubAdminFormData) => {
@@ -230,7 +210,7 @@ export const createSubAdmin = async (data: SubAdminFormData) => {
     formData.append("department", data.department);
     formData.append("userType", data.userType);
     if (data.employeeId) formData.append("employeeId", data.employeeId);
-  if (data.designation) formData.append("designation", data.designation);
+    if (data.designation) formData.append("designation", data.designation);
     if (data.profilePicture) {
       formData.append("profilePicture", data.profilePicture);
     }
@@ -356,16 +336,13 @@ export const createPermission = async (data: PermissionData) => {
   }
 };
 
-
 export const createOrder = async (orderData: any) => {
   const response = await api.post("order/api/order-create-api", orderData);
   return response.data;
 };
 
-
 export const deleteOrders = async (orderId: string) => {
   try {
-    console.log(orderId, "api call shariq khan");
     const response = await api.delete(`/order/api/delete-order/${orderId}`, {
       withCredentials: true,
     });
@@ -376,10 +353,61 @@ export const deleteOrders = async (orderId: string) => {
   }
 };
 
-
 export const fetchRecycleBinOrdersApi = async () => {
   const response = await api.get("/order/api/user-recycle-bin-order/");
   return response;
+};
+
+
+export const fetchAllOrders = async (page: number = 1, limit: number = 10) => {
+  try {
+    const response = await api.get("/order/api/get-all-orders", {
+      params: { page, limit },
+      withCredentials: true,
+    });
+    // console.log(response, "api call");
+    const orders = response?.data?.data?.orders || [];
+    const pagination = response?.data?.data?.pagination || {
+      currentPage: 1,
+      totalPages: 1,
+      totalOrders: 0,
+      limit: 10,
+    };
+    return { orders, pagination };
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+};
+
+//// get order by Id
+export const getOrderById=async(orderId: string)=>{
+  try {
+    const response=await api.get(`/order/api/get-order-details/${orderId}`,{withCredentials:true})
+    return response.data
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+}
+
+
+export const searchOrderApi = async (
+  query: string,
+  startDate?: string,
+  endDate?: string,
+  status?: string
+) => {
+  const response = await api.get(`/order/api/search-order`, {
+    withCredentials: true,
+    params: {
+      query,
+      startDate,
+      endDate,
+      status,
+    },
+  });
+  return response.data;
 };
 
 
@@ -400,26 +428,25 @@ export const restoreOps = async (orderIds: string[]) => {
   }
 };
 
-
-
-
 //// create a function to fetch order for the delete order single order and multiple orders
 export const deleteOrdersMultiple1 = async (orderIds: string[]) => {
   if (orderIds.length === 1) {
     console.log(orderIds[0], "orderIds in deleteOrdersMultiple1");
-    const response = await api.delete(`/order/api/user-delete-permanently/${orderIds[0]}`, {
+    const response = await api.delete(
+      `/order/api/user-delete-permanently/${orderIds[0]}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } else if (orderIds.length > 1) {
+    const response = await api.delete(`/order/api/user-delete-permanently/`, {
+      data: { ids: orderIds }, // Send ids in the request body
       withCredentials: true,
     });
     return response.data;
-  } else if (orderIds.length > 1) {
-      const response = await api.delete(`/order/api/user-delete-permanently/`, {
-        data: { ids: orderIds }, // Send ids in the request body
-        withCredentials: true,
-      });
-      return response.data;
   }
-}
-
+};
 
 // Corrected API functions
 export const fetchLoginUser = async () => {
@@ -429,11 +456,17 @@ export const fetchLoginUser = async () => {
   return response.data;
 };
 
-export const updateOrder = async (orderId: string, orderPayload: Partial<Order>) => {
-  console.log(orderPayload,"dfkf check shariq khan......")
-  const response = await api.put(`order/api/upadate-order/${orderId}`, orderPayload, {
-    withCredentials: true,
-  });
+export const updateOrder = async (
+  orderId: string,
+  orderPayload: Partial<Order>
+) => {
+  const response = await api.put(
+    `order/api/upadate-order/${orderId}`,
+    orderPayload,
+    {
+      withCredentials: true,
+    }
+  );
   return response.data;
 };
 
@@ -444,6 +477,45 @@ export const deleteloginUser = async (orderId: string) => {
   return response.data;
 };
 
+export const getAllUsers = async () => {
+  const response = await api.get(`/user/api/admin-get-all-user`, {
+    withCredentials: true,
+  });
+  return response.data;
+};
+
+///// create a end point for the orders api
+export const taskcreate=async(taskPaylaoad:TaskCratePayload)=>{
+  const response=await api.post(`/task/api/admin-subadmin-create-task`,taskPaylaoad,{
+    withCredentials: true,
+  })
+  return response.data
+}
+
+
+
+export const updateTake = async (
+  taskId: string,
+  taskStatus:TaskStatus
+) => {
+  const response = await api.put(
+    `/task/api/admin-subadmin-update-status/${taskId}`,
+    taskStatus,
+    {
+      withCredentials: true,
+    }
+  );
+  return response.data;
+};
+
+
+export const getTasksByPO = async (poId: string) => {
+  const response = await api.get(`/task/api/admin-subadmin-getTask-By-po/${poId}`, {
+    withCredentials: true,
+  });
+  console.log(response.data,"check dat responses ....")
+  return response.data;
+};
 
 
 

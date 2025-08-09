@@ -6,8 +6,6 @@ import {
   deleteOrdersMultiple1,
   deleteOrders,
 } from "../../utils/api"; // Adjust path to your API file
-import { set } from "lodash";
-import { toast } from "react-toastify";
 
 
 // Define the shape of the state
