@@ -187,7 +187,7 @@ const DashboardCards = () => {
                 statusFilter == "pending" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
-              {pendingPOCount !== null ? pendingPOCount : 'N/A'}
+              {pendingPOCount !== null && delayedPOCount!==null ? delayedPOCount+pendingPOCount : pendingPOCount === null && delayedPOCount!==null ? delayedPOCount : pendingPOCount!==null && delayedPOCount===null ? pendingPOCount   :'N/A'}
             </p>
           </div>
           <div className="w-16 flex justify-center ">

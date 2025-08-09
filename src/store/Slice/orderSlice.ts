@@ -16,6 +16,7 @@ import {
 
 export interface Order {
   _id?: string; // Optional for creation, added by backend
+  orderdate:string;
   orderNumber: string;
   clientName: string;
   companyName: string;

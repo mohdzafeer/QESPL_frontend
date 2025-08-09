@@ -473,7 +473,7 @@ const DashBoard = () => {
                         } text-3xl font-bold`}
                     >
                       {/* {counts.pending} */}
-                      {pendingPOCount}
+                      {pendingPOCount !== null && delayedPOCount!==null ? delayedPOCount+pendingPOCount : pendingPOCount === null && delayedPOCount!==null ? delayedPOCount : pendingPOCount!==null && delayedPOCount===null ? pendingPOCount   :'N/A'}
                     </p>
 
                   </div>

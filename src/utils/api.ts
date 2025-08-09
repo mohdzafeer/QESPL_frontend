@@ -41,13 +41,36 @@ api.interceptors.request.use(
 
 export default api;
 
-export const fetchAllOrders = async (page: number = 1, limit: number = 10) => {
+// export const fetchAllOrders = async (page: number = 1, limit: number = 10) => {
+
+//   try {
+//     const response = await api.get("/order/api/get-all-orders", {
+//       params: { page, limit },
+//       withCredentials: true,
+//     });
+//     // console.log(response, "api call");
+//     const orders = response?.data?.data?.orders || [];
+//     const pagination = response?.data?.data?.pagination || {
+//       currentPage: 1,
+//       totalPages: 1,
+//       totalOrders: 0,
+//       limit: 10,
+//     };
+//     return { orders, pagination };
+//   } catch (error) {
+//     console.error("API error:", error);
+//     throw error;
+//   }
+// };
+
+
+export const fetchAllOrders = async (page = 1, limit = 10, status = 'all', search = '', fromDate = '', toDate = '') => {
   try {
+    const params = { page, limit, status, search, fromDate, toDate };
     const response = await api.get("/order/api/get-all-orders", {
-      params: { page, limit },
+      params,
       withCredentials: true,
     });
-    // console.log(response, "api call");
     const orders = response?.data?.data?.orders || [];
     const pagination = response?.data?.data?.pagination || {
       currentPage: 1,
@@ -61,6 +84,9 @@ export const fetchAllOrders = async (page: number = 1, limit: number = 10) => {
     throw error;
   }
 };
+
+
+
 
 // export const deleteOrders = async (orderId: string) => {
 //   try {
