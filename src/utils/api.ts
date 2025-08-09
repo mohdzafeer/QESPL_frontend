@@ -84,6 +84,26 @@ export const fetchAllOrders = async (page = 1, limit = 10, status = 'all', searc
     throw error;
   }
 };
+export const getNonApprovalPOs = async (page = 1, limit = 10, status = 'all', search = '', fromDate = '', toDate = '') => {
+  try {
+    const params = { page, limit, status, search, fromDate, toDate };
+    const response = await api.get("/order/api/get-non-approval-orders", {
+      params,
+      withCredentials: true,
+    });
+    const orders = response?.data?.data?.orders || [];
+    const pagination = response?.data?.data?.pagination || {
+      currentPage: 1,
+      totalPages: 1,
+      totalOrders: 0,
+      limit: 10,
+    };
+    return { orders, pagination };
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+};
 
 
 
