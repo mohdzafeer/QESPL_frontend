@@ -6,6 +6,7 @@ import type { RootState } from "../../../../store/store";
 import {
   clearMessages,
   createOrderAsync,
+  fetchLastPONumberAsync,
   fetchOrdersAsync,
   fetchPendingPOCountAsync,
   fetchTotalPOCountAsync,
@@ -58,6 +59,27 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({
   const { status, error, message, success } = useSelector(
     (state: RootState) => state.orders
   );
+
+
+
+// ------------------:last PO Number
+
+const lastPONumber = useSelector((state: RootState) => state.orders.lastPONumber); // Corrected
+const newPONumber=parseInt(lastPONumber?.split('/')[0]) +1;
+const newOrderNumber=newPONumber.toString+'/QESPL/AUG/2025'
+
+useEffect(()=>{
+  dispatch(fetchLastPONumberAsync())
+},[])
+
+
+
+// ------------------:last PO Number
+
+
+
+
+
 
   // Show toast notifications only when submissionStatus changes
   useEffect(() => {
@@ -390,7 +412,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({
         className="bg-white dark:bg-zinc-800 xl:w-8/12 w-11/12 lg:w-8/12 max-h-11/12 rounded-lg p-5 my-10 no-scrollbar overflow-y-scroll border border-black"
       >
         <div className="flex justify-between items-center w-full ">
-          <h1 className="text-black text-center w-full dark:text-white font-bold lg:text-3xl xl:text-3xl lg:text-lg xl:text-lg text-sm mb-5 uppercase">
+          <h1 className="text-black text-center w-full dark:text-white font-bold  lg:text-lg xl:text-lg text-sm mb-5 uppercase">
             Create Purchasing Order
           </h1>
           <button
@@ -417,11 +439,12 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({
                   placeholder=" "
                   required
                   value={formData.orderNumber}
+                  // value={formData.orderNumber}
                   onChange={handleInputChange}
                 />
                 <label
                   htmlFor="order_number"
-                  className="absolute lg:lg:text-lg xl:text-lg text-sm xl:lg:text-lg xl:text-lg text-sm text-sm text-black dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
+                  className="absolute lg:lg:text-lg xl:text-lg text-sm xl:lg:text-lg  text-black dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
                 >
                   Order Number (Sequential Part)
                   <span className="text-red-500 m-2">*</span>
@@ -433,6 +456,7 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({
                   Order Number is:{" "}
                   <span className="font-semibold text-[#0A2975] dark:text-white">
                     {formData.fullOrderNumber}
+                    {/* {lastPONumber} */}
                   </span>
                 </div>
               )}

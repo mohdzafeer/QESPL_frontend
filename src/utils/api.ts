@@ -558,7 +558,7 @@ export const getCompletedPOCount = async () => {
     console.log("API Response:", response.data);
     return response.data; // This will be { total_po_count: 37 }
   } catch (error) {
-    console.error("Error fetching total PO count:", error);
+    console.error("Error fetching completed PO count:", error);
     throw error; // Re-throw the error for the component to handle
   }
 };
@@ -568,7 +568,7 @@ export const getPendingPOCount = async () => {
     console.log("API Response:", response.data);
     return response.data; // This will be { total_po_count: 37 }
   } catch (error) {
-    console.error("Error fetching total PO count:", error);
+    console.error("Error fetching pending PO count:", error);
     throw error; // Re-throw the error for the component to handle
   }
 };
@@ -578,7 +578,7 @@ export const getDelayedPOCount = async () => {
     console.log("API Response:", response.data);
     return response.data; // This will be { total_po_count: 37 }
   } catch (error) {
-    console.error("Error fetching total PO count:", error);
+    console.error("Error fetching delayed PO count:", error);
     throw error; // Re-throw the error for the component to handle
   }
 };
@@ -588,7 +588,19 @@ export const getRejectedPOCount = async () => {
     console.log("API Response:", response.data);
     return response.data; // This will be { total_po_count: 37 }
   } catch (error) {
-    console.error("Error fetching total PO count:", error);
+    console.error("Error fetching rejected PO count:", error);
     throw error; // Re-throw the error for the component to handle
   }
 };
+export const getLastPONumber = async () => {
+  try {
+    const response = await api.get("/order/api/get-last-po-number"); // Corrected endpoint
+    console.log("API Response:", response.data);
+    return response.data; 
+  } catch (error) {
+    console.error("Error fetching last PO number:", error);
+    throw error; // Re-throw the error for the component to handle
+  }
+};
+
+

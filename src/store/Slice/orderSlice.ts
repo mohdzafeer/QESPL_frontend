@@ -11,7 +11,8 @@ import {
   getCompletedPOCount,
   getPendingPOCount,
   getDelayedPOCount,
-  getRejectedPOCount
+  getRejectedPOCount,
+  getLastPONumber
 } from '../../utils/api';
 
 export interface Order {
@@ -64,6 +65,7 @@ interface OrderState {
   pendingPOCount: number | null;
   delayedPOCount: number | null;
   rejectedPOCount: number | null;
+  lastPONumber: string | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
   message: string | null;
@@ -165,6 +167,21 @@ export const fetchRejectedPOCountAsync = createAsyncThunk<
     }
   }
 );
+export const fetchLastPONumberAsync = createAsyncThunk<
+  { last_po_created: string },
+  void,
+  { rejectValue: any }
+>(
+  'orders/fetchLastPONumber',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getLastPONumber();
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch last PO numbert');
+    }
+  }
+);
 
 // ----------------------PO Count Thunks---------------------------------------
 
@@ -248,6 +265,7 @@ const initialState: OrderState = {
   pendingPOCount:null,
   delayedPOCount:null,
   rejectedPOCount:null,
+  lastPONumber:null,
   status: 'idle',
   error: null,
   message: null,
@@ -436,7 +454,20 @@ const orderSlice = createSlice({
       .addCase(fetchRejectedPOCountAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-        state.rejectedPOCount = null;
+        state.lastPONumber = null;
+      })
+      .addCase(fetchLastPONumberAsync.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchLastPONumberAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.lastPONumber = action.payload.last_po_created;
+      })
+      .addCase(fetchLastPONumberAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+        state.lastPONumber = null;
       });
   },
 });

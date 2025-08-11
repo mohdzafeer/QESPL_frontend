@@ -1,12 +1,12 @@
-import React from 'react';
+
 import { CiCalendarDate } from "react-icons/ci";
 import { MdAccessTime } from "react-icons/md";
 
 const TaskCard = () => {
     return (
-        <div className="bg-orange-50 dark:bg-zinc-900 dark:text-white rounded-lg shadow-sm p-6 " style={{ borderLeft: '5px solid #F97316' }}>
+        <div className={`bg-orange-50 dark:bg-zinc-900 dark:text-white rounded-lg shadow-sm p-6 border-l-4 border-orange-500`} >
             {/* Header Section */}
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex lg:flex-row xl:flex-row flex-col xl:justify-between lg:justify-between xl:items-center lg:items-center items-start xl:gap-0 lg:gap-0 gap-4 mb-2">
                 <div className="flex items-center space-x-3">
                     <h3 className="lg:text-lg xl:text-lg text-sm font-semibold text-gray-800 dark:text-white text-start">Review Purchase Documentation</h3>
                     <span className="text-xs font-medium px-2 py-1 rounded-lg text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-800">Review Documents</span>
@@ -14,7 +14,7 @@ const TaskCard = () => {
                     {/* <span className="text-xs font-medium px-2 py-1 rounded-full text-blue-800 bg-blue-100">DEMO</span> */}
                 </div>
 
-                <div className="flex items-end space-x-4 flex-col">
+                <div className="flex lg:items-end xl:items-end items-start space-x-4 flex-col gap-2">
                     <div className="flex items-center lg:text-sm xl:text-sm text-xs font-medium text-yellow-500 bg-yellow-100 py-1 px-2 rounded-full gap-2">
                         <span className='text-yellow-500 text-lg'><MdAccessTime/></span>
                         <span>Pending</span>

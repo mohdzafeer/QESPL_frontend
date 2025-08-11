@@ -91,7 +91,7 @@ const DashboardCards = () => {
           className={`${
             statusFilter == "all"
               ? "bg-[var(--theme-color)]"
-              : "bg-white dark:bg-zinc-950"
+              : "bg-blue-50 dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("all")}
         >
@@ -116,7 +116,7 @@ const DashboardCards = () => {
             </p>
           </div>
           <div className="w-16 flex justify-center ">
-            <IoDocumentTextOutline className="text-black text-5xl w-fit bg-gray-200 dark:bg-zinc-700 rounded-lg p-2" />
+            <IoDocumentTextOutline className="text-[var(--theme-color)] text-5xl w-fit bg-blue-100 dark:bg-zinc-700 rounded-lg p-2" />
           </div>
         </motion.div>
         <motion.div
@@ -130,7 +130,7 @@ const DashboardCards = () => {
           className={`${
             statusFilter == "completed"
               ? "bg-[var(--theme-color)]"
-              : "bg-white dark:bg-zinc-950"
+              : "bg-green-50 dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("completed")}
         >
@@ -153,7 +153,7 @@ const DashboardCards = () => {
             </p>
           </div>
           <div className="w-16 flex justify-center ">
-            <SiTicktick className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
+            <SiTicktick className="text-green-600 text-5xl w-fit bg-green-100 rounded-lg p-2" />
           </div>
         </motion.div>
         <motion.div
@@ -167,7 +167,7 @@ const DashboardCards = () => {
           className={`${
             statusFilter == "pending"
               ? "bg-[var(--theme-color)]"
-              : "bg-white dark:bg-zinc-950"
+              : "bg-yellow-50 dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => {
             handleClick("pending");
@@ -192,7 +192,7 @@ const DashboardCards = () => {
             </p>
           </div>
           <div className="w-16 flex justify-center ">
-            <IoMdTime className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
+            <IoMdTime className="text-yellow-600 text-5xl w-fit bg-yellow-100 rounded-lg p-2" />
           </div>
         </motion.div>
         <motion.div
@@ -206,7 +206,7 @@ const DashboardCards = () => {
           className={`${
             statusFilter == "delayed"
               ? "bg-[var(--theme-color)] "
-              : "bg-white dark:bg-zinc-950"
+              : "bg-orange-50 dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("delayed")}
         >
@@ -229,7 +229,7 @@ const DashboardCards = () => {
             </p>
           </div>
           <div className="w-16 flex justify-center ">
-            <CgSandClock className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
+            <CgSandClock className="text-orange-600 text-5xl w-fit bg-orange-100 rounded-lg p-2" />
           </div>
         </motion.div>
         <motion.div
@@ -243,7 +243,7 @@ const DashboardCards = () => {
           className={`${
             statusFilter == "rejected"
               ? "bg-[var(--theme-color)] "
-              : "bg-white dark:bg-zinc-950"
+              : "bg-red-50 dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("rejected")}
         >
@@ -266,7 +266,7 @@ const DashboardCards = () => {
             </p>
           </div>
           <div className="w-16 flex justify-center ">
-            <RxCross2 className="text-black text-5xl w-fit bg-gray-200 rounded-lg p-2" />
+            <RxCross2 className="text-red-600 text-5xl w-fit bg-red-100 rounded-lg p-2" />
           </div>
         </motion.div>
       </div>
