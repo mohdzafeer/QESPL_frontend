@@ -20,6 +20,7 @@ import UserMessage from "../components/User/components/UserMessage";
 import UserNotification from "../components/User/components/UserNotification";
 import UserMyPOs from "../components/User/components/UserMyPOs";
 import SubadminApprovePO from "../components/Subadmin/SubadminApprovePO";
+import UserProfileSection from "../components/User/components/UserProfileSection";
 
 export const AppRoutes: React.FC = () => {
 
@@ -64,6 +65,7 @@ export const AppRoutes: React.FC = () => {
               <Route path="requests" element={<UserMessage />} />
               <Route path="notifications" element={<UserNotification />} />
               <Route path="mypos" element={<UserMyPOs />} />
+              <Route path="user-profile" element={<UserProfileSection />} />
               {/* <Route path="users" element={<UserUsersList />} /> */}
             </Route>
           </Route>
