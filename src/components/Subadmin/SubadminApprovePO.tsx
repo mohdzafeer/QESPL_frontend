@@ -208,7 +208,7 @@ const SubadminApprovePO = () => {
           </div>
 
           {/* Pagination Controls */}
-          <div className="flex justify-center items-center gap-2 mt-4">
+          <div className="flex justify-center items-center gap-2 pb-10">
             <button
               onClick={handlePrev}
               disabled={page === 1}
