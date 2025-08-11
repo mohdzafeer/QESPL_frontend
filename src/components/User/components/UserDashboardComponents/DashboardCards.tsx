@@ -16,6 +16,7 @@ import {
   fetchRejectedPOCountAsync,
   fetchTotalPOCountAsync
 } from "../../../../store/Slice/orderSlice";
+import { BeatLoader } from "react-spinners";
 
 const DashboardCards = () => {
   const dispatch = useDispatch<AppDispatch>(); // Add AppDispatch type for better type inference
@@ -68,7 +69,7 @@ const DashboardCards = () => {
 
   // You might want to add loading and error states to your UI
   if (status === 'loading') {
-    return <div className="text-center py-4 text-blue-600">Loading PO counts...</div>;
+    return <div className="text-center py-4 text-blue-600"><BeatLoader /></div>;
   }
 
   if (error) {
