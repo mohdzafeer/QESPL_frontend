@@ -479,7 +479,7 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                     </span>
                   </div>
 
-                  <div className="flex justify-end gap-4 p-2 text-lg">
+                  <div className="flex justify-end gap-4 p-2 text-xl">
                     <IoEyeOutline
                       onClick={() => handleViewPODetails(data)}
                       className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"

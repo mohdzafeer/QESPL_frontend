@@ -16,10 +16,16 @@ const UserDashboard = () => {
       <div>
         <div className="flex justify-end w-full">
           <button
-            className="text-white bg-[var(--theme-color)] px-3 py-2 rounded-lg mb-10 font-semibold cursor-pointer"
+            className="text-white bg-[var(--theme-color)] px-3 py-2 rounded-lg mb-10 font-semibold cursor-pointer lg:inline-block xl:inline-block hidden"
             onClick={() => setShowForm(true)}
           >
             Create PO
+          </button>
+          <button
+            className=" bg-white text-[var(--theme-color)] px-3 py-2 rounded-lg mb-10 font-semibold cursor-pointer lg:hidden xl:hidden inline-flex  items-center justify-between min-w-full text-xl"
+            onClick={() => setShowForm(true)}
+          >
+            <span>Create Purcahse Order</span> <span className="bg-[var(--theme-color)] text-white px-2 text-2xl rounded ml-2 flex justify-center items-center pb-1">+</span>
           </button>
         </div>
         <DashboardCards />

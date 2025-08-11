@@ -83,6 +83,8 @@ const AddUserForm: React.FC = () => {
       } else {
         await dispatch(createNormalUser(formData)).unwrap();
       }
+
+      console.log(formData,"form Data")
     } catch (err: any) {
       console.error("Form submission error:", err.message);
     }
@@ -222,7 +224,7 @@ const AddUserForm: React.FC = () => {
               <div>
                 <input
                   type="text"
-                  placeholder="Designation"
+                  placeholder="designation"
                   {...register("designation")}
                   className="w-full border rounded px-4 py-2 mt-5 border-gray-400"
                 />
@@ -250,9 +252,9 @@ const AddUserForm: React.FC = () => {
                     </label>
                   </div>
                 ))}
-                {selectedDepartment === "" && (
+                {/* {selectedDepartment === "" && (
                   <p className="text-red-500 text-sm">A department is required</p>
-                )}
+                )} */}
               </div>
             </div>
           </div>
