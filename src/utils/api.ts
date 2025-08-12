@@ -365,7 +365,7 @@ export const createUser = async (data: UserFormData) => {
   formData.append("password", data.password);
   formData.append("userType", data.userType);
   if (data.employeeId) formData.append("employeeId", data.employeeId);
-  if (data.designation) formData.append("desgination", data.designation); // Match backend typo
+  if (data.designation) formData.append("designation", data.designation); // Match backend typo
   if (data.profilePicture)
     formData.append("profilePicture", data.profilePicture);
 
