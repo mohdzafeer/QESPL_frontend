@@ -175,35 +175,35 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
     const totalFilteredPages = pagination?.totalPages || 1;
 
 
-        const USERS_PER_PAGE = 5;
+    const USERS_PER_PAGE = 5;
     const fetchOrders = () => {
         dispatch(fetchOrdersAsync({ page: currentPage, limit: USERS_PER_PAGE }));
-      };
+    };
     const confirmDelete = () => {
         if (userToDelete) {
-          dispatch(softDeleteOrder(userToDelete))
-            .unwrap()
-            .then(() => {
-              toast.error("PO moved to Recycle Bin", {
-                toastId: "po-deleted",
-              });
-              fetchOrders(); // ✅ Fetch fresh data after deletion
-              dispatch(fetchTotalPOCountAsync())
-              dispatch(fetchCompletedPOCountAsync())
-              dispatch(fetchPendingPOCountAsync())
-              dispatch(fetchDelayedPOCountAsync())
-              dispatch(fetchRejectedPOCountAsync())
-            })
-            .catch((err:any) => {
-              toast.error(`Unexpected error: ${err}`, {
-                toastId: "delete-unexpected-error",
-              });
-            });
-    
-          setShowAlert(false);
-          setUserToDelete(null);
+            dispatch(softDeleteOrder(userToDelete))
+                .unwrap()
+                .then(() => {
+                    toast.error("PO moved to Recycle Bin", {
+                        toastId: "po-deleted",
+                    });
+                    fetchOrders(); // ✅ Fetch fresh data after deletion
+                    dispatch(fetchTotalPOCountAsync())
+                    dispatch(fetchCompletedPOCountAsync())
+                    dispatch(fetchPendingPOCountAsync())
+                    dispatch(fetchDelayedPOCountAsync())
+                    dispatch(fetchRejectedPOCountAsync())
+                })
+                .catch((err: any) => {
+                    toast.error(`Unexpected error: ${err}`, {
+                        toastId: "delete-unexpected-error",
+                    });
+                });
+
+            setShowAlert(false);
+            setUserToDelete(null);
         }
-      };
+    };
     const { user } = useSelector((state: RootState) => state.auth);
     const [userToDelete, setUserToDelete] = useState<string | null>(null);
     const [showAlert, setShowAlert] = useState(false);
@@ -446,7 +446,7 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                                                     onClick={() => handleDownload(data)}
                                                     className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                                                 />
-                                                {user.userType === "admin" && (
+                                                {user.userType === "admin" || user.userType === "subadmin" && (
                                                     <RiDeleteBinLine
                                                         onClick={() => {
                                                             setUserToDelete(data._id);
@@ -563,6 +563,15 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                                             onClick={() => handleDownload(data)}
                                             className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                                         />
+                                        {user.userType === "admin" || user.userType === "subadmin" && (
+                                            <RiDeleteBinLine
+                                                onClick={() => {
+                                                    setUserToDelete(data._id);
+                                                    setShowAlert(true);
+                                                }}
+                                                className="text-red-500 hover:bg-blue-800 p-1 rounded-sm duration-200 cursor-pointer"
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             ))
