@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { FaEdit, FaTrashAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchLoginUserAsync, type Order } from '../../../store/Slice/orderSlice';
+import { fetchLoginUserAsync, resetOrders, type Order } from '../../../store/Slice/orderSlice';
 import type { RootState } from '../../../store/store';
 import { formatDate } from './UserEditPO';
 import { toast } from 'react-toastify';
 import UserEditPO from './UserEditPO';
 import { softDeleteOrder } from '../../../store/Slice/recycleBinSlice';
+import { ClipLoader } from 'react-spinners';
 
 const UserMyPOs: React.FC = () => {
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ const UserMyPOs: React.FC = () => {
   // We need to destructure the `pagination` object first, then access its properties.
   const { orders, status, error, success, pagination } = useSelector((state: RootState) => state.orders);
   const { totalPages, currentPage, limit } = pagination;
-
+  // dispatch(resetOrders())
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -77,6 +78,7 @@ const UserMyPOs: React.FC = () => {
   };
 
   useEffect(() => {
+    dispatch(resetOrders())
     dispatch(fetchLoginUserAsync({ page: currentPage, limit: limit }));
   }, [dispatch, currentPage, limit]);
 
@@ -90,7 +92,7 @@ const UserMyPOs: React.FC = () => {
         <div className="fixed inset-0 backdrop-blur-sm z-40"></div>
       )}
       <h1 className="text-3xl font-bold mb-6 text-start">My Purchase Orders</h1>
-      {status === 'loading' && <div className="text-center">Loading...</div>}
+      {status === 'loading' && <ClipLoader color="#40a7f1"/>}
       {status === 'succeeded' && orders.length === 0 && (
         <div className="text-center text-gray-500 dark:text-gray-400">No orders found.</div>
       )}
@@ -135,7 +137,7 @@ const UserMyPOs: React.FC = () => {
                   {order?.companyName || '--'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-xs  uppercase font-bold ">
-                  <span className={`
+                  <span className={`uppercase
                     ${order.status === 'pending' && 'bg-yellow-100 text-yellow-500 py-1 px-2 rounded-full'}
                     ${order.status === 'completed' && 'bg-green-100 text-green-500 py-1 px-2 rounded-full'}
                     ${order.status === 'delayed' && 'bg-orange-100 text-orange-500 py-1 px-2 rounded-full'}

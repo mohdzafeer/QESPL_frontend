@@ -482,7 +482,7 @@ useEffect(()=>{
               </div>
 
               {/* Invoice No. Input */}
-              <div className="relative z-0 w-full mb-5 group">
+              {/* <div className="relative z-0 w-full mb-5 group">
                 <input
                   type="text"
                   name="invoiceNumber"
@@ -499,7 +499,7 @@ useEffect(()=>{
                 >
                   Invoice Number (Optional)
                 </label>
-              </div>
+              </div> */}
             </div>
           </section>
 

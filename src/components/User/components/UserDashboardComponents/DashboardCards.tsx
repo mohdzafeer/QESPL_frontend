@@ -16,7 +16,7 @@ import {
   fetchRejectedPOCountAsync,
   fetchTotalPOCountAsync
 } from "../../../../store/Slice/orderSlice";
-import { BeatLoader } from "react-spinners";
+import { BeatLoader, ClipLoader, FadeLoader } from "react-spinners";
 
 const DashboardCards = () => {
   const dispatch = useDispatch<AppDispatch>(); // Add AppDispatch type for better type inference
@@ -68,9 +68,9 @@ const DashboardCards = () => {
 
 
   // You might want to add loading and error states to your UI
-  if (status === 'loading') {
-    return <div className="text-center py-4 text-blue-600"><BeatLoader /></div>;
-  }
+  // if (status === 'loading') {
+  //   return <div className="text-center py-4 text-blue-600"><BeatLoader /></div>;
+  // }
 
   if (error) {
     return <div className="text-center py-4 text-red-600">Error: {error}</div>;
@@ -112,7 +112,7 @@ const DashboardCards = () => {
                   : "text-[var(--theme-color)] dark:text-white"
               } text-3xl font-bold`}
             >
-              {totalPOCount !== null ? totalPOCount : 'N/A'}
+              {status==="loading" ? <ClipLoader color="#40a7f1" /> : totalPOCount !== null ? totalPOCount : 'N/A'}
             </p>
           </div>
           <div className="w-16 flex justify-center ">
@@ -130,7 +130,7 @@ const DashboardCards = () => {
           className={`${
             statusFilter == "completed"
               ? "bg-[var(--theme-color)]"
-              : "bg-green-50 dark:bg-zinc-950"
+              : "bg-white dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("completed")}
         >
@@ -149,7 +149,7 @@ const DashboardCards = () => {
                 statusFilter == "completed" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
-              {completedPOCount !== null ? completedPOCount : 'N/A'}
+              {status ==="loading" ? <ClipLoader color="#40a7f1"/> :completedPOCount !== null ? completedPOCount : 'N/A'}
             </p>
           </div>
           <div className="w-16 flex justify-center ">
@@ -167,7 +167,7 @@ const DashboardCards = () => {
           className={`${
             statusFilter == "pending"
               ? "bg-[var(--theme-color)]"
-              : "bg-yellow-50 dark:bg-zinc-950"
+              : "bg-white dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => {
             handleClick("pending");
@@ -188,7 +188,7 @@ const DashboardCards = () => {
                 statusFilter == "pending" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
-              {pendingPOCount !== null && delayedPOCount!==null ? delayedPOCount+pendingPOCount : pendingPOCount === null && delayedPOCount!==null ? delayedPOCount : pendingPOCount!==null && delayedPOCount===null ? pendingPOCount   :'N/A'}
+              {status==="loading" ?<ClipLoader color="#40a7f1"/> :pendingPOCount !== null && delayedPOCount!==null ? delayedPOCount+pendingPOCount : pendingPOCount === null && delayedPOCount!==null ? delayedPOCount : pendingPOCount!==null && delayedPOCount===null ? pendingPOCount   :'N/A'}
             </p>
           </div>
           <div className="w-16 flex justify-center ">
@@ -206,7 +206,7 @@ const DashboardCards = () => {
           className={`${
             statusFilter == "delayed"
               ? "bg-[var(--theme-color)] "
-              : "bg-orange-50 dark:bg-zinc-950"
+              : "bg-white dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("delayed")}
         >
@@ -225,7 +225,7 @@ const DashboardCards = () => {
                 statusFilter == "delayed" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
-              {delayedPOCount !== null ? delayedPOCount : 'N/A'}
+              {status==="loading" ? <ClipLoader color="#40a7f1"/> :delayedPOCount !== null ? delayedPOCount : 'N/A'}
             </p>
           </div>
           <div className="w-16 flex justify-center ">
@@ -243,7 +243,7 @@ const DashboardCards = () => {
           className={`${
             statusFilter == "rejected"
               ? "bg-[var(--theme-color)] "
-              : "bg-red-50 dark:bg-zinc-950"
+              : "bg-white dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("rejected")}
         >
@@ -262,7 +262,7 @@ const DashboardCards = () => {
                 statusFilter == "rejected" ? "" : "text-[var(--theme-color)] "
               } text-3xl font-bold`}
             >
-              {rejectedPOCount !== null ? rejectedPOCount : 'N/A'}
+              {status==="loading" ? <ClipLoader color="#40a7f1" /> : rejectedPOCount !== null ? rejectedPOCount : 'N/A'}
             </p>
           </div>
           <div className="w-16 flex justify-center ">
