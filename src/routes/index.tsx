@@ -46,7 +46,7 @@ export const AppRoutes: React.FC = () => {
           </Route>
           <Route element={<ProtectedRoute allowedRoles={["subadmin", "admin"]} />}>
             <Route path="/subadmin/dashboard" element={<SubadminLayout />}>
-              <Route index element={<AdminDashboard />} />
+              <Route index element={<UserDashboard />} />
               <Route path="tasks" element={<Tasks />} />
               {/* <Route path="activity" element={<Activity />} /> */}
               <Route path="users" element={<UserList />} />
