@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
@@ -18,6 +17,7 @@ type UserCreatePOFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
   onOrderCreated: () => void;
 };
+
 type Product = {
   id: number;
   name: string;
@@ -27,8 +27,8 @@ type Product = {
 };
 
 type OrderFormData = {
-  orderNumber: string; // This will now store only the sequential number
-  fullOrderNumber: string; // This will store the generated full format
+  orderNumber: string;
+  fullOrderNumber: string;
   orderDate: string;
   invoiceNumber: string;
   clientName: string;
@@ -46,7 +46,7 @@ type OrderFormData = {
     username: string;
     employeeId: string;
   };
-  estimatedDispatchDate?: string; // Optional, can be added later
+  estimatedDispatchDate?: string;
 };
 
 const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({
@@ -56,53 +56,30 @@ const UserCreatePOForm: React.FC<UserCreatePOFormProps> = ({
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { status, error, message, success } = useSelector(
+  const { status, error, message } = useSelector(
     (state: RootState) => state.orders
   );
 
+  const lastPONumber = useSelector(
+    (state: RootState) => state.orders.lastPONumber
+  );
+  const newPONumber =
+    lastPONumber && !isNaN(parseInt(lastPONumber.split("/")[0]))
+      ? parseInt(lastPONumber.split("/")[0]) + 1
+      : 1;
 
-
-// ------------------:last PO Number
-
-const lastPONumber = useSelector((state: RootState) => state.orders.lastPONumber); // Corrected
-const newPONumber=parseInt(lastPONumber?.split('/')[0]) +1;
-const newOrderNumber=newPONumber.toString+'/QESPL/AUG/2025'
-
-useEffect(()=>{
-  dispatch(fetchLastPONumberAsync())
-},[])
-
-
-
-// ------------------:last PO Number
-
-
-
-
-
-
-  // Show toast notifications only when submissionStatus changes
   useEffect(() => {
-    if (status === "succeeded" && message) {
-      toast.success(message, { toastId: "create-success" });
-      dispatch(clearMessages()); // Clear messages after displaying
-      setShowForm(false); // Close form on success
-    } else if (status === "failed" && error) {
-      toast.error(error, { toastId: "create-error" });
-      dispatch(clearMessages()); // Clear messages after displaying
-    }
-  }, [message, error, dispatch]);
+    dispatch(fetchLastPONumberAsync());
+  }, [dispatch]);
 
-  // Function to get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
-  // Function to get month abbreviation (e.g., JAN, FEB)
   const getMonthAbbreviation = (date: Date) => {
     const months = [
       "JAN",
@@ -122,12 +99,10 @@ useEffect(()=>{
   };
 
   const [formData, setFormData] = useState<OrderFormData>({
-    orderNumber: "", // User inputs this sequential number
-    fullOrderNumber: "", // This will be generated
-    orderDate: getTodayDate(), // Set default to today's date
+    orderNumber: "",
+    fullOrderNumber: "",
+    orderDate: getTodayDate(),
     invoiceNumber: "",
-    // employeeName: user.username || "",
-    // employeeId: user?.employeeId || "Not Available", // Autofill with logged-in user's ID
     clientName: "",
     companyName: "",
     gstNumber: "",
@@ -135,129 +110,58 @@ useEffect(()=>{
     zipCode: "",
     orderThrough: { username: "", employeeId: "" },
     generatedBy: {
-      username: user.username,
-      employeeId: user.employeeId || "Not Available", // Use actual employeeId from user if available
+      username: user?.username || "",
+      employeeId: user?.employeeId || "Not Available",
     },
     contactNumber: "",
     products: [{ id: 1, name: "", quantity: 1, price: 0, remark: "" }],
-    estimatedDispatchDate: "", // Optional, can be added later
+    estimatedDispatchDate: "",
   });
 
-  // Update formData when user changes (for async Redux updates)
+  // Set default order number when lastPONumber is fetched
   useEffect(() => {
-    if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        employeeName: user.username,
-        employeeId: user.employeeId,
-      }));
-    }
-    // console.log(formData,"zafeeeeeeeeeeerrrrrrr")
-  }, [user]);
-
-  // Effect for generating and managing the orderNumber prefix (QESPL/MMM/YY) and incrementing counter
-  useEffect(() => {
-    const today = new Date();
-    const currentMonthAbbr = getMonthAbbreviation(today);
-    const currentYearShort = today.getFullYear() % 100; // Last two digits of the year
-
-    const storedOrderCountData = localStorage.getItem("orderCountData");
-    let lastRecordedMonth = "";
-    let lastRecordedYear = "";
-    let nextSequentialNumber = 1;
-
-    if (storedOrderCountData) {
-      const parsedData = JSON.parse(storedOrderCountData);
-      lastRecordedMonth = parsedData.month;
-      lastRecordedYear = parsedData.year;
-      nextSequentialNumber = parsedData.count; // This is the count *after* the last successful order
-    }
-
-    // Check if month or year has changed to reset the counter
-    if (
-      lastRecordedMonth !== currentMonthAbbr ||
-      lastRecordedYear !== String(currentYearShort)
-    ) {
-      nextSequentialNumber = 1; // Reset to 1 for the new month/year
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      // Initialize the orderNumber input field with the next sequential number if it's the first load
-      orderNumber: prev.orderNumber || String(nextSequentialNumber),
-      fullOrderNumber: `${
-        prev.orderNumber || nextSequentialNumber
-      }/QESPL/${currentMonthAbbr}/${currentYearShort}`,
-    }));
-
-    // Store the count and current month/year for the next order
-    localStorage.setItem(
-      "orderCountData",
-      JSON.stringify({
-        count: nextSequentialNumber, // Store the count that was just used for the *next* order
-        month: currentMonthAbbr,
-        year: String(currentYearShort),
-      })
-    );
-  }, []); // Run once on component mount
-
-  // Effect to update fullOrderNumber when orderNumber (sequential part) changes
-  useEffect(() => {
-    const today = new Date();
-    const currentMonthAbbr = getMonthAbbreviation(today);
-    const currentYearShort = today.getFullYear() % 100;
-    setFormData((prev) => ({
-      ...prev,
-      fullOrderNumber: `${prev.orderNumber}/QESPL/${currentMonthAbbr}/${currentYearShort}`,
-    }));
-  }, [formData.orderNumber]); // Recalculate fullOrderNumber when the sequential part changes
-
-  useEffect(() => {
-    if (status === "succeeded") {
-      // setShowForm(false); // Close form on success
-      // After successful submission, increment the stored counter for the *next* order
-
+    if (lastPONumber) {
       const today = new Date();
       const currentMonthAbbr = getMonthAbbreviation(today);
       const currentYearShort = today.getFullYear() % 100;
-
-      const storedOrderCountData = localStorage.getItem("orderCountData");
-      let nextSequentialNumber = 1;
-
-      if (storedOrderCountData) {
-        const parsedData = JSON.parse(storedOrderCountData);
-        if (
-          parsedData.month === currentMonthAbbr &&
-          parsedData.year === String(currentYearShort)
-        ) {
-          nextSequentialNumber = parsedData.count; // Get the last count
-        }
-      }
-
-      localStorage.setItem(
-        "orderCountData",
-        JSON.stringify({
-          count: nextSequentialNumber + 1, // Increment for the next order
-          month: currentMonthAbbr,
-          year: String(currentYearShort),
-        })
-      );
-    } else if (status === "failed" && error) {
-      console.log(error, "Error creating order:");
-      // toast.error(
-      //   "Order creation failed. This order number might already exist. Please try again with a different Order Number."
-      // );
+      setFormData((prev) => ({
+        ...prev,
+        orderNumber: String(newPONumber),
+        fullOrderNumber: `${newPONumber}/QESPL/${currentMonthAbbr}/${currentYearShort}`,
+      }));
     }
-  }, []);
+  }, [lastPONumber]);
 
-  // Handles input changes for top-level form fields
+  // Update fullOrderNumber whenever orderNumber changes
+  useEffect(() => {
+    if (formData.orderNumber) {
+      const today = new Date();
+      const currentMonthAbbr = getMonthAbbreviation(today);
+      const currentYearShort = today.getFullYear() % 100;
+      setFormData((prev) => ({
+        ...prev,
+        fullOrderNumber: `${prev.orderNumber}/QESPL/${currentMonthAbbr}/${currentYearShort}`,
+      }));
+    }
+  }, [formData.orderNumber]);
+
+  useEffect(() => {
+    if (status === "succeeded" && message) {
+      toast.success(message, { toastId: "create-success" });
+      dispatch(clearMessages());
+      setShowForm(false);
+    } else if (status === "failed" && error) {
+      toast.error(error, { toastId: "create-error" });
+      dispatch(clearMessages());
+    }
+  }, [status, message, error, dispatch, setShowForm]);
+
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
     const { name, value } = e.target;
-
     if (name.includes("orderThrough.")) {
       const field = name.split(".")[1];
       setFormData((prev) => ({
@@ -265,14 +169,12 @@ useEffect(()=>{
         orderThrough: { ...prev.orderThrough, [field]: value },
       }));
     } else if (name.includes("generatedBy.")) {
-      // <--- Added this block for generatedBy
       const field = name.split(".")[1];
       setFormData((prev) => ({
         ...prev,
         generatedBy: { ...prev.generatedBy, [field]: value },
       }));
     } else if (name === "orderNumber") {
-      // Only allow numbers for orderNumber input
       if (/^\d*$/.test(value)) {
         setFormData((prev) => ({ ...prev, [name]: value }));
       }
@@ -281,7 +183,6 @@ useEffect(()=>{
     }
   };
 
-  // Handles input changes specifically for product fields
   const handleProductChange = (
     id: number,
     e: React.ChangeEvent<HTMLInputElement>
@@ -289,37 +190,30 @@ useEffect(()=>{
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      products: prev.products.map((product) => {
-        if (product.id === id) {
-          if (name === "quantity" || name === "price") {
-            return { ...product, [name]: Number(value) };
+      products: prev.products.map((product) =>
+        product.id === id
+          ? {
+            ...product,
+            [name]:
+              name === "quantity" || name === "price"
+                ? Number(value)
+                : value,
           }
-          return { ...product, [name]: value };
-        }
-        return product;
-      }),
+          : product
+      ),
     }));
   };
 
-  // Adds a new product row to the form
   const addProduct = () => {
     setFormData((prev) => ({
       ...prev,
       products: [
         ...prev.products,
-        {
-          id: prev.products.length + 1,
-          name: "",
-          quantity: 1,
-          price: 0,
-          remark: "",
-          // dispatchDate: "",
-        },
+        { id: prev.products.length + 1, name: "", quantity: 1, price: 0, remark: "" },
       ],
     }));
   };
 
-  // Removes a product row from the form
   const removeProduct = (id: number) => {
     setFormData((prev) => ({
       ...prev,
@@ -327,21 +221,13 @@ useEffect(()=>{
     }));
   };
 
-  // Closes the form by updating the parent component's state
-  const handleClose = () => {
-    setShowForm(false);
-  };
-  const [currentPage, setCurrentPage] = useState(1);
-  // Handles the form submission
-  const fetchOrder = () => {
-    fetchOrdersAsync({ page: 1, limit: 10 });
-  };
   const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
     e.preventDefault();
+
     const sequentialOrderNum = parseInt(formData.orderNumber, 10);
     if (isNaN(sequentialOrderNum) || sequentialOrderNum <= 0) {
-      toast.error("Please enter a valid Order Number (sequential part).");
+      toast.error("Please enter a valid Order Number.");
       setLoading(false);
       return;
     }
@@ -353,22 +239,11 @@ useEffect(()=>{
       contact: formData.contactNumber,
       address: formData.address,
       zipCode: formData.zipCode,
-      products: formData.products.map((product) => ({
-        name: product.name,
-        quantity: product.quantity,
-        price: product.price,
-        remark: product.remark,
-      })),
+      products: formData.products,
       estimatedDispatchDate: formData.estimatedDispatchDate || "",
-      generatedBy: {
-        username: formData.generatedBy.username,
-        employeeId: formData.generatedBy.employeeId,
-      },
-      orderThrough: {
-        username: formData.orderThrough.username,
-        employeeId: formData.orderThrough.employeeId,
-      },
-      orderNumber: formData.fullOrderNumber, // Use the generated full order number here
+      generatedBy: formData.generatedBy,
+      orderThrough: formData.orderThrough,
+      orderNumber: formData.fullOrderNumber,
       orderDate: formData.orderDate,
       invoiceNumber: formData.invoiceNumber,
       status: "pending",
@@ -380,29 +255,21 @@ useEffect(()=>{
     try {
       await dispatch(createOrderAsync(apiOrderData)).unwrap();
       onOrderCreated();
-      dispatch(fetchTotalPOCountAsync())
-      dispatch(fetchPendingPOCountAsync())
+      dispatch(fetchTotalPOCountAsync());
+      dispatch(fetchPendingPOCountAsync());
       setShowForm(false);
-      setLoading(false);
-
-      // Fetch updated orders after creation
-
-      // Fetch updated orders after creation
-      // Fetch updated orders after creation
-      // window.location.reload();
       toast.success("Order created successfully!");
-    } catch (err) {
-      // toast.error("Failed to create order. Please try again.");
+    } catch {
       setLoading(false);
     }
   };
 
-  // If user is not logged in, show a loading state or redirect
-  if (!user) {
-    return <div>Please log in to access this form.</div>;
-  }
+  if (!user) return <div>Please log in to access this form.</div>;
 
   console.log(user.employeeId, "User data in UserCreatePOForm");
+  const handleClose = () => {
+    setShowForm(false);
+  };
 
   return (
     <div className="w-screen h-screen flex justify-center items-center pt-20">
@@ -432,34 +299,38 @@ useEffect(()=>{
               {/* Order Number Input (User enters only the sequential part) */}
               <div className="relative z-0 w-full mb-5 group">
                 <input
-                  type="text" // Changed to text to allow empty initially, but validation ensures numbers
+                  type="text"
                   name="orderNumber"
                   id="order_number"
-                  className="block pt-5 px-0 w-full lg:text-lg xl:text-lg text-sm text-[#0A2975] font-bold bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-white focus:outline-none focus:ring-0 focus:border-[#0A2975] peer"
+                  className="block pt-5 px-0 w-full lg:text-lg xl:text-lg text-sm text-[#0A2975] font-bold bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 focus:outline-none focus:border-[#0A2975] peer"
                   placeholder=" "
                   required
                   value={formData.orderNumber}
-                  // value={formData.orderNumber}
                   onChange={handleInputChange}
                 />
                 <label
                   htmlFor="order_number"
-                  className="absolute lg:lg:text-lg xl:text-lg text-sm xl:lg:text-lg  text-black dark:text-gray-400 duration-300 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975] peer-focus:dark:text-white"
+                  className="absolute lg:lg:text-lg xl:text-lg text-sm text-black dark:text-gray-400 transform scale-75 top-0 left-0 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-2.5 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-[#0A2975]"
                 >
                   Order Number (Sequential Part)
                   <span className="text-red-500 m-2">*</span>
                 </label>
               </div>
-              {/* Display Full Order Number Label */}
-              {formData.fullOrderNumber && (
-                <div className="mb-5 -mt-3 lg:text-sm xl:text-sm text-xs text-start text-[#0A2975] dark:text-gray-300 font-semibold">
-                  Order Number is:{" "}
-                  <span className="font-semibold text-[#0A2975] dark:text-white">
-                    {formData.fullOrderNumber}
-                    {/* {lastPONumber} */}
-                  </span>
-                </div>
-              )}
+
+              <div className="flex flex-col items-start">
+                {formData.fullOrderNumber && (
+                  <div className="mb-2 -mt-3 text-sm text-[#0A2975] font-semibold">
+                    Full Order Number:{" "}
+                    <span className="font-semibold">{formData.fullOrderNumber}</span>
+                  </div>
+                )}
+
+                {lastPONumber && (
+                  <div className="mb-5 text-xs text-gray-600">
+                    Last PO Number: <span className="font-medium">{lastPONumber}</span>
+                  </div>
+                )}
+              </div>
 
               {/* Order Date Input */}
               <div className="relative z-0 w-full mb-5 group">
@@ -824,19 +695,19 @@ useEffect(()=>{
 
               {loading === false ? (
                 <div className="justify-end flex gap-4">
-                <button
-                  type="submit"
-                  className="text-end max-w-fit bg-[#0A2975] text-white px-3 py-1 font-semibold lg:text-xl xl:text-xl text-sm rounded-md hover:bg-[#092060] transition duration-300 cursor-pointer"
-                >
-                  Submit
-                </button>
-                <button
-                  // type="submit"
-                  onClick={handleClose}
-                  className="text-end max-w-fit bg-red-400 text-white px-3 py-1 font-semibold lg:text-xl xl:text-xl text-sm rounded-md hover:bg-red-500 transition duration-300 cursor-pointer"
-                >
-                  Cancel
-                </button>
+                  <button
+                    type="submit"
+                    className="text-end max-w-fit bg-[#0A2975] text-white px-3 py-1 font-semibold lg:text-xl xl:text-xl text-sm rounded-md hover:bg-[#092060] transition duration-300 cursor-pointer"
+                  >
+                    Submit
+                  </button>
+                  <button
+                    // type="submit"
+                    onClick={handleClose}
+                    className="text-end max-w-fit bg-red-400 text-white px-3 py-1 font-semibold lg:text-xl xl:text-xl text-sm rounded-md hover:bg-red-500 transition duration-300 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
 
                 </div>
               ) : (
