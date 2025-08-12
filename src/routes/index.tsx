@@ -35,7 +35,7 @@ export const AppRoutes: React.FC = () => {
 
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
             <Route path="/admin/dashboard" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
+              <Route index element={<UserDashboard />} />
               <Route path="tasks" element={<Tasks />} />
               <Route path="activity" element={<Activity />} />
               <Route path="users" element={<UserList />} />
@@ -44,7 +44,7 @@ export const AppRoutes: React.FC = () => {
               <Route path="recycle-bin" element={<RecycleBin />} />
             </Route>
           </Route>
-          <Route element={<ProtectedRoute allowedRoles={["subadmin","admin"]} />}>
+          <Route element={<ProtectedRoute allowedRoles={["subadmin", "admin"]} />}>
             <Route path="/subadmin/dashboard" element={<SubadminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="tasks" element={<Tasks />} />
@@ -58,10 +58,10 @@ export const AppRoutes: React.FC = () => {
             </Route>
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={["admin","user","subadmin"]} />}>
-            <Route path="/user/dashboard" element={<UserLayout/>}>
+          <Route element={<ProtectedRoute allowedRoles={["admin", "user", "subadmin"]} />}>
+            <Route path="/user/dashboard" element={<UserLayout />}>
               <Route index element={<UserDashboard />} />
-              <Route path="tasks" element={<UserTask />} /> 
+              <Route path="tasks" element={<UserTask />} />
               <Route path="requests" element={<UserMessage />} />
               <Route path="notifications" element={<UserNotification />} />
               <Route path="mypos" element={<UserMyPOs />} />

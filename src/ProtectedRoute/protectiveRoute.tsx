@@ -26,9 +26,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Modified logic: If the user's role is not in the allowedRoles array,
+  // they are redirected to the login page.
   if (!allowedRoles.includes(user.userType)) {
-    const redirectPath = user.userType === "admin" || "subadmin" ? "/admin/dashboard" : "/user/dashboard";
-    return <Navigate to={redirectPath} state={{ from: location }} replace />;
+    console.log(`User type '${user.userType}' not in allowed roles: [${allowedRoles.join(", ")}]`);
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return <Outlet />;
