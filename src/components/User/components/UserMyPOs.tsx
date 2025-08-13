@@ -77,8 +77,8 @@ const UserMyPOs: React.FC = () => {
     }
   };
 
+  // dispatch(resetOrders())
   useEffect(() => {
-    dispatch(resetOrders())
     dispatch(fetchLoginUserAsync({ page: currentPage, limit: limit }));
   }, [dispatch, currentPage, limit]);
 
