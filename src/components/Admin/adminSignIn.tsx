@@ -62,9 +62,9 @@ const LoginForm = () => {
     }
   }, [status, error, navigate]);
 
-  useEffect(() => {
-    dispatch(logout()); // Reset auth state on mount
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(logout()); // Reset auth state on mount
+  // }, [dispatch]);
 
   const onSubmit: SubmitHandler<LoginFormData> = (data) => {
     console.log("LoginForm - Form submitted with data:", data); // Debug
