@@ -91,7 +91,7 @@ const DashboardCards = () => {
           className={`${
             statusFilter == "all"
               ? "bg-[var(--theme-color)]"
-              : "bg-blue-50 dark:bg-zinc-950"
+              : "bg-white dark:bg-zinc-950"
           } p-4 rounded-lg shadow-[5px_5px_15px_#d1d9e6,-5px_-5px_15px_#ffffff] dark:shadow-none flex justify-between cursor-pointer font-semibold`}
           onClick={() => handleClick("all")}
         >

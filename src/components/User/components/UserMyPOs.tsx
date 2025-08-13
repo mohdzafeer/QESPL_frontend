@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaEdit, FaTrashAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchLoginUserAsync, resetOrders, type Order } from '../../../store/Slice/orderSlice';
+import { fetchLoginUserAsync, type Order } from '../../../store/Slice/orderSlice';
 import type { RootState } from '../../../store/store';
 import { formatDate } from './UserEditPO';
 import { toast } from 'react-toastify';
