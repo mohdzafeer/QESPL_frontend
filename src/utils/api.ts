@@ -168,7 +168,7 @@ interface DecodedToken {
 
 //// create Interface for the task creat
 export interface TaskCratePayload {
-  _id: string;
+  poId: string;
   title: string;
   description: string;
   taskType: string;
@@ -486,6 +486,7 @@ export const getAllUsers = async () => {
 
 ///// create a end point for the orders api
 export const taskcreate=async(taskPaylaoad:TaskCratePayload)=>{
+  console.log(taskPaylaoad,"chake task paylaod on api End points")
   const response=await api.post(`/task/api/admin-subadmin-create-task`,taskPaylaoad,{
     withCredentials: true,
   })
@@ -512,8 +513,13 @@ export const updateTake = async (
 export const getTasksByPO = async (poId: string) => {
   const response = await api.get(`/task/api/admin-subadmin-getTask-By-po/${poId}`, {
     withCredentials: true,
-  });
-  console.log(response.data,"check dat responses ....")
+  })
+  return response.data;
+};
+
+
+export const getAssignTask = async (userId: string) => {
+ const response = await api.get(`/task/api/get-tasks-assigned-to-user/${userId}`, { withCredentials: true });
   return response.data;
 };
 

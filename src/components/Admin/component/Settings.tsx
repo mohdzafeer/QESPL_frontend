@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import Navbar from "./Navbar";
-import Sidebar from "./sidebar";
+
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setTheme } from "../../../store/Slice/themeSlice";
@@ -9,9 +8,11 @@ const Settings = () => {
   const [recycleBinTime, setRecycleBinTime] = useState("30"); //30 Days default Recycle bin time
   // const [theme, setTheme] = useState('light')  //default light theme
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const theme = useSelector((state: any) => state.theme.theme);
   const dispatch = useDispatch();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleThemeChange = (e: any) => {
     dispatch(setTheme(e.target.value));
   };

@@ -25,10 +25,8 @@ interface NotificationProps {
 const Notification: React.FC<NotificationProps> = ({ onClose }) => {
   const dispatch = useDispatch<AppDispatch>(); // Use typed AppDispatch
    const { notifications, showAll } = useSelector((state: RootState) => state.notifications);
-
-
-  const displayedNotifications = showAll ? notifications : notifications.slice(0, 5);
-  const notificationCount = showAll ? notifications.length : 5;
+   const displayedNotifications = showAll ? notifications : notifications.slice(0, 5);
+   const notificationCount = showAll ? notifications.length : 5;
 
 
   return (

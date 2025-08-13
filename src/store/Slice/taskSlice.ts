@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, type PayloadAction} from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import {getOrderById, getTasksByPO, taskcreate,updateTake,type TaskCratePayload} from "../../utils/api";
+import {getAssignTask, getOrderById, getTasksByPO, taskcreate,updateTake,type TaskCratePayload} from "../../utils/api";
 
 
 
@@ -26,6 +26,7 @@ export const taskCreate = createAsyncThunk(
   "task/taskCreate",
   async (taskData: TaskCratePayload, { rejectWithValue }) => {
     try {
+      console.log(taskData,"check on the slice RE")
       const response = await taskcreate(taskData);
       return response.task;
     } catch (error: any) {
@@ -55,7 +56,7 @@ export const fetchTaskByTaskId = createAsyncThunk(
   async (taskId: string, { rejectWithValue }) => {
     try {
       const response = await getTasksByPO(taskId);
-      console.log(response,"jdewoew")
+      console.log(response,"skdd")
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch tasks");
@@ -72,6 +73,19 @@ export const updateTaskStatus = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to update task status");
+    }
+  }
+);
+
+
+export const fetchTasksAssignedToUser = createAsyncThunk(
+  "task/fetchTasksAssignedToUser",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await getAssignTask(userId)
+      return Array.isArray(response.data) ? response.data : [response.data];
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch assigned tasks");
     }
   }
 );

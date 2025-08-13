@@ -19,7 +19,8 @@ import taskReducer from "./Slice/taskSlice";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth","notifications"],
+  whitelist: ["auth", "notifications", "task"],
+  // whitelist: ["auth","notifications"],
 };
 console.log("Persist Config:", persistConfig.storage);
 

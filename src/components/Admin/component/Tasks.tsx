@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
@@ -31,7 +32,7 @@ const Tasks = () => {
     taskType: "",
     taskDeadline: "",
     description: "",
-    assignedUsers: [{userId: "", username:"" }],
+    assignedUsers: [{ id: Date.now().toString(), primaryUserId: "", secondaryUserId: "", username: "", employeeId: "" }],
   });
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -56,13 +57,13 @@ const Tasks = () => {
 
   // Set purchase orders from API
   useEffect(() => {
-     const fetchData = async () => {
+    const fetchData = async () => {
       try {
         const result = await dispatch(fetchOrdersAsync({ page: currentPage, limit: USERS_PER_PAGE })).unwrap();
-        const {orders}=result
+        const { orders } = result
         setPurchaseOrders(orders);
         const pendingOrDelayedPO = orders.find(
-          (po) => po.status === 'pending' || po.status === 'delayed'
+          (po: any) => po.status === 'pending' || po.status === 'delayed'
         );
         setSelectedPO(pendingOrDelayedPO || orders[0] || null); // Select first pending/delayed, or first order, or null
       } catch (error) {
@@ -76,7 +77,7 @@ const Tasks = () => {
 
 
   useEffect(() => {
-    if(!selectedPO)return 
+    if (!selectedPO) return
     if (selectedPO) {
       dispatch(fetchTaskByTaskId(selectedPO._id));
     }
@@ -99,14 +100,34 @@ const Tasks = () => {
     }));
   };
 
-  // Handler for assigned users
-  const handleAssignedUserChange = (id: string, e: any) => {
-    const { name, value } = e.target;
+
+  const handleAssignedUserChange = (id: string, field: string, e: any) => {
+    const { value } = e.target;
     setTaskData((prevData) => ({
       ...prevData,
-      assignedUsers: prevData.assignedUsers.map((user) =>
-        user._id === id ? { ...user, [name]: value } : user
-      ),
+      assignedUsers: prevData.assignedUsers.map((user) => {
+        if (user.id === id) {
+          const selectedUser = userData.find((dUser) => dUser._id === value);
+          if (field === "primaryUserId") {
+            return {
+              ...user,
+              primaryUserId: value,
+              secondaryUserId: value, // Auto-fill secondaryUserId
+              username: selectedUser ? selectedUser.username : "",
+              employeeId: selectedUser ? selectedUser.employeeId : "",
+            };
+          } else if (field === "secondaryUserId") {
+            return {
+              ...user,
+              primaryUserId: value, // Auto-fill primaryUserId
+              secondaryUserId: value,
+              username: selectedUser ? selectedUser.username : "",
+              employeeId: selectedUser ? selectedUser.employeeId : "",
+            };
+          }
+        }
+        return user;
+      }),
     }));
   };
 
@@ -114,7 +135,16 @@ const Tasks = () => {
   const addAssignedUser = () => {
     setTaskData((prevData) => ({
       ...prevData,
-      assignedUsers: [...prevData.assignedUsers, { id: uuidv4(), userId: "" }],
+      assignedUsers: [
+        ...prevData.assignedUsers,
+        {
+          id: Date.now().toString(),
+          primaryUserId: "",
+          secondaryUserId: "",
+          username: "",
+          employeeId: ""
+        }
+      ],
     }));
   };
 
@@ -137,14 +167,19 @@ const Tasks = () => {
     }
 
     const payload: TaskCratePayload = {
+      poId: selectedPO?._id || "",
       title: taskData.title,
       description: taskData.description,
       taskType: taskData.taskType,
       taskDeadline: taskData.taskDeadline || undefined,
       assignedUsers: taskData.assignedUsers
-        .filter((user) => user.userId)
-        .map((user) => user.userId),
-      poId: selectedPO._id,
+        .map((user) => {
+          const selectedUser = userData.find((dUser) => dUser._id === user.primaryUserId);
+          return selectedUser
+            ? { _id: selectedUser._id, username: selectedUser.username, }
+            : null;
+        })
+        .filter((userObj) => userObj !== null) as { _id: string; username: string; email: string }[]
     };
 
     try {
@@ -155,30 +190,33 @@ const Tasks = () => {
         taskType: "",
         taskDeadline: "",
         description: "",
-        assignedUsers: [{ id: uuidv4(), userId: "" }],
+        assignedUsers: [{ id: Date.now().toString(), primaryUserId: "", secondaryUserId: "", username: "", employeeId: "" }],
       });
       setFormError(null);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      if (selectedPO) {
+        console.log(selectedPO, "check user po Ids...")
+        dispatch(fetchTaskByTaskId(selectedPO._id)); // Refresh the task list after creation
+      }
     } catch (error) {
       setFormError("Failed to create task");
     }
   };
-
   // Handler to mark a task as completed
   const handleMarkAsCompleted = async (taskId: string, currentStatus: string) => {
-    const newStatus = currentStatus === "completed" ? "pending" : "completed";
+    const newStatus = currentStatus !== "completed"; // true if marking as completed, false otherwise
     try {
       await dispatch(updateTaskStatus({ taskId, status: newStatus })).unwrap();
       toast.success("Task status updated");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Failed to update task status");
     }
   };
 
   // Get status color
-  const getStatusColor = (status: string) => {
-    switch (status) {
+  const getStatusColor = (status: string | undefined) => {
+    const effectiveStatus = status || "pending";
+    switch (effectiveStatus) {
       case "pending":
         return "bg-yellow-500 text-white";
       case "completed":
@@ -221,10 +259,10 @@ const Tasks = () => {
           <span className="text-sm text-gray-500 dark:text-gray-400">
             {selectedPO
               ? new Date(selectedPO.createdAt.split('T')[0]).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
               : "No PO selected"}
           </span>
         </div>
@@ -366,40 +404,36 @@ const Tasks = () => {
                     )}
                   </div>
                   <div className="flex gap-5">
-                    <label htmlFor={`userId-${user.id}`} className="sr-only">
-                      Select User
-                    </label>
                     <select
-                      id={`userId-${user.id}`}
-                      name="userId"
+                      id={`primaryUserId-${user.id}`}
+                      name="username"
                       className="block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white dark:focus:border-blue-400"
-                      value={user.userId}
-                      onChange={(e) => handleAssignedUserChange(user.id, e)}
+                      value={user.primaryUserId || ""}
+                      onChange={(e) => handleAssignedUserChange(user.id, "primaryUserId", e)}
                     >
-                      <option value="">Select user</option>
+                      <option value="">Select user (by username)</option>
                       {userData.map((dUser: any) => (
                         <option key={dUser._id} value={dUser._id}>
                           {dUser.username}
-                          {/* {dUser.employeeId} */}
                         </option>
                       ))}
-
                     </select>
+
                     <select
-                      id={`userId-${user.id}`}
-                      name="userId"
+                      id={`secondaryUserId-${user.id}`}
+                      name="secondaryUserId"
                       className="block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white dark:focus:border-blue-400"
-                      value={user.userId}
-                      onChange={(e) => handleAssignedUserChange(user.id, e)}
+                      value={user.secondaryUserId || ""}
+                      onChange={(e) => handleAssignedUserChange(user.id, "secondaryUserId", e)}
                     >
-                      <option value="">Select user</option>
+                      <option value="">Select user (by employee ID)</option>
                       {userData.map((dUser: any) => (
                         <option key={dUser._id} value={dUser._id}>
                           {dUser.employeeId}
                         </option>
                       ))}
-
                     </select>
+
                   </div>
                 </div>
               ))}
@@ -429,11 +463,10 @@ const Tasks = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full flex justify-center items-center px-6 py-3 font-semibold rounded-md shadow-md transition-colors duration-200 ${
-                  loading
+                className={`w-full flex justify-center items-center px-6 py-3 font-semibold rounded-md shadow-md transition-colors duration-200 ${loading
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
-                }`}
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -456,12 +489,17 @@ const Tasks = () => {
         </div>
 
         {/* Task List (Component 3) */}
+
         <div className="w-full lg:w-1/2 h-auto border border-gray-200 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-900 shadow-lg p-6 overflow-y-auto no-scrollbar">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+
             Tasks for{" "}
             <span className="text-blue-600 dark:text-blue-400">
-              {selectedPO ? `PO #${selectedPO.orderNumber}` : "Selected PO"}
+              {selectedPO ? (selectedPO._id === 'all' ? 'All Purchase Orders' : `PO #${selectedPO.orderNumber}`) : "Selected PO"}
             </span>
+            {/* <span className="text-blue-600 dark:text-blue-400">
+              {selectedPO ? `PO #${selectedPO.orderNumber}` : "Selected PO"}
+            </span> */}
           </h2>
           {loading ? (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 py-10">
@@ -472,11 +510,10 @@ const Tasks = () => {
               {tasks.map((task: any) => (
                 <div
                   key={task._id}
-                  className={`bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 flex flex-col ${
-                    task.status === "completed"
+                  className={`bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 flex flex-col ${task.status === "completed"
                       ? "opacity-70 border-green-400 dark:border-green-600"
                       : ""
-                  }`}
+                    }`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mr-4">
@@ -498,17 +535,44 @@ const Tasks = () => {
                       </span>{" "}
                       {task.taskType}
                     </div>
+                    {selectedPO?._id === 'all' && task.poId?.orderNumber && (
+                      <div className="flex items-center">
+                        <span className="font-semibold text-gray-700 dark:text-gray-200 mr-1">
+                          PO #:
+                        </span>{" "}
+                        {task.poId.orderNumber}
+                      </div>
+                    )}
                     <div className="flex items-center">
                       <span className="font-semibold text-gray-700 dark:text-gray-200 mr-1">
                         Created:
                       </span>{" "}
-                      {new Date(task.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {task.createdAt
+                        ? new Date(task.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                        : "N/A"}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300 mb-3">
+                    <div className="flex items-center">
+                      <span className="font-semibold text-gray-700 dark:text-gray-200 mr-1">
+                        Deadline:
+                      </span>{" "}
+                      {task.taskDeadline
+                        ? new Date(task.taskDeadline).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                        : "No deadline"}
                     </div>
                   </div>
 
@@ -517,11 +581,15 @@ const Tasks = () => {
                       Assigned To:
                     </span>
                     <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 ml-4">
-                      {task.assignedUsers.map((user: any) => (
-                        <li key={user._id}>
-                          {user.username} (Emp ID: {user._id})
-                        </li>
-                      ))}
+                      {task.assignedUsers?.length > 0 ? (
+                        task.assignedUsers.map((user: any) => (
+                          <li key={user._id}>
+                            {user.username} (Emp ID: {user._id})
+                          </li>
+                        ))
+                      ) : (
+                        <li>No users assigned</li>
+                      )}
                     </ul>
                   </div>
 
@@ -530,7 +598,7 @@ const Tasks = () => {
                       Description:
                     </span>
                     <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {task.description}
+                      {task.description || "No description provided"}
                     </p>
                   </div>
 
@@ -556,10 +624,13 @@ const Tasks = () => {
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 py-10">
               {selectedPO
-                ? "No tasks assigned to this PO yet."
+                ? selectedPO._id === "all"
+                  ? "No tasks assigned yet."
+                  : "No tasks assigned to this PO yet."
                 : "Select a Purchase Order to view its tasks."}
             </div>
           )}
+
         </div>
       </div>
 
@@ -580,11 +651,10 @@ const Tasks = () => {
               filteredPurchaseOrders.map((po: any) => (
                 <div
                   key={po._id}
-                  className={`flex justify-between items-center bg-gray-50 dark:bg-zinc-800 p-3 rounded-lg w-full border border-gray-200 dark:border-zinc-700 shadow-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors duration-200 ${
-                    selectedPO && selectedPO._id === po._id
+                  className={`flex justify-between items-center bg-gray-50 dark:bg-zinc-800 p-3 rounded-lg w-full border border-gray-200 dark:border-zinc-700 shadow-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors duration-200 ${selectedPO && selectedPO._id === po._id
                       ? "ring-2 ring-blue-500 dark:ring-blue-400"
                       : ""
-                  }`}
+                    }`}
                   onClick={() => handlePOSelect(po)}
                 >
                   <span className="font-semibold text-gray-800 dark:text-gray-100">

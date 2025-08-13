@@ -11,11 +11,6 @@ import { useEffect, useState } from 'react';
 
 
 
-
-
-
-
-
 const AppContent: React.FC = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const { user, token } = useSelector((state: RootState) => state.auth);
