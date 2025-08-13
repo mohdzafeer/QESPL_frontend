@@ -110,7 +110,7 @@ const UserMyPOs: React.FC = () => {
       {(showEditModal || showDeleteConfirmModal) && (
         <div className="fixed inset-0 backdrop-blur-sm z-40"></div>
       )}
-      <h1 className="text-3xl font-bold mb-6 text-start">My Purchase Orders</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">My Purchase Orders</h1>
       {status === 'loading' && <ClipLoader color="#40a7f1"/>}
       {status === 'succeeded' && orders.length === 0 && (
         <div className="text-center text-gray-500 dark:text-gray-400">No orders found.</div>
