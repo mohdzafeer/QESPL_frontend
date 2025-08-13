@@ -7,7 +7,7 @@ import { formatDate } from './UserEditPO';
 import { toast } from 'react-toastify';
 import UserEditPO from './UserEditPO';
 import { softDeleteOrder } from '../../../store/Slice/recycleBinSlice';
-import { ClipLoader } from 'react-spinners';
+import { ClipLoader, MoonLoader } from 'react-spinners';
 
 const UserMyPOs: React.FC = () => {
   const dispatch = useDispatch();
@@ -77,14 +77,33 @@ const UserMyPOs: React.FC = () => {
     }
   };
 
-  
+  const [loading, setLoading] = useState(false)
+
   useEffect(() => {
-    dispatch(fetchLoginUserAsync({ page: currentPage, limit: limit }));
+    const fetchOrdersOfLoggedInUser=async()=>{
+      setLoading(true)
+      try {
+        await dispatch(fetchLoginUserAsync({ page: currentPage, limit: limit }));
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
+    }
+    fetchOrdersOfLoggedInUser()
   }, [dispatch, currentPage, limit]);
 
   useEffect(() => {
     console.log(selectedOrder, "selected oRder.............");
   }, [selectedOrder]);
+
+  if(loading===true){
+    return(
+      <div className='h-full w-full flex items-center justify-center'>
+        <MoonLoader />
+      </div>
+    )
+  }
 
   return (
     <div className={`p-5 mb-20 ${showEditModal || showDeleteConfirmModal ? 'relative overflow-hidden' : ''}`}>
