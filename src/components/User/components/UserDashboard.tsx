@@ -25,17 +25,17 @@ const UserDashboard = () => {
         <div className="flex justify-end w-full">
           {location.pathname==="/user/dashboard" && (
             <>
-              <button
+              {/* <button
                 className="text-white bg-[var(--theme-color)] px-3 py-2 rounded-lg mb-10 font-semibold cursor-pointer lg:inline-block xl:inline-block hidden"
                 onClick={() => setShowForm(true)}
               >
                 Create PO
-              </button>
+              </button> */}
               <button
-                className=" bg-white text-[var(--theme-color)] px-3 py-2 rounded-lg mb-10 font-semibold cursor-pointer lg:hidden xl:hidden inline-flex  items-center justify-between min-w-full text-xl"
+                className=" bg-white text-[var(--theme-color)] px-3 py-2 lg:p-5 xl:p-5 rounded-lg mb-10 font-semibold cursor-pointer  inline-flex  items-center justify-between min-w-full text-xl border shadow-md hover:bg-blue-50 duration-200 dark:bg-zinc-900 dark:text-white"
                 onClick={() => setShowForm(true)}
               >
-                <span>Create Purcahse Order</span> <span className="bg-[var(--theme-color)] text-white px-2 text-2xl rounded ml-2 flex justify-center items-center pb-1">+</span>
+                <span>Create Purcahse Order</span> <span className="bg-[var(--theme-color)] dark:bg-zinc-200 text-white dark:text-black px-3 text-2xl xl:text-4xl lg:text-4xl rounded ml-2 flex justify-center items-center pb-2 text-center ">+</span>
               </button>
             </>
           )}

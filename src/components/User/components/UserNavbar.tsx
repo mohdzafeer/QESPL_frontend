@@ -91,7 +91,7 @@ const UserNavbar: React.FC<NavbarProps> = () => {
 
   return (
     <>
-      <nav className="bg-white dark:bg-zinc-950 px-2 sm:px-4 py-2 flex flex-wrap items-center shadow-[5px_5px_15px_#d1d9e6_dark:shadow-black,-5px_-5px_15px_#ffffff] mb-4 z-[50]">
+      <nav className="bg-white dark:bg-zinc-950 px-2 sm:px-4 py-2 flex flex-wrap items-center   z-[50]">
         {/* Logo - Moved to the left */}
         <div className="flex-shrink-0 flex items-center">
           <img
