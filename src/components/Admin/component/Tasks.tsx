@@ -584,7 +584,7 @@ const Tasks = () => {
                       {task.assignedUsers?.length > 0 ? (
                         task.assignedUsers.map((user: any) => (
                           <li key={user._id}>
-                            {user.username} (Emp ID: {user._id})
+                            {user.username}
                           </li>
                         ))
                       ) : (
