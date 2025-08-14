@@ -275,6 +275,22 @@ interface DecodedToken {
   [key: string]: any;
 }
 
+
+//// create Interface for the task creat
+export interface TaskCratePayload {
+  poId: string;
+  title: string;
+  description: string;
+  taskType: string;
+  status?: string;
+  taskDeadline?: string;
+  assignedUsers: { _id: string; username: string; email: string }[];
+}
+
+//// create interface for the status
+interface TaskStatus {
+  status:boolean
+}
 //// create subadmin funcation for the handles
 
 export const createSubAdmin = async (data: SubAdminFormData) => {
@@ -540,6 +556,16 @@ export const deleteloginUser = async (orderId: string) => {
 };
 
 
+// getAllUsers  getOrderById
+export const getOrderById=async(orderId: string)=>{
+  try {
+    const response=await api.get(`/order/api/get-order-details/${orderId}`,{withCredentials:true})
+    return response.data
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+}
 
 // Get count api endpoints
 export const getTotalPOCount = async () => {
@@ -604,3 +630,41 @@ export const getLastPONumber = async () => {
 };
 
 
+// task apis
+export const taskcreate=async(taskPaylaoad:TaskCratePayload)=>{
+  console.log(taskPaylaoad,"chake task paylaod on api End points")
+  const response=await api.post(`/task/api/admin-subadmin-create-task`,taskPaylaoad,{
+    withCredentials: true,
+  })
+  return response.data
+}
+
+
+
+export const updateTake = async (
+  taskId: string,
+  taskStatus:TaskStatus
+) => {
+  const response = await api.put(
+    `/task/api/admin-subadmin-update-status/${taskId}`,
+    taskStatus,
+    {
+      withCredentials: true,
+    }
+  );
+  return response.data;
+};
+
+
+export const getTasksByPO = async (poId: string) => {
+  const response = await api.get(`/task/api/admin-subadmin-getTask-By-po/${poId}`, {
+    withCredentials: true,
+  })
+  return response.data;
+};
+
+
+export const getAssignTask = async (userId: string) => {
+ const response = await api.get(`/task/api/get-tasks-assigned-to-user/${userId}`, { withCredentials: true });
+  return response.data;
+};

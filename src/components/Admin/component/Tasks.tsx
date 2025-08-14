@@ -1,173 +1,227 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { MdDeleteOutline } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { type AppDispatch, type RootState } from "../../../store/store";
+import {
+  taskCreate,
+  resetask,
+  updateTaskStatus,
+  selectTasks,
+  fetchTaskByTaskId,
+} from "../../../store/Slice/taskSlice";
+import { fetchOrdersAsync } from "../../../store/Slice/orderSlice";
 import { getAllUsers } from "../../../utils/api";
-import api from "../../../utils/api"; // Assuming your api utility is at this path
+import { type TaskCratePayload } from "../../../utils/api";
+import { toast } from "react-toastify";
 
 const Tasks = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { tasks, loading, error } = useSelector((state: RootState) =>
+    selectTasks(state)
+  );
   const [userData, setUserData] = useState<any[]>([]);
   const [purchaseOrders, setPurchaseOrders] = useState<any[]>([]);
   const [selectedPO, setSelectedPO] = useState<any>(null);
-  const [tasksByPO, setTasksByPO] = useState<any>({});
-
   const [isFourthComponentOpen, setIsFourthComponentOpen] = useState(false);
-
-  // State for the "Assign New Task" form
-  const [taskData, setTaskData] = useState<any>({
+  const [currentPage] = useState(1);
+  const USERS_PER_PAGE = 10;
+  const [taskData, setTaskData] = useState({
     title: "",
-    type: "",
-    assignedUsers: [{ id: uuidv4(), userId: "", employeeId: "" }],
+    taskType: "",
+    taskDeadline: "",
     description: "",
+    assignedUsers: [{ id: Date.now().toString(), primaryUserId: "", secondaryUserId: "", username: "", employeeId: "" }],
   });
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Fetch all users
   useEffect(() => {
-    try {
-      const allUsers = getAllUsers();
-      allUsers
-        .then((data: any) => {
-          setUserData(data.data);
-          console.log(data, "Fetched Users Data");
-        })
-        .catch((error: any) => {
-          console.error("Error fetching users:", error);
-        });
-    } catch (error: any) {
-      console.error("Error fetching user data:", error);
-    }
+    const fetchUsers = async () => {
+      try {
+        const response = await getAllUsers()
+        setUserData(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        toast.error("Failed to fetch users");
+      }
+    };
+    fetchUsers();
   }, []);
 
   // Fetch all purchase orders
   useEffect(() => {
-    const fetchAllPurchaseOrders = async () => {
+    dispatch(fetchOrdersAsync({ page: currentPage, limit: USERS_PER_PAGE }));
+  }, [dispatch, currentPage]);
+
+  // Set purchase orders from API
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const response: any = await api.get("/order/api/get-all-orders", {
-          withCredentials: true,
-        });
-        const orders = response?.data?.data?.orders || [];
+        const result = await dispatch(fetchOrdersAsync({ page: currentPage, limit: USERS_PER_PAGE })).unwrap();
+        const { orders } = result
         setPurchaseOrders(orders);
-        console.log("Fetched All Orders:", orders);
-        // Automatically select the first PO if available (consider only pending/delayed if filtering on initial load)
-        const initialFilteredOrders = orders.filter((po: any) => po.status === "pending" || po.status === "delayed");
-        if (initialFilteredOrders.length > 0) {
-          setSelectedPO(initialFilteredOrders[0]);
-        } else if (orders.length > 0) { // Fallback to any PO if no pending/delayed found
-          setSelectedPO(orders[0]);
-        }
-      } catch (error: any) {
-        console.error("Error fetching all orders:", error);
+        const pendingOrDelayedPO = orders.find(
+          (po: any) => po.status === 'pending' || po.status === 'delayed'
+        );
+        setSelectedPO(pendingOrDelayedPO || orders[0] || null); // Select first pending/delayed, or first order, or null
+      } catch (error) {
+        console.error('Failed to fetch orders:', error);
+        setPurchaseOrders([]);
+        setSelectedPO(null);
       }
     };
-    fetchAllPurchaseOrders();
+    fetchData();
   }, []);
 
-  // Handler for general task input fields (title, type, description)
+
+  useEffect(() => {
+    if (!selectedPO) return
+    if (selectedPO) {
+      dispatch(fetchTaskByTaskId(selectedPO._id));
+    }
+  }, [dispatch, selectedPO]);
+
+  // Handle error notifications
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(resetask());
+    }
+  }, [error, dispatch]);
+
+  // Handler for general task input fields
   const handleTaskInputChange = (e: any) => {
     const { id, value } = e.target;
-    setTaskData((prevData: any) => ({
+    setTaskData((prevData) => ({
       ...prevData,
       [id]: value,
     }));
   };
 
-  // Handler for inputs within the assignedUsers array
-  const handleAssignedUserChange = (userId: string, e: any) => {
-    const { name, value } = e.target;
-    setTaskData((prevData: any) => ({
+
+  const handleAssignedUserChange = (id: string, field: string, e: any) => {
+    const { value } = e.target;
+    setTaskData((prevData) => ({
       ...prevData,
-      assignedUsers: prevData.assignedUsers.map((user: any) => {
-        if (user.id === userId) {
-          if (name === "userId") {
-            const selectedUser = userData.find((u: any) => u._id === value);
+      assignedUsers: prevData.assignedUsers.map((user) => {
+        if (user.id === id) {
+          const selectedUser = userData.find((dUser) => dUser._id === value);
+          if (field === "primaryUserId") {
             return {
               ...user,
-              [name]: value,
+              primaryUserId: value,
+              secondaryUserId: value, // Auto-fill secondaryUserId
+              username: selectedUser ? selectedUser.username : "",
+              employeeId: selectedUser ? selectedUser.employeeId : "",
+            };
+          } else if (field === "secondaryUserId") {
+            return {
+              ...user,
+              primaryUserId: value, // Auto-fill primaryUserId
+              secondaryUserId: value,
+              username: selectedUser ? selectedUser.username : "",
               employeeId: selectedUser ? selectedUser.employeeId : "",
             };
           }
-          return { ...user, [name]: value };
         }
         return user;
       }),
     }));
   };
 
-  // Function to add a new user assignment block
+  // Add a new user assignment block
   const addAssignedUser = () => {
-    setTaskData((prevData: any) => ({
+    setTaskData((prevData) => ({
       ...prevData,
       assignedUsers: [
         ...prevData.assignedUsers,
-        { id: uuidv4(), userId: "", employeeId: "" },
+        {
+          id: Date.now().toString(),
+          primaryUserId: "",
+          secondaryUserId: "",
+          username: "",
+          employeeId: ""
+        }
       ],
     }));
   };
 
-  // Function to remove a user assignment block
+  // Remove a user assignment block
   const removeAssignedUser = (idToRemove: string) => {
-    setTaskData((prevData: any) => ({
+    setTaskData((prevData) => ({
       ...prevData,
       assignedUsers: prevData.assignedUsers.filter(
-        (user: any) => user.id !== idToRemove
+        (user) => user.id !== idToRemove
       ),
     }));
   };
 
   // Handler for form submission
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-
     if (!selectedPO) {
-      // Removed alert here for smoother UX
+      setFormError("Please select a purchase order");
       return;
     }
 
-    const newTask = {
-      id: uuidv4(),
-      poId: selectedPO._id,
+    const payload: TaskCratePayload = {
+      poId: selectedPO?._id || "",
       title: taskData.title,
-      type: taskData.type,
-      assignedUsers: taskData.assignedUsers.map((user: any) => {
-        const fullUser = userData.find((u: any) => u._id === user.userId);
-        return {
-          id: user.id,
-          userId: user.userId,
-          username: fullUser ? fullUser.username : "Unknown User",
-          employeeId: fullUser ? fullUser.employeeId : "",
-        };
-      }),
       description: taskData.description,
-      createdAt: new Date().toISOString(),
-      status: "pending",
-      completed: false,
+      taskType: taskData.taskType,
+      taskDeadline: taskData.taskDeadline || undefined,
+      assignedUsers: taskData.assignedUsers
+        .map((user) => {
+          const selectedUser = userData.find((dUser) => dUser._id === user.primaryUserId);
+          return selectedUser
+            ? { _id: selectedUser._id, username: selectedUser.username, }
+            : null;
+        })
+        .filter((userObj) => userObj !== null) as { _id: string; username: string; email: string }[]
     };
 
-    setTasksByPO((prevTasksByPO: any) => ({
-      ...prevTasksByPO,
-      [selectedPO._id]: [...(prevTasksByPO[selectedPO._id] || []), newTask],
-    }));
-
-    console.log("New Task Added:", newTask);
-    // Removed alert here for smoother UX
-
-    // Reset the form fields
-    setTaskData({
-      title: "",
-      type: "",
-      assignedUsers: [{ id: uuidv4(), userId: "", employeeId: "" }],
-      description: "",
-    });
+    try {
+      await dispatch(taskCreate(payload)).unwrap();
+      toast.success("Task created successfully");
+      setTaskData({
+        title: "",
+        taskType: "",
+        taskDeadline: "",
+        description: "",
+        assignedUsers: [{ id: Date.now().toString(), primaryUserId: "", secondaryUserId: "", username: "", employeeId: "" }],
+      });
+      setFormError(null);
+      if (selectedPO) {
+        console.log(selectedPO, "check user po Ids...")
+        dispatch(fetchTaskByTaskId(selectedPO._id)); // Refresh the task list after creation
+      }
+    } catch (error) {
+      setFormError("Failed to create task");
+    }
+  };
+  // Handler to mark a task as completed
+  const handleMarkAsCompleted = async (taskId: string, currentStatus: string) => {
+    const newStatus = currentStatus !== "completed"; // true if marking as completed, false otherwise
+    try {
+      await dispatch(updateTaskStatus({ taskId, status: newStatus })).unwrap();
+      toast.success("Task status updated");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      toast.error("Failed to update task status");
+    }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
+  // Get status color
+  const getStatusColor = (status: string | undefined) => {
+    const effectiveStatus = status || "pending";
+    switch (effectiveStatus) {
       case "pending":
         return "bg-yellow-500 text-white";
       case "completed":
         return "bg-green-500 text-white";
-      case "delayed":
-        return "bg-orange-500 text-white";
-      case "rejected":
+      case "canceled":
         return "bg-red-500 text-white";
       default:
         return "bg-gray-200 text-gray-800";
@@ -177,34 +231,13 @@ const Tasks = () => {
   // Handler to set the selected PO
   const handlePOSelect = (po: any) => {
     setSelectedPO(po);
-    setIsFourthComponentOpen(false); // Hide the sidebar when a PO is selected
+    setIsFourthComponentOpen(false);
   };
 
-  // Handler to mark a task as completed
-  const handleMarkAsCompleted = (taskId: string) => {
-    if (!selectedPO) return;
-
-    setTasksByPO((prevTasksByPO: any) => {
-      const currentTasks = prevTasksByPO[selectedPO._id] || [];
-      const updatedTasks = currentTasks.map((task: any) =>
-        task.id === taskId
-          ? { ...task, completed: !task.completed, status: task.completed ? "pending" : "completed" }
-          : task
-      );
-      return {
-        ...prevTasksByPO,
-        [selectedPO._id]: updatedTasks,
-      };
-    });
-  };
-
-  // Filtered POs for the sidebar (Component 4)
+  // Filtered POs for the sidebar
   const filteredPurchaseOrders = purchaseOrders.filter(
     (po: any) => po.status === "pending" || po.status === "delayed"
   );
-
-  // Get tasks for the currently selected PO
-  const currentPOTasks = selectedPO ? tasksByPO[selectedPO._id] || [] : [];
 
   return (
     <div className="flex flex-col gap-6 min-h-screen p-4 md:p-8 relative overflow-hidden">
@@ -226,10 +259,10 @@ const Tasks = () => {
           <span className="text-sm text-gray-500 dark:text-gray-400">
             {selectedPO
               ? new Date(selectedPO.createdAt.split('T')[0]).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
               : "No PO selected"}
           </span>
         </div>
@@ -247,7 +280,7 @@ const Tasks = () => {
       {/* Main Content Area: Assign Task Form (Component 2) + Task List (Component 3) */}
       <div className="flex flex-col xl:flex-row lg:flex-row gap-6 h-full relative z-10">
         {/* Assign New Task Form (Component 2) */}
-        <div className="w-full lg:w-1/2 h-auto border border-gray-200 dark:border-zinc-700 rounded-xl p-6 bg-white dark:bg-zinc-900 shadow-lg overflow-y-auto custom-scrollbar">
+        <div className="w-full lg:w-1/2 h-auto border border-gray-200 dark:border-zinc-700 rounded-xl p-6 bg-white max-h-fit dark:bg-zinc-900 shadow-lg overflow-y-auto custom-scrollbar">
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               Assign New Task
@@ -255,6 +288,9 @@ const Tasks = () => {
             <p className="mt-1 text-gray-500 dark:text-gray-400">
               Create and assign tasks for this purchase order.
             </p>
+            {formError && (
+              <p className="text-red-500 text-sm mt-2">{formError}</p>
+            )}
           </div>
 
           {/* Form */}
@@ -281,28 +317,43 @@ const Tasks = () => {
             {/* Task Type */}
             <div>
               <label
-                htmlFor="type"
+                htmlFor="taskType"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
               >
                 Task Type
               </label>
-              <input
-                list="taskTypes"
-                id="type"
-                name="type"
+              <select
+                id="taskType"
+                name="taskType"
                 className="block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-zinc-700 dark:border-zinc-600 dark:text-white dark:focus:border-blue-400"
-                value={taskData.type}
+                value={taskData.taskType}
                 onChange={handleTaskInputChange}
                 required
-                placeholder="Select or type a task type"
+              >
+                <option value="">Select task type</option>
+                <option value="installation">Installation</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="calibration">Calibration</option>
+                <option value="repair">Repair</option>
+                <option value="inspection">Inspection</option>
+              </select>
+            </div>
+
+            {/* Task Deadline */}
+            <div>
+              <label
+                htmlFor="taskDeadline"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
+                Task Deadline (Optional)
+              </label>
+              <input
+                type="date"
+                id="taskDeadline"
+                className="block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-zinc-700 dark:border-zinc-600 dark:text-white dark:focus:border-blue-400"
+                value={taskData.taskDeadline}
+                onChange={handleTaskInputChange}
               />
-              <datalist id="taskTypes">
-                <option value="Installation"></option>
-                <option value="Maintenance"></option>
-                <option value="Calibration"></option>
-                <option value="Repair"></option>
-                <option value="Inspection"></option>
-              </datalist>
             </div>
 
             {/* Assign To Section */}
@@ -320,14 +371,12 @@ const Tasks = () => {
                 </button>
               </div>
 
-              {/* User Assignment Blocks - dynamically rendered */}
               {taskData.assignedUsers.map((user: any, index: number) => (
                 <div
                   key={user.id}
                   className="mt-2 p-4 bg-gray-100 border border-gray-200 rounded-lg shadow-sm dark:bg-zinc-800 dark:border-zinc-700 relative"
                 >
                   <div className="flex items-center text-gray-700 font-medium dark:text-gray-200 mb-3">
-                    {/* User Icon */}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5 mr-2 text-gray-400"
@@ -354,47 +403,37 @@ const Tasks = () => {
                       </button>
                     )}
                   </div>
+                  <div className="flex gap-5">
+                    <select
+                      id={`primaryUserId-${user.id}`}
+                      name="username"
+                      className="block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white dark:focus:border-blue-400"
+                      value={user.primaryUserId || ""}
+                      onChange={(e) => handleAssignedUserChange(user.id, "primaryUserId", e)}
+                    >
+                      <option value="">Select user (by username)</option>
+                      {userData.map((dUser: any) => (
+                        <option key={dUser._id} value={dUser._id}>
+                          {dUser.username}
+                        </option>
+                      ))}
+                    </select>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Select User Dropdown */}
-                    <div>
-                      <label htmlFor={`userId-${user.id}`} className="sr-only">
-                        Select User
-                      </label>
-                      <select
-                        id={`userId-${user.id}`}
-                        name="userId"
-                        className="block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white dark:focus:border-blue-400"
-                        value={user.userId}
-                        onChange={(e) => handleAssignedUserChange(user.id, e)}
-                        required
-                      >
-                        <option value="">Select user</option>
-                        {userData.map((dUser: any) => (
-                          <option key={dUser._id} value={dUser._id}>
-                            {dUser.username}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <select
+                      id={`secondaryUserId-${user.id}`}
+                      name="secondaryUserId"
+                      className="block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white dark:focus:border-blue-400"
+                      value={user.secondaryUserId || ""}
+                      onChange={(e) => handleAssignedUserChange(user.id, "secondaryUserId", e)}
+                    >
+                      <option value="">Select user (by employee ID)</option>
+                      {userData.map((dUser: any) => (
+                        <option key={dUser._id} value={dUser._id}>
+                          {dUser.employeeId}
+                        </option>
+                      ))}
+                    </select>
 
-                    {/* Employee ID (Auto-filled) */}
-                    <div>
-                      <label
-                        htmlFor={`employeeId-${user.employeeId}`}
-                        className="sr-only"
-                      >
-                        Employee ID
-                      </label>
-                      <input
-                        type="text"
-                        id={`employeeId-${user.employeeId}`}
-                        name="employeeId"
-                        disabled
-                        value={user.employeeId || "Auto-filled"}
-                        className="block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-sm text-gray-500 cursor-not-allowed dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-400"
-                      />
-                    </div>
                   </div>
                 </div>
               ))}
@@ -415,6 +454,7 @@ const Tasks = () => {
                 placeholder="Enter task description..."
                 value={taskData.description}
                 onChange={handleTaskInputChange}
+                required
               ></textarea>
             </div>
 
@@ -422,9 +462,12 @@ const Tasks = () => {
             <div className="pt-4 w-full">
               <button
                 type="submit"
-                className="min-w-full flex justify-center items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-600 transition-colors duration-200"
+                disabled={loading}
+                className={`w-full flex justify-center items-center px-6 py-3 font-semibold rounded-md shadow-md transition-colors duration-200 ${loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
+                  }`}
               >
-                {/* Plus Icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 mr-2"
@@ -446,25 +489,32 @@ const Tasks = () => {
         </div>
 
         {/* Task List (Component 3) */}
+
         <div className="w-full lg:w-1/2 h-auto border border-gray-200 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-900 shadow-lg p-6 overflow-y-auto no-scrollbar">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+
             Tasks for{" "}
             <span className="text-blue-600 dark:text-blue-400">
-              {selectedPO ? `PO #${selectedPO.orderNumber}` : "Selected PO"}
+              {selectedPO ? (selectedPO._id === 'all' ? 'All Purchase Orders' : `PO #${selectedPO.orderNumber}`) : "Selected PO"}
             </span>
+            {/* <span className="text-blue-600 dark:text-blue-400">
+              {selectedPO ? `PO #${selectedPO.orderNumber}` : "Selected PO"}
+            </span> */}
           </h2>
-          {currentPOTasks.length > 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 py-10">
+              Loading tasks...
+            </div>
+          ) : tasks.length > 0 ? (
             <div className="space-y-4">
-              {currentPOTasks.map((task: any) => (
+              {tasks.map((task: any) => (
                 <div
-                  key={task.id}
-                  className={`bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 flex flex-col ${
-                    task.completed
+                  key={task._id}
+                  className={`bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 flex flex-col ${task.status === "completed"
                       ? "opacity-70 border-green-400 dark:border-green-600"
                       : ""
-                  }`}
+                    }`}
                 >
-                  {/* Task Header: Title (left) & Status (right) */}
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mr-4">
                       {task.title}
@@ -478,67 +528,94 @@ const Tasks = () => {
                     </span>
                   </div>
 
-                  {/* Type (left) & Created Date (right) */}
                   <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300 mb-3">
                     <div className="flex items-center">
                       <span className="font-semibold text-gray-700 dark:text-gray-200 mr-1">
                         Type:
                       </span>{" "}
-                      {task.type}
+                      {task.taskType}
                     </div>
+                    {selectedPO?._id === 'all' && task.poId?.orderNumber && (
+                      <div className="flex items-center">
+                        <span className="font-semibold text-gray-700 dark:text-gray-200 mr-1">
+                          PO #:
+                        </span>{" "}
+                        {task.poId.orderNumber}
+                      </div>
+                    )}
                     <div className="flex items-center">
                       <span className="font-semibold text-gray-700 dark:text-gray-200 mr-1">
                         Created:
                       </span>{" "}
-                      {new Date(task.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {task.createdAt
+                        ? new Date(task.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                        : "N/A"}
                     </div>
                   </div>
 
-                  {/* Assigned To Section - Aligned Left */}
+                  <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300 mb-3">
+                    <div className="flex items-center">
+                      <span className="font-semibold text-gray-700 dark:text-gray-200 mr-1">
+                        Deadline:
+                      </span>{" "}
+                      {task.taskDeadline
+                        ? new Date(task.taskDeadline).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                        : "No deadline"}
+                    </div>
+                  </div>
+
                   <div className="mb-3 text-left">
                     <span className="font-semibold text-gray-700 dark:text-gray-200 block mb-1">
                       Assigned To:
                     </span>
                     <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 ml-4">
-                      {task.assignedUsers.map((user: any) => (
-                        <li key={user.id}>
-                          {user.username}{" "}
-                          {user.employeeId && `(Emp ID: ${user.employeeId})`}
-                        </li>
-                      ))}
+                      {task.assignedUsers?.length > 0 ? (
+                        task.assignedUsers.map((user: any) => (
+                          <li key={user._id}>
+                            {user.username} (Emp ID: {user._id})
+                          </li>
+                        ))
+                      ) : (
+                        <li>No users assigned</li>
+                      )}
                     </ul>
                   </div>
 
-                  {/* Description Section - Aligned Left */}
                   <div className="mb-4 text-left">
                     <span className="font-semibold text-gray-700 dark:text-gray-200 block mb-1">
                       Description:
                     </span>
                     <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {task.description}
+                      {task.description || "No description provided"}
                     </p>
                   </div>
 
-                  {/* Mark as Completed Checkbox */}
                   <div className="flex items-center justify-end pt-2 border-t border-gray-200 dark:border-zinc-700">
                     <input
-                      id={`completed-${task.id}`}
+                      id={`completed-${task._id}`}
                       type="checkbox"
-                      checked={task.completed}
-                      onChange={() => handleMarkAsCompleted(task.id)}
+                      checked={task.status === "completed"}
+                      onChange={() => handleMarkAsCompleted(task._id, task.status)}
                       className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400 rounded focus:ring-blue-500 dark:focus:ring-blue-400 cursor-pointer"
+                      disabled={loading}
                     />
                     <label
-                      htmlFor={`completed-${task.id}`}
+                      htmlFor={`completed-${task._id}`}
                       className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer"
                     >
-                      Mark as Completed
+                      Mark as {task.status === "completed" ? "Pending" : "Completed"}
                     </label>
                   </div>
                 </div>
@@ -547,22 +624,21 @@ const Tasks = () => {
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 py-10">
               {selectedPO
-                ? "No tasks assigned to this PO yet."
+                ? selectedPO._id === "all"
+                  ? "No tasks assigned yet."
+                  : "No tasks assigned to this PO yet."
                 : "Select a Purchase Order to view its tasks."}
             </div>
           )}
+
         </div>
       </div>
 
       {/* Sidebar (Component 4) */}
       <div
         className={`fixed top-48 right-0 h-9/12 w-full max-w-sm rounded-xl bg-gray-200 dark:bg-zinc-900 shadow-xl border border-gray-200 dark:border-zinc-700 z-50 transform transition-transform duration-300 ease-in-out
-          ${
-            isFourthComponentOpen ? "translate-x-0" : "translate-x-[calc(100%)]"
-          }
-          lg:max-w-md xl:max-w-lg`}
+          ${isFourthComponentOpen ? "translate-x-0" : "translate-x-[calc(100%)]"} lg:max-w-md xl:max-w-lg`}
       >
-        {/* Content of the Fourth Component */}
         <div className="h-full p-6 flex flex-col">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Purchase Orders
@@ -575,11 +651,10 @@ const Tasks = () => {
               filteredPurchaseOrders.map((po: any) => (
                 <div
                   key={po._id}
-                  className={`flex justify-between items-center bg-gray-50 dark:bg-zinc-800 p-3 rounded-lg w-full border border-gray-200 dark:border-zinc-700 shadow-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors duration-200 ${
-                    selectedPO && selectedPO._id === po._id
+                  className={`flex justify-between items-center bg-gray-50 dark:bg-zinc-800 p-3 rounded-lg w-full border border-gray-200 dark:border-zinc-700 shadow-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors duration-200 ${selectedPO && selectedPO._id === po._id
                       ? "ring-2 ring-blue-500 dark:ring-blue-400"
                       : ""
-                  }`}
+                    }`}
                   onClick={() => handlePOSelect(po)}
                 >
                   <span className="font-semibold text-gray-800 dark:text-gray-100">
