@@ -408,8 +408,12 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                                                     </span>
                                                 </div>
                                             </td>
-                                            
-                                            <td className="lg:p-2 p-1 text-start font-semibold text-lg">{data.clientName}</td>
+
+                                            <td className="lg:p-2 p-1 text-start">
+                                                <div className="flex flex-col items-start uppercase">
+                                                    <span className="font-semibold text-lg">{data.clientName}</span>
+                                                    <span>{data.companyName}</span>
+                                                </div></td>
                                             <td className="lg:p-2 p-1 font-semibold text-sm">
                                                 {data.orderDate
                                                     ? formatDate(data.orderDate.split('T')[0])
@@ -448,7 +452,7 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                                                     onClick={() => handleDownload(data)}
                                                     className="hover:bg-blue-800 p-1 rounded-sm hover:text-white duration-200 cursor-pointer"
                                                 />
-                                                {(user.userType === "admin" || user.userType === "subadmin" ) && (
+                                                {(user.userType === "admin" || user.userType === "subadmin") && (
                                                     <RiDeleteBinLine
                                                         onClick={() => {
                                                             setUserToDelete(data._id);
