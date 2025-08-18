@@ -257,23 +257,50 @@ const Tasks = () => {
             {selectedPO ? `PO #${selectedPO.orderNumber}` : "Select a PO"}
           </span>
           <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span>Order Date : </span>
             {selectedPO
-              ? new Date(selectedPO.createdAt.split('T')[0]).toLocaleDateString("en-US", {
+              ? new Date(selectedPO.orderDate ? selectedPO.orderDate.split('T')[0] : selectedPO.createdAt.split('T')[0]).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
                 day: "numeric",
               })
               : "No PO selected"}
           </span>
-        </div>
-        {selectedPO && (
-          <span
-            className={`uppercase font-semibold px-3 py-1 rounded-full text-xs mt-3 md:mt-0 shadow-sm ${getStatusColor(
-              selectedPO.status
-            )}`}
-          >
-            {selectedPO.status}
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span>Estimated Dispatch Date : </span>
+            {selectedPO
+              ? new Date(selectedPO.estimatedDispatchDate.split('T')[0]).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
+              : "No PO selected"}
           </span>
+
+        </div>
+
+        {selectedPO && (
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex flex-col items-end">
+              <span
+                className={`uppercase font-bold  text-lg  md:mt-0 `}
+              >
+                {selectedPO.clientName}
+              </span>
+              <span
+                className={`uppercase   text-lg  md:mt-0 `}
+              >
+                {selectedPO.companyName}
+              </span>
+            </div>
+            <span
+              className={`uppercase font-semibold px-3 py-1 rounded-full text-xs mt-3 md:mt-0 shadow-sm ${getStatusColor(
+                selectedPO.status
+              )}`}
+            >
+              {selectedPO.status}
+            </span>
+          </div>
         )}
       </div>
 
@@ -464,8 +491,8 @@ const Tasks = () => {
                 type="submit"
                 disabled={loading}
                 className={`w-full flex justify-center items-center px-6 py-3 font-semibold rounded-md shadow-md transition-colors duration-200 ${loading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
                   }`}
               >
                 <svg
@@ -511,8 +538,8 @@ const Tasks = () => {
                 <div
                   key={task._id}
                   className={`bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 flex flex-col ${task.status === "completed"
-                      ? "opacity-70 border-green-400 dark:border-green-600"
-                      : ""
+                    ? "opacity-70 border-green-400 dark:border-green-600"
+                    : ""
                     }`}
                 >
                   <div className="flex justify-between items-start mb-2">
@@ -652,8 +679,8 @@ const Tasks = () => {
                 <div
                   key={po._id}
                   className={`flex justify-between items-center bg-gray-50 dark:bg-zinc-800 p-3 rounded-lg w-full border border-gray-200 dark:border-zinc-700 shadow-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors duration-200 ${selectedPO && selectedPO._id === po._id
-                      ? "ring-2 ring-blue-500 dark:ring-blue-400"
-                      : ""
+                    ? "ring-2 ring-blue-500 dark:ring-blue-400"
+                    : ""
                     }`}
                   onClick={() => handlePOSelect(po)}
                 >
