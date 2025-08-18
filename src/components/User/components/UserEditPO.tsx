@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { MdPrint } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { updateOrderAsync } from "../../../store/Slice/orderSlice";
 import { toast } from "react-toastify";
@@ -20,7 +19,7 @@ interface User {
 
 interface Order {
     _id: string;
-    orderDate:string,
+    orderDate: string,
     orderNumber: string;
     createdAt: string;
     clientName: string;
@@ -59,7 +58,8 @@ export const formatDate = (dateString: string | null | undefined): string => {
 const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({
-        orderDate:order?.orderDate || '',
+        orderNumber: order?.orderNumber || '',
+        orderDate: order?.orderDate || '',
         clientName: order?.clientName || "",
         companyName: order?.companyName || "",
         address: order?.address || "",
@@ -78,13 +78,14 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
             username: order?.orderThrough?.username || "",
             employeeId: order?.orderThrough?.employeeId || "",
         },
-        createdAt:order?.createdAt || ""
+        createdAt: order?.createdAt || ""
     });
 
     useEffect(() => {
         if (order) {
             setFormData({
-                orderDate:order.orderDate || "",
+                orderNumber: order.orderNumber || "",
+                orderDate: order.orderDate || "",
                 clientName: order.clientName || "",
                 companyName: order.companyName || "",
                 address: order.address || "",
@@ -103,7 +104,7 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                     username: order.orderThrough?.username || "",
                     employeeId: order.orderThrough?.employeeId || "",
                 },
-                createdAt:order.createdAt || ""
+                createdAt: order.createdAt || ""
             });
         }
     }, [order]);
@@ -187,11 +188,17 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                 <div className="text-right flex flex-col w-full md:w-auto">
                     {/* The PO Number and Order Date are now static text */}
                     <span className="text-xs font-semibold">PO Number</span>
-                    <span className="text-blue-600 underline text-lg font-semibold font-mono mb-2">
-                        {order.orderNumber || "N/A"}
-                    </span>
+                    <input 
+                        type="text"
+                        name="orderNumber"
+                        value={formData.orderNumber} 
+                        onChange={handleInputChange}
+                        className="text-blue-600 underline text-lg font-semibold font-mono mb-2 text-end" 
+                    />
+
+
                     <span className="text-xs font-semibold mt-2">
-                        Order Creation Date: <span>{formData.orderDate ? formData.orderDate.split('T')[0] : formData.createdAt.split('T')[0] }</span>
+                        Order Creation Date: <span>{formData.orderDate ? formData.orderDate.split('T')[0] : formData.createdAt.split('T')[0]}</span>
                         <input
                             type="date"
                             name="orderDate"
@@ -216,14 +223,14 @@ const UserEditPO: React.FC<UserEditPOProps> = ({ order, onClose }) => {
                             // value={formData.status}
                             // onChange={handleInputChange}
                             className={`font-semibold rounded-full px-2 py-1 text-xs text-white uppercase ${formData.status === "completed"
-                                    ? "bg-green-500"
-                                    : formData.status === "pending"
-                                        ? "bg-yellow-500"
-                                        : formData.status === "delayed"
-                                            ? "bg-orange-500"
-                                            : formData.status === "rejected"
-                                                ? "bg-red-500"
-                                                : "bg-gray-500"
+                                ? "bg-green-500"
+                                : formData.status === "pending"
+                                    ? "bg-yellow-500"
+                                    : formData.status === "delayed"
+                                        ? "bg-orange-500"
+                                        : formData.status === "rejected"
+                                            ? "bg-red-500"
+                                            : "bg-gray-500"
                                 }`}
                         >
                             {formData.status}
