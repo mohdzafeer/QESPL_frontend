@@ -453,10 +453,10 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                                                 </div></td>
                                             <td className="lg:p-2 p-1 font-semibold text-sm">
                                                 {data.orderDate
-                                                    ? formatDate(data.orderDate.split('T')[0])
+                                                    ? formatDate(data.orderDate?.split('T')[0])
                                                     : formatDate(data.createdAt?.split('T')[0])}
                                             </td>
-                                            <td className="lg:p-2 p-1 font-semibold text-sm">{formatDate(data.estimatedDispatchDate.split('T')[0])}</td>
+                                            <td className="lg:p-2 p-1 font-semibold text-sm">{formatDate(data.estimatedDispatchDate?.split('T')[0])}</td>
                                             <td
                                                 className={`lg:p-2 p-1 ${data.status === "completed"
                                                     ? "text-green-600"
@@ -563,7 +563,7 @@ const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
                                         </span>
                                         <span className="w-2/3 text-left">
                                             {data.orderDate
-                                                ? data.orderDate.split('T')[0]
+                                                ? data.orderDate?.split('T')[0]
                                                 : data.createdAt?.split('T')[0]}
                                         </span>
                                     </div>
