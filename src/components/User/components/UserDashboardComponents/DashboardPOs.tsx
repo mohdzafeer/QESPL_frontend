@@ -13,6 +13,8 @@ import { debounce } from 'lodash';
 import { toast } from "react-toastify";
 import { softDeleteOrder } from "../../../../store/Slice/recycleBinSlice";
 import { formatDate } from "../UserEditPO";
+import { clearSearchResults, searchOrders } from "../../../../store/Slice/orderSearchSlice";
+
 
 // --- INTERFACES: COPIED DIRECTLY FROM PODetails.tsx (po-details-updated Canvas) ---
 interface Product {
@@ -73,6 +75,41 @@ interface FetchedOrdersData {
 // --- END INTERFACES ---
 
 const DashboardPOs = ({ refreshTrigger }: { refreshTrigger: boolean }) => {
+
+    // const useDebounce = <T,>(value: T, delay: number): T => {
+    //     const [debouncedValue, setDebouncedValue] = useState<T>(value);
+    //     useEffect(() => {
+    //         const handler = setTimeout(() => {
+    //             setDebouncedValue(value);
+    //         }, delay);
+
+    //         return () => {
+    //             clearTimeout(handler);
+    //         };
+    //     }, [value, delay]);
+
+    //     return debouncedValue;
+    // };
+
+    // const debouncedSearchQuery = useDebounce(localSearchQuery, 500);
+    // useEffect(() => {
+    //     if (debouncedSearchQuery || fromDate || toDate || statusFilter !== "all") {
+    //         dispatch(
+    //             searchOrders({
+    //                 query: debouncedSearchQuery,
+    //                 startDate: fromDate || undefined,
+    //                 endDate: toDate || undefined,
+    //                 status: statusFilter !== "all" ? statusFilter : undefined,
+    //             })
+    //         );
+    //     } else {
+    //         dispatch(clearSearchResults());
+    //     }
+    // }, [dispatch, debouncedSearchQuery, fromDate, toDate, statusFilter]);
+
+
+
+
     const dispatch = useDispatch();
     const statusFilter = useSelector(
         (state: RootState) => state.filter.statusFilter

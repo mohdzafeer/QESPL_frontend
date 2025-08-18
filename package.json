@@ -33,6 +33,10 @@
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.3.0",
+    "@capacitor-community/http": "^1.4.1",
+    "@capacitor/android": "^7.4.2",
+    "@capacitor/cli": "^7.4.2",
+    "@capacitor/core": "^7.4.2",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.1.1",
