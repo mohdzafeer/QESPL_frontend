@@ -109,7 +109,7 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
     }
 
   return (
-    <div className="lg:w-4xl xl:w-4xl w-sm lg:max-h-[600px] xl:max-h-[700px] max-h-[700px] overflow-y-auto overflow-x-hidden no-scrollbar rounded-xl bg-white dark:bg-zinc-800 dark:text-white py-5 px-10 flex flex-col">
+    <div className="lg:w-4xl xl:w-4xl w-xs lg:max-h-[600px] xl:max-h-[700px] max-h-[700px] overflow-y-auto overflow-x-hidden no-scrollbar rounded-xl bg-white dark:bg-zinc-800 dark:text-white py-5 px-10 flex flex-col">
       {/* Close button for the modal */}
       <button
         className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl font-bold z-10"
@@ -289,45 +289,76 @@ const PODetails: React.FC<PODetailsProps> = ({ orderData, onClose }) => {
       </div>
 
       {/* Product Info Table */}
-      <table className="table-auto w-full text-left border-collapse text-sm mt-4">
-        <thead className="bg-gray-100 dark:bg-zinc-900 dark:text-white">
-          <tr>
-            <th className="px-4 py-2 border">Product Name</th>
-            <th className="px-4 py-2 border">Price</th>
-            <th className="px-4 py-2 border">Qty</th>
-            <th className="px-4 py-2 border">Remark</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orderData.products && orderData.products.length > 0 ? (
-            orderData.products.map((product) => (
-              <tr
-                key={product._id || product.name}
-                className="hover:bg-gray-50 dark:hover:bg-zinc-800 "
-              >
-                <td className="px-4 py-2 border w-fit">{product.name}</td>
-                <td className="px-4 py-2 border">
-                  ₹{product.price?.toLocaleString()}/-
-                </td>{" "}
-                {/* Format price with locale string */}
-                <td className="px-4 py-2 border">{product.quantity}</td>
-                <td className="px-4 py-2 border">
-                  {product.remark || "N/A"} {/* Display dynamic Remark */}
+      <div className="hidden sm:block">
+        <table className="table-auto w-full text-left border-collapse text-sm mt-4">
+          <thead className="bg-gray-100 dark:bg-zinc-900 dark:text-white">
+            <tr>
+              <th className="px-4 py-2 border">Product Name</th>
+              <th className="px-4 py-2 border">Price</th>
+              <th className="px-4 py-2 border">Qty</th>
+              <th className="px-4 py-2 border">Remark</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orderData.products && orderData.products.length > 0 ? (
+              orderData.products.map((product) => (
+                <tr
+                  key={product._id || product.name}
+                  className="hover:bg-gray-50 dark:hover:bg-zinc-800"
+                >
+                  <td className="px-4 py-2 border w-fit">{product.name}</td>
+                  <td className="px-4 py-2 border">
+                    ₹{product.price?.toLocaleString()}/-
+                  </td>
+                  <td className="px-4 py-2 border">{product.quantity}</td>
+                  <td className="px-4 py-2 border">
+                    {product.remark || "N/A"}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="px-4 py-2 border text-center text-gray-500">
+                  No products listed.
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan={4}
-                className="px-4 py-2 border text-center text-gray-500"
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile View (as cards) */}
+      <div className="sm:hidden">
+        {orderData.products && orderData.products.length > 0 ? (
+          <div className="mt-4 space-y-4">
+            {orderData.products.map((product) => (
+              <div
+                key={product._id || product.name}
+                className="bg-white dark:bg-zinc-900 p-4 border rounded-lg shadow-sm"
               >
-                No products listed.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="font-bold text-lg">{product.name}</div>
+                  <div className="text-gray-700 dark:text-gray-300">
+                    ₹{product.price?.toLocaleString()}/-
+                  </div>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <div className="text-gray-500 dark:text-gray-400">Quantity:</div>
+                  <div>{product.quantity}</div>
+                </div>
+                <div className="flex justify-between items-start text-sm mt-1 gap-1">
+                  <div className="text-gray-500 dark:text-gray-400">Remark:</div>
+                  <div className="text-start">{product.remark || "N/A"}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-4 p-4 border rounded-lg text-center text-gray-500 bg-white dark:bg-zinc-900">
+            No products listed.
+          </div>
+        )}
+      </div>
 
       {/* Print Button */}
       <div className="flex justify-between items-center mt-4">

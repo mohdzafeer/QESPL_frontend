@@ -4,7 +4,7 @@ import { MdAccessTime } from "react-icons/md";
 
 const TaskCard = () => {
     return (
-        <div className="flex flex-col pb-26 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-2 pb-26 gap-6">
             <div className={`bg-orange-50 dark:bg-zinc-900 dark:text-white rounded-lg shadow-sm p-6 border-l-4 border-orange-500`} >
                 {/* Header Section */}
                 <div className="flex lg:flex-row xl:flex-row flex-col xl:justify-between lg:justify-between xl:items-center lg:items-center items-start xl:gap-0 lg:gap-0 gap-4 mb-2">
